@@ -20,7 +20,7 @@ func main() {
 
 	env.Load()
 
-	gin.SetMode("release")
+	gin.SetMode("debug")
 	gin.ForceConsoleColor()
 	router := gin.New()
 	// router.Use(LoggerToFile())
@@ -48,8 +48,8 @@ func main() {
 	s := &http.Server{
 		Addr:           fmt.Sprintf(":%s", os.Getenv("HTTP_PORT")),
 		Handler:        router,
-		ReadTimeout:    60,
-		WriteTimeout:   60,
+		ReadTimeout:    60 * time.Second,
+		WriteTimeout:   60 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
 

@@ -4,10 +4,18 @@ import (
 	"eCommerce/pkg/e"
 	"net/http"
 
+	models "eCommerce/models/backend"
+
 	"github.com/gin-gonic/gin"
 )
 
 func GetPagesList(c *gin.Context) {
 	g := Gin{c}
-	g.Response(http.StatusOK, e.Success, "YAYAYAYA")
+	req := &models.PageReq{
+		CustomerID: 1,
+	}
+
+	pages, _ := req.GetPageList()
+
+	g.Response(http.StatusOK, e.Success, pages)
 }

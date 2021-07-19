@@ -4,11 +4,13 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	// "eCommerce/internal/redis"
+	// "ec/internal/redis"
 )
 
 func AuthRequred(c *gin.Context) {
 	fmt.Println(c.Request.Header["Authorization"])
+
+	c.Set("customer_id", 1)
 	// rdb.Get(ctx, "odin")
 
 	// redis.Set("odin", "cool", 30)
