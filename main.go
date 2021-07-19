@@ -6,7 +6,9 @@ import (
 	"os"
 	"time"
 
+	"eCommerce/controllers/backend"
 	frontend "eCommerce/controllers/frontend"
+	auth "eCommerce/internal/auth"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -18,10 +20,10 @@ func main() {
 
 	env.Load()
 
-	gin.SetMode("debug")
+	gin.SetMode("release")
 	gin.ForceConsoleColor()
 	router := gin.New()
-	// r.Use(LoggerToFile())
+	// router.Use(LoggerToFile())
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 	router.Use(cors.New(cors.Config{
@@ -35,6 +37,11 @@ func main() {
 	frontendApi := router.Group("/api/frontend")
 	{
 		frontendApi.GET("/test", frontend.Test)
+	}
+
+	backendApi := router.Group("/api/backend", auth.AuthRequred)
+	{
+		backendApi.GET("/pages", backend.GetPagesList)
 	}
 
 	// var listenTime = 5
