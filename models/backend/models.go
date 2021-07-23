@@ -1,11 +1,8 @@
 package backend
 
-import "time"
-
 type TimeDefault struct {
-	CreatedAt *time.Time `json:"-" gorm:"column:CreatedAt"` //建立時間
-	UpdatedAt *time.Time `json:"-" gorm:"column:UpdatedAt"` //修改時間
-	DeletedAt *time.Time `json:"-" gorm:"column:DeletedAt"` //停用時間
+	CreatedAt int `json:"created_at"`
+	UpdatedAt int `json:"updated_at"`
 }
 
 type Pagination struct {

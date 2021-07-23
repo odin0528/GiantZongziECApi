@@ -7,8 +7,9 @@ import (
 	"time"
 
 	"eCommerce/controllers/backend"
-	frontend "eCommerce/controllers/frontend"
+	"eCommerce/controllers/frontend"
 	auth "eCommerce/internal/auth"
+	_ "eCommerce/internal/component"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -42,6 +43,10 @@ func main() {
 	backendApi := router.Group("/api/backend", auth.AuthRequred)
 	{
 		backendApi.GET("/pages", backend.GetPagesList)
+		/* backendApi.POST("/component/delete", backend.DraftComponentDelete)
+		backendApi.POST("/component/edit", backend.DraftComponentEdit)
+		backendApi.POST("/component/change", backend.DraftComponentChange)
+		backendApi.POST("/component/create", backend.DraftComponentCreate) */
 	}
 
 	// var listenTime = 5

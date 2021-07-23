@@ -1,0 +1,177 @@
+{
+    "TTextBlockA" : {
+        "type": "text",
+        "title": "標題文字",
+        "maxNumber": 1
+    },
+    "TTextBlockB" : {
+        "type": "text",
+        "title": "標題文字",
+        "maxNumber": 1
+    },
+    "TTextBlockC" : {
+        "type": "text",
+        "title": "標題文字",
+        "maxNumber": 1
+    },
+    "TTextImageBlockA" :{
+        "type": "image",
+        "title": "圖片文字",
+        "maxNumber": 1
+    },
+    "TTextImageBlockB" : {
+        "type": "image",
+        "title": "圖片文字",
+        "maxNumber": 1
+    },
+    "TBannerBlockA":{
+        "type": "banner",
+        "title": "Banner",
+        "maxNumber": 1
+    },
+    "TBannerBlockB":{
+        "type": "banner",
+        "title": "Banner",
+        "maxNumber": 5
+    },
+    "TBannerBlockC":{
+        "type": "banner",
+        "title": "Banner",
+        "maxNumber": 5
+    },
+    "TPlaceBlockA":{
+        "type": "place",
+        "title": "DMO",
+        "maxNumber": 1
+    },
+    "TPlaceBlockB":{
+        "type": "place",
+        "title": "DMO",
+        "maxNumber": 4
+    },
+    "TPlaceBlockC":{
+        "type": "place",
+        "title": "DMO",
+        "maxNumber": 6
+    },
+    "TEventBlockA":{
+        "type": "event",
+        "title": "行銷",
+        "maxNumber": 4
+    },
+    "TEventBlockB":{
+        "type": "event",
+        "title": "行銷",
+        "maxNumber": 5
+    },
+    "TEventBlockC":{
+        "type": "event",
+        "title": "行銷",
+        "maxNumber": 4
+    },
+    "TAttractionBlockA":{
+        "type": "attraction",
+        "title": "景點",
+        "maxNumber": 4
+    },
+    "TAttractionBlockB":{
+        "type": "attraction",
+        "title": "景點",
+        "maxNumber": 5
+    },
+    "TAttractionBlockC":{
+        "type": "attraction",
+        "title": "景點",
+        "maxNumber": 4
+    },
+    "TStoreBlockA":{
+        "type": "store",
+        "title": "店家",
+        "maxNumber": 6
+    },
+    "TStoreBlockB":{
+        "type": "store",
+        "title": "店家",
+        "maxNumber": 6
+    },
+    "TStoreBlockC":{
+        "type": "store",
+        "title": "店家",
+        "maxNumber": 6
+    },
+    "TFoodBlockA":{
+        "type": "food",
+        "title": "在地美食",
+        "maxNumber": 4
+    },
+    "TFoodBlockB":{
+        "type": "food",
+        "title": "在地美食",
+        "maxNumber": 4
+    },
+    "TFoodBlockC":{
+        "type": "food",
+        "title": "在地美食",
+        "maxNumber": 5
+    },
+    "TFoodBlockD":{
+        "type": "food",
+        "title": "在地美食",
+        "maxNumber": 5
+    },
+    "TProductBlockA":{
+        "type": "product",
+        "title": "商品",
+        "maxNumber": 4
+    },
+    "TProductBlockB":{
+        "type": "product",
+        "title": "商品",
+        "maxNumber": 4
+    },
+    "TPlayBlockA":{
+        "type": "play",
+        "title": "小編",
+        "maxNumber": 4
+    },
+    "TPlayBlockB":{
+        "type": "play",
+        "title": "小編",
+        "maxNumber": 4
+    },
+    "TPlayBlockC":{
+        "type": "play",
+        "title": "小編",
+        "maxNumber": 3
+    },
+    "TVideoBlockA":{
+        "type": "video",
+        "title": "影音專區",
+        "maxNumber": 3
+    },
+    "TVideoBlockB":{
+        "type": "video",
+        "title": "影音專區",
+        "maxNumber": 10
+    },
+    "TMapBlockA":{
+        "type": "map",
+        "title": "地圖",
+        "maxNumber": 1
+    },
+    "TMessageBlockA":{
+        "type": "message",
+        "title": "留言版",
+        "maxNumber": 1
+    },
+    "TNewsBlockA":{
+        "type": "news",
+        "title": "公告",
+        "maxNumber": 6
+    },
+    "TNewsBlockB":{
+        "type": "news",
+        "title": "公告",
+        "maxNumber": 6
+    }
+}

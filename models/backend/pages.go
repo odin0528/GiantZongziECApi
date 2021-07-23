@@ -10,12 +10,14 @@ type PageReq struct {
 }
 
 type Pages struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	PageID     int    `json:"page_id"`
+	Name       string `json:"name"`
+	ReleasedAt int    `json:"released_at"`
+	TimeDefault
 }
 
 func (req *PageReq) GetPageList() (pagesRowset []Pages, err error) {
-	err = DB.Debug().Table("rel_customer_pages as rel").Select("pages.*").Joins("inner join pages on rel.page_id = pages.id").
+	err = DB.Table("rel_customer_pages as rel").Select("rel.*, pages.name").Joins("inner join pages on rel.page_id = pages.id").
 		Where("rel.customer_id = ?", req.CustomerID).
 		Scan(&pagesRowset).Error
 	return
