@@ -45,8 +45,8 @@ func main() {
 		backendApi.GET("/pages", backend.GetPagesList)
 		/* backendApi.POST("/component/delete", backend.DraftComponentDelete)
 		backendApi.POST("/component/edit", backend.DraftComponentEdit)
-		backendApi.POST("/component/change", backend.DraftComponentChange)
-		backendApi.POST("/component/create", backend.DraftComponentCreate) */
+		backendApi.POST("/component/change", backend.DraftComponentChange) */
+		backendApi.POST("/component/create", backend.DraftComponentCreate)
 	}
 
 	// var listenTime = 5
