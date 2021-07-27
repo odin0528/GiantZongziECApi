@@ -2,6 +2,7 @@ package backend
 
 import (
 	"net/http"
+	"time"
 
 	"eCommerce/pkg/e"
 
@@ -63,22 +64,14 @@ func DraftComponentChange(c *gin.Context) {
 		return
 	}
 
-	component1 := models.PageComponentDraft{
+	component := models.PageComponentDraft{
 		PageID: req.PageID,
 		Sort:   req.Position1,
 	}
 
-	component2 := models.PageComponentDraft{
-		PageID: req.PageID,
-		Sort:   req.Position2,
-	}
-
-	component1.FetchBySort()
-	component2.FetchBySort()
-	component1.Sort = req.Position2
-	component2.Sort = req.Position1
-	component1.Update()
-	component2.Update()
+	component.FetchBySort()
+	component.Sort = req.Position2
+	component.Update()
 
 	g.Response(http.StatusOK, e.Success, nil)
 }
@@ -91,7 +84,10 @@ func DraftComponentCreate(c *gin.Context) {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
 		return
 	}
-
+	CustomerID, _ := c.Get("customer_id")
+	component.CustomerID = CustomerID.(int)
+	component.CreatedAt = int(time.Now().Unix())
+	component.UpdatedAt = int(time.Now().Unix())
 	component.Save()
 
 	for _, data := range component.Data {

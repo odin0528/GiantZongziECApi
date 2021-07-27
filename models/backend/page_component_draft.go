@@ -14,7 +14,7 @@ type PageComponentDraftReq struct {
 type PageComponentDraft struct {
 	ID            int                      `json:"id" gorm:"primaryKey;autoIncrement"`
 	CustomerID    int                      `json:"customer_id"`
-	PageID        int                      `json:"page_id"`
+	PageID        int                      `json:"page_id" uri:"page_id"`
 	Sort          int                      `json:"sort"`
 	ComponentName string                   `json:"componentName"`
 	Title         string                   `json:"title"`
@@ -35,13 +35,13 @@ func (req *PageComponentDraftReq) DmoComponentFetch() (component PageComponentDr
 }
 
 func (component *PageComponentDraft) FetchByPageID() (components []PageComponentDraft) {
-	DB.Model(&component).Where("page_id = ?", component.PageID).Order("sort asc").Scan(&components)
+	DB.Debug().Model(&component).Where("page_id = ?", component.PageID).Order("sort asc").Scan(&components)
 	return
 }
 
 func (component *PageComponentDraft) Save() (err error) {
 	component.ID = 0
-	err = DB.Model(&PageComponentDraft{}).Where("page_id = ? AND sort >= ?", component.PageID, component.Sort).Update("sort", gorm.Expr("sort + 1")).Error
+	err = DB.Table("page_component_draft").Where("page_id = ? AND sort >= ?", component.PageID, component.Sort).Update("sort", gorm.Expr("sort + 1")).Error
 	err = DB.Create(&component).Error
 	return
 }
@@ -52,12 +52,12 @@ func (component *PageComponentDraft) FetchBySort() {
 
 func (component *PageComponentDraft) Delete() (err error) {
 	DB.Delete(PageComponentDraft{}, "id = ?", component.ID)
-	err = DB.Model(&PageComponentDraft{}).Where("page_id = ? AND sort > ?", component.PageID, component.Sort).Update("sort", gorm.Expr("sort - 1")).Error
+	err = DB.Debug().Table("page_component_draft").Where("page_id = ? AND sort > ?", component.PageID, component.Sort).Update("sort", gorm.Expr("sort - 1")).Error
 	return
 }
 
 func (component *PageComponentDraft) DeleteChildren() (err error) {
-	DB.Delete(PageComponentDataDraft{}, "customer_id = ?", component.ID)
+	DB.Delete(PageComponentDataDraft{}, "com_id = ?", component.ID)
 	return
 }
 

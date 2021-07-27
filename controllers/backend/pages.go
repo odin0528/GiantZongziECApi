@@ -19,3 +19,17 @@ func GetPagesList(c *gin.Context) {
 
 	g.Response(http.StatusOK, e.Success, pages)
 }
+
+func GetPage(c *gin.Context) {
+	g := Gin{c}
+	var req models.PageComponentDraft
+	err := c.ShouldBindUri(&req)
+	if err != nil {
+		g.Response(http.StatusBadRequest, e.InvalidParams, err)
+		return
+	}
+
+	components := req.FetchByPageID()
+	g.Response(http.StatusOK, e.Success, components)
+
+}
