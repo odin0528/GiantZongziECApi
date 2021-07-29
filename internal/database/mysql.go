@@ -3,21 +3,24 @@ package database
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	env "github.com/joho/godotenv"
 )
 
 // DB 全域
 var DB *gorm.DB
 
 func init() {
+	env.Load()
 	var err error
 	DB, err = gorm.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
-		"root",
-		"H:Q=>Pi</7y1",
-		"18.179.111.81:3306",
-		"ec"))
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_NAME")))
 	if err != nil {
 		log.Println(err)
 	}

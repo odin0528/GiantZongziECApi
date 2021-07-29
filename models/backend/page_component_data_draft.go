@@ -4,20 +4,25 @@ import (
 	. "eCommerce/internal/database"
 )
 
+type PageComponentDataDraftQuery struct {
+	ComID int `json:"com_id"`
+}
+
 type PageComponentDataDraft struct {
-	ID        int    `json:"id"`
-	ComID     int    `json:"com_id"`
-	PageID    int    `json:"page_id"`
+	ID        int    `json:"-"`
+	ComID     int    `json:"-"`
+	PageID    int    `json:"-"`
 	Title     string `json:"title"`
 	Img       string `json:"img"`
 	Link      string `json:"link"`
 	Text      string `json:"text"`
-	StartTime string `json:"start_time"`
-	EndTime   string `json:"end_time"`
+	StartTime int    `json:"start_time"`
+	EndTime   int    `json:"end_time"`
 }
 
-func (comData *PageComponentDataDraft) FetchByComID() {
-	DB.Model(&comData).Where("page_id = ?", comData.PageID).Scan(&comData)
+func (query *PageComponentDataDraftQuery) FetchByComID() (componentData []PageComponentDataDraft) {
+	DB.Model(&PageComponentDataDraft{}).Where("com_id = ?", query.ComID).Scan(&componentData)
+	return
 }
 
 func (listData *PageComponentDataDraft) Save() (err error) {

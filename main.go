@@ -43,11 +43,11 @@ func main() {
 	backendApi := router.Group("/api/backend", auth.AuthRequred)
 	{
 		backendApi.GET("/pages", backend.GetPagesList)
-		backendApi.GET("/pages/:page_id", backend.GetPage)
+		backendApi.GET("/pages/:page_id", backend.GetPageComponent)
 		backendApi.POST("/components/delete", backend.DraftComponentDelete)
 		backendApi.POST("/components/create", backend.DraftComponentCreate)
 		backendApi.POST("/components/change", backend.DraftComponentChange)
-		/* backendApi.POST("/component/edit", backend.DraftComponentEdit) */
+		backendApi.POST("/components/edit", backend.DraftComponentEdit)
 	}
 
 	// var listenTime = 5

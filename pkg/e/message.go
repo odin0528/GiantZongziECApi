@@ -8,7 +8,7 @@ var MsgFlags = map[int]string{
 	// UsernameAndPasswordCanNotNull: "使用者名稱及密碼不能為空",
 	// EmailIsNotValid:               "請輸入正確的信箱格式",
 	// UsernameNotFound:              "使用者名稱不存在",
-	PasswordDoesNotCorrect: "使用者密碼錯誤",
+	// PasswordDoesNotCorrect: "使用者密碼錯誤",
 	// LastGameIsOver:                "前一局遊戲已經結束，請等待新的一局開始",
 	// GamePlayerIsFull:              "此局遊戲玩家已滿，等待開獎",
 	// UserNotFound:                  "使用者不存在",
