@@ -48,6 +48,8 @@ func main() {
 		backendApi.POST("/components/create", backend.DraftComponentCreate)
 		backendApi.POST("/components/change", backend.DraftComponentChange)
 		backendApi.POST("/components/edit", backend.DraftComponentEdit)
+
+		backendApi.POST("/category/create", backend.CategoryCreate)
 	}
 
 	// var listenTime = 5
