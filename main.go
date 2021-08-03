@@ -49,7 +49,11 @@ func main() {
 		backendApi.POST("/components/change", backend.DraftComponentChange)
 		backendApi.POST("/components/edit", backend.DraftComponentEdit)
 
+		backendApi.GET("/category/:parent_id", backend.CategoryList)
 		backendApi.POST("/category/create", backend.CategoryCreate)
+		backendApi.POST("/category/modify", backend.CategoryModify)
+		backendApi.POST("/category/delete", backend.CategoryDelete)
+		backendApi.POST("/category/move", backend.CategoryMove)
 	}
 
 	// var listenTime = 5

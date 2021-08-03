@@ -3,7 +3,7 @@ package backend
 import (
 	. "eCommerce/internal/database"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // DB Table struct
