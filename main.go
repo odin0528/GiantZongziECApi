@@ -54,6 +54,8 @@ func main() {
 		backendApi.POST("/category/modify", backend.CategoryModify)
 		backendApi.POST("/category/delete", backend.CategoryDelete)
 		backendApi.POST("/category/move", backend.CategoryMove)
+
+		backendApi.POST("/products/save", backend.ProductModify)
 	}
 
 	// var listenTime = 5
