@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	. "eCommerce/internal/awsm"
+	. "eCommerce/internal/uploader"
 	"eCommerce/pkg/e"
 
 	models "eCommerce/models/backend"
