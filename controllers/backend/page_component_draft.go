@@ -144,13 +144,11 @@ func DraftComponentChange(c *gin.Context) {
 	}
 
 	component1 := componentQuery1.Fetch()
-	component1.Validate(customerID.(int))
 	if !component1.Validate(customerID.(int)) {
 		g.Response(http.StatusBadRequest, e.DataNotExist, err)
 		return
 	}
 	component2 := componentQuery2.Fetch()
-	component2.Validate(customerID.(int))
 	if !component2.Validate(customerID.(int)) {
 		g.Response(http.StatusBadRequest, e.DataNotExist, err)
 		return

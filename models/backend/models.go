@@ -1,7 +1,7 @@
 package backend
 
 type TimeDefault struct {
-	CreatedAt int `json:"created_at"`
+	CreatedAt int `json:"created_at" gorm:"<-:create"`
 	UpdatedAt int `json:"updated_at"`
 }
 

@@ -82,7 +82,7 @@ func (query *CategoryQuery) Query() *gorm.DB {
 
 func (query *CategoryQuery) Fetch() (category Category) {
 	sql := query.Query()
-	sql.Debug().First(&category)
+	sql.First(&category)
 	return
 }
 

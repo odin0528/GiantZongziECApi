@@ -8,9 +8,8 @@ type ProductStylePhotos struct {
 	ID             int    `json:"id"`
 	CustomerID     int    `json:"-"`
 	ProductID      int    `json:"-"`
-	ProductStyleID int    `json:"-"`
+	ProductStyleID int    `json:"product_style_id"`
 	Img            string `json:"img"`
-	Sort           int    `json:"-"`
 	TimeDefault
 }
 

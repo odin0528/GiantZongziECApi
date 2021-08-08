@@ -28,6 +28,21 @@ func CategoryList(c *gin.Context) {
 	g.Response(http.StatusOK, e.Success, map[string]interface{}{"categories": categories, "breadcrumbs": breadcrumbs})
 }
 
+func CategoryChildList(c *gin.Context) {
+	g := Gin{c}
+	var query models.CategoryQuery
+	err := c.ShouldBindUri(&query)
+	if err != nil {
+		g.Response(http.StatusBadRequest, e.InvalidParams, err)
+		return
+	}
+	CustomerID, _ := c.Get("customer_id")
+	query.CustomerID = CustomerID.(int)
+	categories := query.FetchAll()
+
+	g.Response(http.StatusOK, e.Success, categories)
+}
+
 func CategoryCreate(c *gin.Context) {
 	g := Gin{c}
 	var category *models.Category
