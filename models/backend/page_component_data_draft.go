@@ -20,6 +20,10 @@ type PageComponentDataDraft struct {
 	EndTime   int    `json:"end_time"`
 }
 
+func (PageComponentDataDraft) TableName() string {
+	return "page_component_data_draft"
+}
+
 func (query *PageComponentDataDraftQuery) FetchByComID() (componentData []PageComponentDataDraft) {
 	DB.Model(&PageComponentDataDraft{}).Where("com_id = ?", query.ComID).Scan(&componentData)
 	return
