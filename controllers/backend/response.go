@@ -19,7 +19,7 @@ func (g *Gin) Response(httpCode, errCode int, data interface{}) {
 	})
 }
 
-/*func (g *Gin) PaginationResponse(httpCode, errCode int, data interface{}, pager interface{}) {
+func (g *Gin) PaginationResponse(httpCode, errCode int, data interface{}, pager interface{}) {
 	g.C.JSON(httpCode, gin.H{
 		"http_status": httpCode,
 		"code":        errCode,
@@ -27,4 +27,4 @@ func (g *Gin) Response(httpCode, errCode int, data interface{}) {
 		"data":        data,
 		"pager":       pager,
 	})
-}*/
+}

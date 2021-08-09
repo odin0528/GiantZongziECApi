@@ -20,7 +20,10 @@ func init() {
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_HOST"),
-		os.Getenv("DB_NAME"))), &gorm.Config{})
+		os.Getenv("DB_NAME"))), &gorm.Config{
+		SkipDefaultTransaction: true,
+		PrepareStmt:            true,
+	})
 	if err != nil {
 		log.Println(err)
 	}

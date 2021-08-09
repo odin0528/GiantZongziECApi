@@ -6,8 +6,21 @@ type TimeDefault struct {
 }
 
 type Pagination struct {
-	CurrentPage  int `json:"current_page" uri:"page"`
-	TotalItem    int `json:"total_item"`
-	LastPage     int `json:"last_page"`
-	ItemsPerPage int `json:"item_per_page"`
+	Page  int `json:"page"`
+	Start int `json:"start"`
+	End   int `json:"end"`
+	Total int `json:"total"`
+	Items int `json:"items"`
+}
+
+func CreatePagination(page int, items int, total int64) (pagination Pagination) {
+	pagination.Page = page
+	pagination.Start = ((page - 1) * items) + 1
+	pagination.End = pagination.Start + items
+	pagination.Total = int(total)
+	pagination.Items = items
+	if pagination.End > pagination.Total {
+		pagination.End = pagination.Total
+	}
+	return
 }

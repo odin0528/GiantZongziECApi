@@ -32,6 +32,26 @@ func ProductFetch(c *gin.Context) {
 	g.Response(http.StatusOK, e.Success, product)
 }
 
+func ProductList(c *gin.Context) {
+	g := Gin{c}
+	var req models.ProductListReq
+	err := c.BindJSON(&req)
+	if err != nil {
+		g.Response(http.StatusBadRequest, e.InvalidParams, err)
+		return
+	}
+	CustomerID, _ := c.Get("customer_id")
+	req.CustomerID = CustomerID.(int)
+	products, pagination := req.FetchAll()
+
+	for index := range products {
+		products[index].GetPhotos()
+		products[index].GetStyleTable()
+	}
+
+	g.PaginationResponse(http.StatusOK, e.Success, products, pagination)
+}
+
 func ProductModify(c *gin.Context) {
 	g := Gin{c}
 	var req *models.Products
@@ -211,5 +231,24 @@ func ProductModify(c *gin.Context) {
 		}
 	}
 
+	g.Response(http.StatusOK, e.Success, nil)
+}
+
+func ProductPublic(c *gin.Context) {
+	g := Gin{c}
+	var req *models.Products
+	err := c.BindJSON(&req)
+	customerID, _ := c.Get("customer_id")
+
+	// 編輯產品
+	var query models.ProductQuery
+	query.ID = req.ID
+	product := query.Fetch()
+	if !product.Validate(customerID.(int)) {
+		g.Response(http.StatusBadRequest, e.DataNotExist, err)
+		return
+	}
+
+	req.ChangePubliced()
 	g.Response(http.StatusOK, e.Success, nil)
 }

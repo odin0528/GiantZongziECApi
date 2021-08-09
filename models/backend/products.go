@@ -3,12 +3,18 @@ package backend
 import (
 	. "eCommerce/internal/database"
 
+	"github.com/liudng/godump"
 	"gorm.io/gorm"
 )
 
 type ProductQuery struct {
 	ID         int `json:"id" uri:"id"`
 	CustomerID int `json:"-"`
+}
+
+type ProductListReq struct {
+	CustomerID int `json:"-"`
+	Pagination
 }
 
 type Products struct {
@@ -79,6 +85,15 @@ func (query *ProductQuery) FetchAll() (products []Products) {
 	return
 }
 
+func (req *ProductListReq) FetchAll() (products []Products, pagination Pagination) {
+	var count int64
+	sql := DB.Debug().Table("products").Where("customer_id = ?", req.CustomerID)
+	sql.Count(&count)
+	sql.Offset((req.Page - 1) * req.Items).Limit(req.Items).Scan(&products)
+	pagination = CreatePagination(req.Page, req.Items, count)
+	return
+}
+
 // 關連功能
 func (product *Products) GetPhotos() {
 	DB.Table("product_photos").Where("product_id = ?", product.ID).Order("sort ASC").Scan(&product.Photos)
@@ -102,4 +117,9 @@ func (product *Products) GetStyleTable() {
 		}
 		product.StyleTable[style.Group] = append(product.StyleTable[style.Group], style)
 	}
+}
+
+func (product *Products) ChangePubliced() {
+	godump.Dump(product)
+	DB.Debug().Table("products").Where("id = ?", product.ID).Update("is_public", product.IsPublic)
 }
