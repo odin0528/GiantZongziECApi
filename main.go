@@ -35,9 +35,9 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	frontendApi := router.Group("/api/frontend")
+	frontendApi := router.Group("/api/frontend", auth.GetCustomerID)
 	{
-		frontendApi.GET("/test", frontend.Test)
+		frontendApi.GET("/pages/:page", frontend.GetPageComponent)
 	}
 
 	backendApi := router.Group("/api/backend", auth.AuthRequred)

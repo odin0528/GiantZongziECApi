@@ -1,6 +1,6 @@
 module eCommerce
 
-go 1.14
+go 1.16
 
 require (
 	github.com/aws/aws-sdk-go v1.40.10
