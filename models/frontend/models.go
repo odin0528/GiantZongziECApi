@@ -6,12 +6,14 @@ type TimeDefault struct {
 }
 
 type Pagination struct {
-	Page  int `json:"page"`
+	Page  int `json:"page" uri:"page"`
 	Start int `json:"start"`
 	End   int `json:"end"`
 	Total int `json:"total"`
 	Items int `json:"items"`
 }
+
+const Items = 20
 
 func CreatePagination(page int, items int, total int64) (pagination Pagination) {
 	pagination.Page = page

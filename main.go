@@ -38,6 +38,8 @@ func main() {
 	frontendApi := router.Group("/api/frontend", auth.GetCustomerID)
 	{
 		frontendApi.GET("/pages/:page", frontend.GetPageComponent)
+		frontendApi.GET("/products/:layer/:category_id/:page", frontend.GetProductsByCategoryID)
+		frontendApi.GET("/categories/:parent_id", frontend.CategoryList)
 	}
 
 	backendApi := router.Group("/api/backend", auth.AuthRequred)
