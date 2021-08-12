@@ -77,7 +77,6 @@ func (query *ProductQuery) FetchAll() (products []Products, pagination Paginatio
 	sql.Count(&count)
 	sql.Offset((query.Page - 1) * Items).Limit(Items).Scan(&products)
 	pagination = CreatePagination(query.Page, Items, count)
-	sql.Scan(&products)
 	return
 }
 

@@ -76,7 +76,7 @@ func (query *CategoryQuery) GetBreadcrumbs(breadcrumbs *[]Category) {
 		parentCategory := parentCategoryQuery.Fetch()
 		if parentCategory.ID != 0 {
 			parentCategoryQuery.ParentID = parentCategory.ParentID
-			*breadcrumbs = append(*breadcrumbs, parentCategory)
+			*breadcrumbs = append([]Category{parentCategory}, *breadcrumbs...)
 			parentCategoryQuery.GetBreadcrumbs(breadcrumbs)
 		}
 	}
