@@ -14,7 +14,6 @@ type ProductStyleTable struct {
 	Sku        string `json:"sku"`
 	Price      int    `json:"price"`
 	Qty        int    `json:"qty"`
-	DeletedAt  int    `json:"-"`
 	TimeDefault
 }
 

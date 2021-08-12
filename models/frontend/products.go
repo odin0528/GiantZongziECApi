@@ -11,6 +11,8 @@ type ProductQuery struct {
 	CategoryID int `json:"category_id" uri:"category_id"`
 	Layer      int `json:"layer" uri:"layer"`
 	CustomerID int `json:"-"`
+	Min        int `json:"min"`
+	Max        int `json:"max"`
 	Pagination
 }
 
@@ -59,7 +61,20 @@ func (query *ProductQuery) Query() *gorm.DB {
 	}
 
 	if query.CustomerID != 0 {
-		sql.Where("customer_id = ?", query.CustomerID)
+		sql.Where("products.customer_id = ?", query.CustomerID)
+	}
+
+	if query.Min > 0 || query.Max > 0 {
+		sql.Joins("inner join product_style_table on products.id = product_style_table.product_id")
+		if query.Min > 0 {
+			sql.Where("product_style_table.price >= ?", query.Min)
+		}
+
+		if query.Max > 0 {
+			sql.Where("product_style_table.price <= ?", query.Max)
+		}
+
+		sql.Group("products.id")
 	}
 
 	return sql
@@ -75,7 +90,7 @@ func (query *ProductQuery) FetchAll() (products []Products, pagination Paginatio
 	var count int64
 	sql := query.Query()
 	sql.Count(&count)
-	sql.Offset((query.Page - 1) * Items).Limit(Items).Scan(&products)
+	sql.Select("products.*").Offset((query.Page - 1) * Items).Limit(Items).Scan(&products)
 	pagination = CreatePagination(query.Page, Items, count)
 	return
 }
