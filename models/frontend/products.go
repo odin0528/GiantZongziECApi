@@ -95,6 +95,14 @@ func (query *ProductQuery) FetchAll() (products []Products, pagination Paginatio
 	return
 }
 
+func (query *ProductQuery) FetchRelated() (products []Products) {
+	id := query.ID
+	query.ID = 0
+	sql := query.Query()
+	sql.Where("id != ?", id).Limit(10).Scan(&products)
+	return
+}
+
 // 關連功能
 func (product *Products) GetPhotos() {
 	DB.Table("product_photos").Where("product_id = ?", product.ID).Order("sort ASC").Scan(&product.Photos)
@@ -118,6 +126,28 @@ func (product *Products) GetStyleTable() {
 		}
 		product.StyleTable[style.Group] = append(product.StyleTable[style.Group], style)
 	}
+}
+
+func (product *Products) GetRelated() (products []Products) {
+	query := ProductQuery{
+		ID: product.ID,
+	}
+
+	if product.CategoryLayer4 != -1 {
+		query.Layer = 4
+		query.CategoryID = product.CategoryLayer4
+	} else if product.CategoryLayer3 != -1 {
+		query.Layer = 3
+		query.CategoryID = product.CategoryLayer3
+	} else if product.CategoryLayer2 != -1 {
+		query.Layer = 2
+		query.CategoryID = product.CategoryLayer2
+	} else if product.CategoryLayer1 != -1 {
+		query.Layer = 1
+		query.CategoryID = product.CategoryLayer1
+	}
+
+	return query.FetchRelated()
 }
 
 func (product *Products) GetPriceRange() {
