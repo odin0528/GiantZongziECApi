@@ -84,7 +84,7 @@ func CategoryModify(c *gin.Context) {
 
 	category := query.Fetch()
 	if !category.Validate(customerID.(int)) {
-		g.Response(http.StatusBadRequest, e.DataNotExist, err)
+		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
 
@@ -119,13 +119,13 @@ func CategoryMove(c *gin.Context) {
 	category1 := categoryQuery1.Fetch()
 	category1.Validate(customerID.(int))
 	if !category1.Validate(customerID.(int)) {
-		g.Response(http.StatusBadRequest, e.DataNotExist, err)
+		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
 	category2 := categoryQuery2.Fetch()
 	category2.Validate(customerID.(int))
 	if !category2.Validate(customerID.(int)) {
-		g.Response(http.StatusBadRequest, e.DataNotExist, err)
+		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
 	category2.Sort = req.Sort
@@ -152,7 +152,7 @@ func CategoryDelete(c *gin.Context) {
 
 	category := query.Fetch()
 	if !category.Validate(customerID.(int)) {
-		g.Response(http.StatusBadRequest, e.DataNotExist, err)
+		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
 

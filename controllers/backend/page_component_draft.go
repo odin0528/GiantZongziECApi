@@ -38,7 +38,7 @@ func DraftComponentDelete(c *gin.Context) {
 	component := req.Fetch()
 	component.Validate(customerID.(int))
 	if !component.Validate(customerID.(int)) {
-		g.Response(http.StatusBadRequest, e.DataNotExist, err)
+		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
 
@@ -66,7 +66,7 @@ func DraftComponentEdit(c *gin.Context) {
 
 	component := componentQurey.Fetch()
 	if !component.Validate(customerID.(int)) {
-		g.Response(http.StatusBadRequest, e.DataNotExist, err)
+		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
 
@@ -145,12 +145,12 @@ func DraftComponentChange(c *gin.Context) {
 
 	component1 := componentQuery1.Fetch()
 	if !component1.Validate(customerID.(int)) {
-		g.Response(http.StatusBadRequest, e.DataNotExist, err)
+		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
 	component2 := componentQuery2.Fetch()
 	if !component2.Validate(customerID.(int)) {
-		g.Response(http.StatusBadRequest, e.DataNotExist, err)
+		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
 	component1.Sort = req.NewSort
