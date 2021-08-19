@@ -23,7 +23,7 @@ func GetPageComponent(c *gin.Context) {
 	pages := req.Fetch()
 
 	if !pages.Validate() {
-		g.Response(http.StatusBadRequest, e.DataNotExist, err)
+		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
 

@@ -48,6 +48,8 @@ func main() {
 
 	backendApi := router.Group("/api/backend", auth.AuthRequred)
 	{
+		backendApi.POST("/login", backend.Login)
+
 		backendApi.GET("/pages", backend.GetPagesList)
 		backendApi.GET("/pages/:page_id", backend.GetPageComponent)
 		backendApi.POST("/components/delete", backend.DraftComponentDelete)

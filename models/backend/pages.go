@@ -38,8 +38,8 @@ func (pages *Pages) Validate(customerID int, ctx gin.Context) {
 	if pages.PageID == 0 {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"http_status": http.StatusBadRequest,
-			"code":        e.DataNotExist,
-			"msg":         e.GetMsg(e.DataNotExist),
+			"code":        e.StatusNotFound,
+			"msg":         e.GetMsg(e.StatusNotFound),
 			"data":        nil,
 		})
 		ctx.Abort()

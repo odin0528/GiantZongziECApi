@@ -114,7 +114,7 @@ func ProductModify(c *gin.Context) {
 		query.ID = req.ID
 		product := query.Fetch()
 		if !product.Validate(customerID.(int)) {
-			g.Response(http.StatusBadRequest, e.DataNotExist, err)
+			g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 			return
 		}
 		req.Update()
@@ -245,7 +245,7 @@ func ProductPublic(c *gin.Context) {
 	query.ID = req.ID
 	product := query.Fetch()
 	if !product.Validate(customerID.(int)) {
-		g.Response(http.StatusBadRequest, e.DataNotExist, err)
+		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
 
