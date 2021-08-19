@@ -71,6 +71,8 @@ func main() {
 			authRequired.GET("/products/:id", backend.ProductFetch)
 			authRequired.POST("/products/save", backend.ProductModify)
 			authRequired.POST("/products/public", backend.ProductPublic)
+
+			authRequired.POST("/orders", backend.OrderList)
 		}
 	}
 
