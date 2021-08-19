@@ -46,28 +46,32 @@ func main() {
 		frontendApi.POST("/order/create", frontend.OrderCreate)
 	}
 
-	backendApi := router.Group("/api/backend", auth.AuthRequred)
+	backendApi := router.Group("/api/backend")
 	{
 		backendApi.POST("/login", backend.Login)
+		backendApi.POST("/reset", backend.ResetPassword)
 
-		backendApi.GET("/pages", backend.GetPagesList)
-		backendApi.GET("/pages/:page_id", backend.GetPageComponent)
-		backendApi.POST("/components/delete", backend.DraftComponentDelete)
-		backendApi.POST("/components/create", backend.DraftComponentCreate)
-		backendApi.POST("/components/change", backend.DraftComponentChange)
-		backendApi.POST("/components/edit", backend.DraftComponentEdit)
+		authRequired := backendApi.Use(auth.AuthRequred)
+		{
+			authRequired.GET("/pages", backend.GetPagesList)
+			authRequired.GET("/pages/:page_id", backend.GetPageComponent)
+			authRequired.POST("/components/delete", backend.DraftComponentDelete)
+			authRequired.POST("/components/create", backend.DraftComponentCreate)
+			authRequired.POST("/components/change", backend.DraftComponentChange)
+			authRequired.POST("/components/edit", backend.DraftComponentEdit)
 
-		backendApi.GET("/category/list/:parent_id", backend.CategoryList)
-		backendApi.GET("/category/fetch/:parent_id", backend.CategoryChildList)
-		backendApi.POST("/category/create", backend.CategoryCreate)
-		backendApi.POST("/category/modify", backend.CategoryModify)
-		backendApi.POST("/category/delete", backend.CategoryDelete)
-		backendApi.POST("/category/move", backend.CategoryMove)
+			authRequired.GET("/category/list/:parent_id", backend.CategoryList)
+			authRequired.GET("/category/fetch/:parent_id", backend.CategoryChildList)
+			authRequired.POST("/category/create", backend.CategoryCreate)
+			authRequired.POST("/category/modify", backend.CategoryModify)
+			authRequired.POST("/category/delete", backend.CategoryDelete)
+			authRequired.POST("/category/move", backend.CategoryMove)
 
-		backendApi.POST("/products", backend.ProductList)
-		backendApi.GET("/products/:id", backend.ProductFetch)
-		backendApi.POST("/products/save", backend.ProductModify)
-		backendApi.POST("/products/public", backend.ProductPublic)
+			authRequired.POST("/products", backend.ProductList)
+			authRequired.GET("/products/:id", backend.ProductFetch)
+			authRequired.POST("/products/save", backend.ProductModify)
+			authRequired.POST("/products/public", backend.ProductPublic)
+		}
 	}
 
 	// var listenTime = 5

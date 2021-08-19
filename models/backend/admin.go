@@ -17,10 +17,14 @@ type Admin struct {
 	ID         int
 	CustomerID int
 	Account    string
-	Password   string `json:"-" gorm:"<-:create"`
+	Password   string
 	Title      string
 	IsResetPwd bool
 	TimeDefault
+}
+
+func (Admin) TableName() string {
+	return "admin"
 }
 
 func (query *AdminQuery) Query() *gorm.DB {

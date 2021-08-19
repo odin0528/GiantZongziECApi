@@ -9,5 +9,9 @@ const (
 	Error          = 500
 
 	// auth
-	ResetRedirect = 10001
+	ResetRedirect   = 10001
+	AccountNotExist = 90001
+	TokenNotExist   = 90002
+	TokenExpired    = 90003
+	PasswordNoMatch = 90004
 )

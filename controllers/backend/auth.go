@@ -2,15 +2,20 @@ package backend
 
 import (
 	"eCommerce/pkg/e"
+	"encoding/base64"
 	"net/http"
 	"time"
 
 	. "eCommerce/internal/database"
 	models "eCommerce/models/backend"
 
+	"golang.org/x/crypto/scrypt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
+
+var Salt = []byte{0x47, 0x69, 0x61, 0x6E, 0x74, 0x5a, 0x6F, 0x6E}
 
 func Login(c *gin.Context) {
 	g := Gin{c}
@@ -28,7 +33,7 @@ func Login(c *gin.Context) {
 	admin := query.Fetch()
 
 	if admin.ID == 0 {
-		g.Response(http.StatusOK, e.StatusNotFound, err)
+		g.Response(http.StatusOK, e.AccountNotExist, err)
 		return
 	}
 
@@ -49,5 +54,61 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	g.Response(http.StatusOK, e.Success, admin)
+	dk, err := scrypt.Key([]byte(req.Password), Salt, 1<<15, 8, 1, 64)
+	if base64.StdEncoding.EncodeToString(dk) != admin.Password {
+		g.Response(http.StatusOK, e.AccountNotExist, nil)
+		return
+	}
+
+	token := uuid.New().String()
+
+	adminToken := models.AdminToken{
+		AdminID: admin.ID,
+		Token:   token,
+	}
+	adminToken.CancelOldToken()
+	DB.Create(&adminToken)
+
+	g.Response(http.StatusOK, e.Success, token)
+}
+
+func ResetPassword(c *gin.Context) {
+	g := Gin{c}
+	var req models.ResetReq
+	err := c.BindJSON(&req)
+	if err != nil {
+		g.Response(http.StatusBadRequest, e.InvalidParams, err)
+		return
+	}
+
+	if req.Password != req.CPassword {
+		g.Response(http.StatusOK, e.PasswordNoMatch, err)
+		return
+	}
+
+	reset := models.AdminResetPassword{
+		Token: req.Token,
+	}
+	reset.Fetch()
+
+	if reset.AdminID == 0 {
+		g.Response(http.StatusOK, e.TokenNotExist, err)
+		return
+	}
+
+	if time.Now().Unix() > int64(reset.ExpiredAt) {
+		g.Response(http.StatusOK, e.TokenExpired, err)
+		return
+	}
+
+	dk, err := scrypt.Key([]byte(req.Password), Salt, 1<<15, 8, 1, 64)
+	DB.Debug().Select("password", "is_reset_pwd").Where("id = ?", reset.AdminID).Updates(models.Admin{
+		Password:   base64.StdEncoding.EncodeToString(dk),
+		IsResetPwd: false,
+	})
+
+	reset.CancelOldToken()
+
+	g.Response(http.StatusOK, e.Success, nil)
+	return
 }

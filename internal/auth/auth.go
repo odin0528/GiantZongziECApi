@@ -1,27 +1,54 @@
 package auth
 
 import (
-	"fmt"
 	"regexp"
 
 	"github.com/gin-gonic/gin"
 
 	// "ec/internal/redis"
 
+	"eCommerce/models/backend"
 	"eCommerce/models/frontend"
 	"eCommerce/pkg/e"
 )
 
 func AuthRequred(c *gin.Context) {
-	fmt.Println(c.Request.Header["Authorization"])
 
-	c.Set("customer_id", 1)
-	// rdb.Get(ctx, "odin")
+	if c.Request.Header.Get("Authorization") == "" {
+		c.Abort()
+		c.JSON(200, gin.H{
+			"http_status": 401,
+			"code":        401,
+			"msg":         e.GetMsg(401),
+			"data":        nil,
+		})
+		return
+	}
 
-	// redis.Set("odin", "cool", 30)
+	token := backend.AdminToken{
+		Token: c.Request.Header.Get("Authorization"),
+	}
 
-	// text, _ := redis.Get("odin")
-	// fmt.Println(text)
+	token.Fetch()
+
+	if token.AdminID == 0 {
+		c.Abort()
+		c.JSON(200, gin.H{
+			"http_status": 401,
+			"code":        401,
+			"msg":         e.GetMsg(401),
+			"data":        nil,
+		})
+		return
+	}
+
+	query := backend.AdminQuery{
+		ID: token.AdminID,
+	}
+
+	admin := query.Fetch()
+
+	c.Set("customer_id", admin.CustomerID)
 }
 
 func GetCustomerID(c *gin.Context) {
