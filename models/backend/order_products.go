@@ -11,5 +11,6 @@ type OrderProducts struct {
 	Title      string  `json:"title"`
 	StyleTitle string  `json:"style_title"`
 	Photo      string  `json:"photo"`
+	Sku        string  `json:"sku"`
 	TimeDefault
 }

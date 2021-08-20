@@ -69,7 +69,7 @@ func Login(c *gin.Context) {
 	adminToken.CancelOldToken()
 	DB.Create(&adminToken)
 
-	g.Response(http.StatusOK, e.Success, token)
+	g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "title": admin.Title})
 }
 
 func ResetPassword(c *gin.Context) {

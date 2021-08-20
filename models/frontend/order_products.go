@@ -15,6 +15,7 @@ type OrderProducts struct {
 	Title      string
 	StyleTitle string
 	Photo      string
+	Sku        string
 	TimeDefault
 }
 

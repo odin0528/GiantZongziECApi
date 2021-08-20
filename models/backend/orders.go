@@ -2,11 +2,20 @@ package backend
 
 import (
 	. "eCommerce/internal/database"
+
+	"gorm.io/gorm"
 )
 
 type OrderListReq struct {
 	CustomerID int `json:"-"`
+	Status     int `json:"status"`
 	Pagination
+}
+
+type OrderQuery struct {
+	ID         int `json:"id"`
+	CustomerID int `json:"-"`
+	Status     int `json:"status"`
 }
 
 type Orders struct {
@@ -32,12 +41,45 @@ type Orders struct {
 }
 
 // 查詢功能
+func (query *OrderQuery) GetCondition() *gorm.DB {
+	sql := DB.Model(Orders{})
+	if query.ID != 0 {
+		sql.Where("id = ?", query.ID)
+	}
+
+	if query.Status != 0 {
+		sql.Where("status = ?", query.Status)
+	}
+
+	sql.Where("customer_id = ?", query.CustomerID)
+
+	return sql
+}
+
+func (query *OrderQuery) Fetch() (order Orders, err error) {
+	sql := query.GetCondition()
+	err = sql.First(&order).Error
+	return
+}
+
 func (req *OrderListReq) FetchAll() (orders []Orders, pagination Pagination) {
 	var count int64
-	sql := DB.Debug().Model(&Orders{}).Where("customer_id = ?", req.CustomerID)
+	query := OrderQuery{
+		CustomerID: req.CustomerID,
+		Status:     req.Status,
+	}
+	sql := query.GetCondition()
 	sql.Count(&count)
-	sql.Offset((req.Page - 1) * req.Items).Limit(req.Items).Scan(&orders)
+	sql.Offset((req.Page - 1) * req.Items).Limit(req.Items).Order("created_at DESC").Scan(&orders)
 	pagination = CreatePagination(req.Page, req.Items, count)
+	return
+}
+
+func (query *OrderQuery) FetchUntreated() (count int64) {
+	sql := query.GetCondition()
+	// 待付款，待出貨
+	sql.Where("status IN (11, 21)")
+	sql.Count(&count)
 	return
 }
 

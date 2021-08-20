@@ -40,6 +40,7 @@ func OrderCreate(c *gin.Context) {
 				Title:      product.Title,
 				StyleTitle: style.Title + style.SubTitle,
 				Photo:      style.Photo,
+				Sku:        style.Sku,
 			}
 
 			orderProduct.Create()

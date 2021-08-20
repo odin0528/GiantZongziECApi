@@ -72,7 +72,9 @@ func main() {
 			authRequired.POST("/products/save", backend.ProductModify)
 			authRequired.POST("/products/public", backend.ProductPublic)
 
+			authRequired.GET("/orders/untreated", backend.OrderUntreated)
 			authRequired.POST("/orders", backend.OrderList)
+			authRequired.POST("/order/next", backend.OrderNextStep)
 		}
 	}
 
