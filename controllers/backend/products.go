@@ -21,8 +21,8 @@ func ProductFetch(c *gin.Context) {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
 		return
 	}
-	CustomerID, _ := c.Get("customer_id")
-	query.CustomerID = CustomerID.(int)
+	PlatformID, _ := c.Get("platform_id")
+	query.PlatformID = PlatformID.(int)
 	product := query.Fetch()
 	product.GetPhotos()
 	product.GetStyle()
@@ -40,8 +40,8 @@ func ProductList(c *gin.Context) {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
 		return
 	}
-	CustomerID, _ := c.Get("customer_id")
-	req.CustomerID = CustomerID.(int)
+	PlatformID, _ := c.Get("platform_id")
+	req.PlatformID = PlatformID.(int)
 	products, pagination := req.FetchAll()
 
 	for index := range products {
@@ -60,20 +60,20 @@ func ProductModify(c *gin.Context) {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
 		return
 	}
-	customerID, _ := c.Get("customer_id")
+	platformID, _ := c.Get("platform_id")
 
 	if req.ID == 0 {
-		req.CustomerID = customerID.(int)
+		req.PlatformID = platformID.(int)
 		req.Create()
 
 		sort := 1
 		for _, photo := range req.Photos {
 			//有找到base64的編碼關鍵字
 			if strings.Index(photo.Img, ",") > 0 {
-				filename := fmt.Sprintf("/upload/%08d/products/%08d/%d", customerID.(int), req.ID, time.Now().UnixNano())
+				filename := fmt.Sprintf("/upload/%08d/products/%08d/%d", platformID.(int), req.ID, time.Now().UnixNano())
 				productPhotos := models.ProductPhotos{
 					ProductID:  req.ID,
-					CustomerID: customerID.(int),
+					PlatformID: platformID.(int),
 					Img:        uploader.Thumbnail(filename, photo.Img, 720),
 					Sort:       sort,
 				}
@@ -84,10 +84,10 @@ func ProductModify(c *gin.Context) {
 
 		for index, style := range req.Style {
 			style.ProductID = req.ID
-			style.CustomerID = customerID.(int)
+			style.PlatformID = platformID.(int)
 			style.Sort = index
 			if strings.Index(style.Img, ",") > 0 {
-				filename := fmt.Sprintf("/upload/%08d/products/%08d/%d", customerID.(int), req.ID, time.Now().UnixNano())
+				filename := fmt.Sprintf("/upload/%08d/products/%08d/%d", platformID.(int), req.ID, time.Now().UnixNano())
 				style.Img = uploader.Thumbnail(filename, style.Img, 720)
 			}
 			style.Create()
@@ -95,7 +95,7 @@ func ProductModify(c *gin.Context) {
 
 		for index, style := range req.SubStyle {
 			style.ProductID = req.ID
-			style.CustomerID = customerID.(int)
+			style.PlatformID = platformID.(int)
 			style.Sort = index
 			style.Create()
 		}
@@ -103,7 +103,7 @@ func ProductModify(c *gin.Context) {
 		for index, list := range req.StyleTable {
 			for _, item := range list {
 				item.ProductID = req.ID
-				item.CustomerID = customerID.(int)
+				item.PlatformID = platformID.(int)
 				item.Group = index
 				item.Create()
 			}
@@ -113,7 +113,7 @@ func ProductModify(c *gin.Context) {
 		var query models.ProductQuery
 		query.ID = req.ID
 		product := query.Fetch()
-		if !product.Validate(customerID.(int)) {
+		if !product.Validate(platformID.(int)) {
 			g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 			return
 		}
@@ -124,10 +124,10 @@ func ProductModify(c *gin.Context) {
 			// 如果沒有id 新增照片
 			if photo.ID == 0 {
 				if strings.Index(photo.Img, ",") > 0 {
-					filename := fmt.Sprintf("/upload/%08d/products/%08d/%d", customerID.(int), req.ID, time.Now().UnixNano())
+					filename := fmt.Sprintf("/upload/%08d/products/%08d/%d", platformID.(int), req.ID, time.Now().UnixNano())
 					productPhotos := models.ProductPhotos{
 						ProductID:  req.ID,
-						CustomerID: customerID.(int),
+						PlatformID: platformID.(int),
 						Img:        uploader.Thumbnail(filename, photo.Img, 720),
 						Sort:       sort,
 					}
@@ -139,7 +139,7 @@ func ProductModify(c *gin.Context) {
 				if photo.Img == "" {
 					productPhotos := models.ProductPhotos{
 						ID:         photo.ID,
-						CustomerID: customerID.(int),
+						PlatformID: platformID.(int),
 					}
 					productPhotos.Fetch()
 					uploader.DeletePhoto(productPhotos.Img)
@@ -152,7 +152,7 @@ func ProductModify(c *gin.Context) {
 					}
 					//有找到base64的編碼關鍵字
 					if strings.Index(photo.Img, ",") > 0 {
-						filename := fmt.Sprintf("/upload/%08d/products/%08d/%d", customerID.(int), req.ID, time.Now().UnixNano())
+						filename := fmt.Sprintf("/upload/%08d/products/%08d/%d", platformID.(int), req.ID, time.Now().UnixNano())
 						productPhotos.Img = uploader.Thumbnail(filename, photo.Img, 720)
 					} else {
 						productPhotos.Img = photo.Img
@@ -168,12 +168,12 @@ func ProductModify(c *gin.Context) {
 		for index, style := range req.Style {
 			style.Sort = index
 			if strings.Index(style.Img, ",") > 0 {
-				filename := fmt.Sprintf("/upload/%08d/products/%08d/%d", customerID.(int), req.ID, time.Now().UnixNano())
+				filename := fmt.Sprintf("/upload/%08d/products/%08d/%d", platformID.(int), req.ID, time.Now().UnixNano())
 				style.Img = uploader.Thumbnail(filename, style.Img, 720)
 			}
 			if style.ID == 0 {
 				style.ProductID = req.ID
-				style.CustomerID = customerID.(int)
+				style.PlatformID = platformID.(int)
 				style.Create()
 			} else {
 				style.Update()
@@ -183,7 +183,7 @@ func ProductModify(c *gin.Context) {
 
 		productStyle := &models.ProductStyle{
 			ProductID:  req.ID,
-			CustomerID: customerID.(int),
+			PlatformID: platformID.(int),
 		}
 		productStyle.DeleteNotExistStyle(deleteIds)
 
@@ -193,7 +193,7 @@ func ProductModify(c *gin.Context) {
 
 			if style.ID == 0 {
 				style.ProductID = req.ID
-				style.CustomerID = customerID.(int)
+				style.PlatformID = platformID.(int)
 				style.Create()
 			} else {
 				style.Update()
@@ -203,7 +203,7 @@ func ProductModify(c *gin.Context) {
 
 		productSubStyle := &models.ProductSubStyle{
 			ProductID:  req.ID,
-			CustomerID: customerID.(int),
+			PlatformID: platformID.(int),
 		}
 		productSubStyle.DeleteNotExistStyle(deleteIds)
 
@@ -211,7 +211,7 @@ func ProductModify(c *gin.Context) {
 		for index, list := range req.StyleTable {
 			for _, item := range list {
 				item.ProductID = req.ID
-				item.CustomerID = customerID.(int)
+				item.PlatformID = platformID.(int)
 				item.Group = index
 				if item.ID == 0 {
 					item.Create()
@@ -225,7 +225,7 @@ func ProductModify(c *gin.Context) {
 		if len(deleteIds) > 0 {
 			styleTable := &models.ProductStyleTable{
 				ProductID:  req.ID,
-				CustomerID: customerID.(int),
+				PlatformID: platformID.(int),
 			}
 			styleTable.DeleteNotExistStyle(deleteIds)
 		}
@@ -238,13 +238,13 @@ func ProductPublic(c *gin.Context) {
 	g := Gin{c}
 	var req *models.Products
 	err := c.BindJSON(&req)
-	customerID, _ := c.Get("customer_id")
+	platformID, _ := c.Get("platform_id")
 
 	// 編輯產品
 	var query models.ProductQuery
 	query.ID = req.ID
 	product := query.Fetch()
-	if !product.Validate(customerID.(int)) {
+	if !product.Validate(platformID.(int)) {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}

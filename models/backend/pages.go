@@ -10,30 +10,30 @@ import (
 
 type PageReq struct {
 	PageID     int `json:"page_id" uri:"page_id"`
-	CustomerID int `json:"customer_id"`
+	PlatformID int `json:"platform_id"`
 }
 
 type Pages struct {
 	PageID     int    `json:"page_id"`
-	CustomerID int    `json:"-"`
+	PlatformID int    `json:"-"`
 	Name       string `json:"name"`
 	ReleasedAt int    `json:"released_at"`
 	TimeDefault
 }
 
 func (req *PageReq) GetPageList() (pagesRowset []Pages, err error) {
-	err = DB.Table("rel_customer_pages as rel").Select("rel.*, pages.name").Joins("inner join pages on rel.page_id = pages.id").
-		Where("rel.customer_id = ?", req.CustomerID).
+	err = DB.Table("rel_platform_pages as rel").Select("rel.*, pages.name").Joins("inner join pages on rel.page_id = pages.id").
+		Where("rel.platform_id = ?", req.PlatformID).
 		Scan(&pagesRowset).Error
 	return
 }
 
 func (req *PageReq) Fetch() (pages Pages) {
-	DB.Table("rel_customer_pages").Where("page_id = ? and customer_id = ?", req.PageID, req.CustomerID).Scan(&pages)
+	DB.Table("rel_platform_pages").Where("page_id = ? and platform_id = ?", req.PageID, req.PlatformID).Scan(&pages)
 	return
 }
 
-func (pages *Pages) Validate(customerID int, ctx gin.Context) {
+func (pages *Pages) Validate(platformID int, ctx gin.Context) {
 	// data is not exist
 	if pages.PageID == 0 {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -46,7 +46,7 @@ func (pages *Pages) Validate(customerID int, ctx gin.Context) {
 	}
 
 	// The owner of the data is not the operator
-	if pages.CustomerID != customerID {
+	if pages.PlatformID != platformID {
 		ctx.JSON(http.StatusForbidden, gin.H{
 			"http_status": http.StatusForbidden,
 			"code":        e.Forbidden,

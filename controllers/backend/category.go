@@ -18,8 +18,8 @@ func CategoryList(c *gin.Context) {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
 		return
 	}
-	CustomerID, _ := c.Get("customer_id")
-	query.CustomerID = CustomerID.(int)
+	PlatformID, _ := c.Get("platform_id")
+	query.PlatformID = PlatformID.(int)
 	categories := query.FetchAll()
 
 	var breadcrumbs []models.Category
@@ -36,8 +36,8 @@ func CategoryChildList(c *gin.Context) {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
 		return
 	}
-	CustomerID, _ := c.Get("customer_id")
-	query.CustomerID = CustomerID.(int)
+	PlatformID, _ := c.Get("platform_id")
+	query.PlatformID = PlatformID.(int)
 	categories := query.FetchAll()
 
 	g.Response(http.StatusOK, e.Success, categories)
@@ -52,14 +52,14 @@ func CategoryCreate(c *gin.Context) {
 		return
 	}
 
-	CustomerID, _ := c.Get("customer_id")
+	PlatformID, _ := c.Get("platform_id")
 
 	query := &models.CategoryQuery{
-		CustomerID: CustomerID.(int),
+		PlatformID: PlatformID.(int),
 		ParentID:   category.ParentID,
 	}
 
-	category.CustomerID = CustomerID.(int)
+	category.PlatformID = PlatformID.(int)
 	category.Sort = int(query.Count()) + 1
 	category.CreatedAt = int(time.Now().Unix())
 	category.UpdatedAt = int(time.Now().Unix())
@@ -77,13 +77,13 @@ func CategoryModify(c *gin.Context) {
 		return
 	}
 
-	customerID, _ := c.Get("customer_id")
+	platformID, _ := c.Get("platform_id")
 	query := &models.CategoryQuery{
 		ID: req.ID,
 	}
 
 	category := query.Fetch()
-	if !category.Validate(customerID.(int)) {
+	if !category.Validate(platformID.(int)) {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
@@ -99,7 +99,7 @@ func CategoryModify(c *gin.Context) {
 func CategoryMove(c *gin.Context) {
 	g := Gin{c}
 	var req *models.CategoryMoveReq
-	customerID, _ := c.Get("customer_id")
+	platformID, _ := c.Get("platform_id")
 	err := c.BindJSON(&req)
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
@@ -117,14 +117,14 @@ func CategoryMove(c *gin.Context) {
 	}
 
 	category1 := categoryQuery1.Fetch()
-	category1.Validate(customerID.(int))
-	if !category1.Validate(customerID.(int)) {
+	category1.Validate(platformID.(int))
+	if !category1.Validate(platformID.(int)) {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
 	category2 := categoryQuery2.Fetch()
-	category2.Validate(customerID.(int))
-	if !category2.Validate(customerID.(int)) {
+	category2.Validate(platformID.(int))
+	if !category2.Validate(platformID.(int)) {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
@@ -145,13 +145,13 @@ func CategoryDelete(c *gin.Context) {
 		return
 	}
 
-	customerID, _ := c.Get("customer_id")
+	platformID, _ := c.Get("platform_id")
 	query := &models.CategoryQuery{
 		ID: req.ID,
 	}
 
 	category := query.Fetch()
-	if !category.Validate(customerID.(int)) {
+	if !category.Validate(platformID.(int)) {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}

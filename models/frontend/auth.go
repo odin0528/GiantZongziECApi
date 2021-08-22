@@ -1,0 +1,32 @@
+package frontend
+
+import (
+	. "eCommerce/internal/database"
+
+	"gorm.io/plugin/soft_delete"
+)
+
+type LoginReq struct {
+	Account  string `json:"email"`
+	Password string `json:"password"`
+}
+
+type MemberToken struct {
+	MemberID  int
+	Token     string
+	ExpiredAt int
+	CreatedAt int
+	DeletedAt soft_delete.DeletedAt
+}
+
+func (MemberToken) TableName() string {
+	return "admin_token"
+}
+
+func (token *MemberToken) CancelOldToken() {
+	DB.Debug().Where("member_id = ?", token.MemberID).Delete(&MemberToken{})
+}
+
+func (token *MemberToken) Fetch() {
+	DB.Debug().Model(MemberToken{}).Where("token = ?", token.Token).Scan(token)
+}

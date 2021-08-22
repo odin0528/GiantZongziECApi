@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	auth "eCommerce/internal/auth"
 	. "eCommerce/internal/database"
 	models "eCommerce/models/backend"
 
@@ -14,8 +15,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
-
-var Salt = []byte{0x47, 0x69, 0x61, 0x6E, 0x74, 0x5a, 0x6F, 0x6E}
 
 func Login(c *gin.Context) {
 	g := Gin{c}
@@ -54,7 +53,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	dk, err := scrypt.Key([]byte(req.Password), Salt, 1<<15, 8, 1, 64)
+	dk, err := scrypt.Key([]byte(req.Password), auth.Salt, 1<<15, 8, 1, 64)
 	if base64.StdEncoding.EncodeToString(dk) != admin.Password {
 		g.Response(http.StatusOK, e.AccountNotExist, nil)
 		return
@@ -101,7 +100,7 @@ func ResetPassword(c *gin.Context) {
 		return
 	}
 
-	dk, err := scrypt.Key([]byte(req.Password), Salt, 1<<15, 8, 1, 64)
+	dk, err := scrypt.Key([]byte(req.Password), auth.Salt, 1<<15, 8, 1, 64)
 	DB.Debug().Select("password", "is_reset_pwd").Where("id = ?", reset.AdminID).Updates(models.Admin{
 		Password:   base64.StdEncoding.EncodeToString(dk),
 		IsResetPwd: false,

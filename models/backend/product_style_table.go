@@ -6,7 +6,7 @@ import (
 
 type ProductStyleTable struct {
 	ID         int    `json:"id" gorm:"<-:create"`
-	CustomerID int    `json:"-" gorm:"<-:create"`
+	PlatformID int    `json:"-" gorm:"<-:create"`
 	ProductID  int    `json:"-" gorm:"<-:create"`
 	Group      int    `json:"-"`
 	Title      string `json:"title"`
@@ -34,7 +34,7 @@ func (style *ProductStyleTable) Update() (err error) {
 
 func (style *ProductStyleTable) DeleteNotExistStyle(ids []int) (err error) {
 	err = DB.Debug().
-		Where("product_id = ? AND customer_id = ? AND id NOT IN (?)", style.ProductID, style.CustomerID, ids).
+		Where("product_id = ? AND platform_id = ? AND id NOT IN (?)", style.ProductID, style.PlatformID, ids).
 		Delete(&ProductStyleTable{}).Error
 	return
 }

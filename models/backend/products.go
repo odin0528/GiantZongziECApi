@@ -9,17 +9,17 @@ import (
 
 type ProductQuery struct {
 	ID         int `json:"id" uri:"id"`
-	CustomerID int `json:"-"`
+	PlatformID int `json:"-"`
 }
 
 type ProductListReq struct {
-	CustomerID int `json:"-"`
+	PlatformID int `json:"-"`
 	Pagination
 }
 
 type Products struct {
 	ID              int                   `json:"id"`
-	CustomerID      int                   `json:"-" gorm:"<-:create"`
+	PlatformID      int                   `json:"-" gorm:"<-:create"`
 	Title           string                `json:"title"`
 	StyleTitle      string                `json:"style_title"`
 	SubStyleTitle   string                `json:"sub_style_title"`
@@ -51,9 +51,9 @@ func (products *Products) Update() (err error) {
 }
 
 // 資料驗證
-func (products *Products) Validate(customerID int) bool {
+func (products *Products) Validate(platformID int) bool {
 	// data is not exist or The owner of the data is not the operator
-	if products.ID == 0 || products.CustomerID != customerID {
+	if products.ID == 0 || products.PlatformID != platformID {
 		return false
 	}
 	return true
@@ -66,8 +66,8 @@ func (query *ProductQuery) Query() *gorm.DB {
 		sql.Where("id = ?", query.ID)
 	}
 
-	if query.CustomerID != 0 {
-		sql.Where("customer_id = ?", query.CustomerID)
+	if query.PlatformID != 0 {
+		sql.Where("platform_id = ?", query.PlatformID)
 	}
 
 	return sql
@@ -87,7 +87,7 @@ func (query *ProductQuery) FetchAll() (products []Products) {
 
 func (req *ProductListReq) FetchAll() (products []Products, pagination Pagination) {
 	var count int64
-	sql := DB.Debug().Table("products").Where("customer_id = ?", req.CustomerID)
+	sql := DB.Debug().Table("products").Where("platform_id = ?", req.PlatformID)
 	sql.Count(&count)
 	sql.Offset((req.Page - 1) * req.Items).Limit(req.Items).Scan(&products)
 	pagination = CreatePagination(req.Page, req.Items, count)

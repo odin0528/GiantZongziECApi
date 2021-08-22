@@ -12,6 +12,8 @@ import (
 	"eCommerce/pkg/e"
 )
 
+var Salt = []byte{0x47, 0x69, 0x61, 0x6E, 0x74, 0x5a, 0x6F, 0x6E}
+
 func AuthRequred(c *gin.Context) {
 
 	if c.Request.Header.Get("Authorization") == "" {
@@ -48,18 +50,18 @@ func AuthRequred(c *gin.Context) {
 
 	admin := query.Fetch()
 
-	c.Set("customer_id", admin.CustomerID)
+	c.Set("platform_id", admin.PlatformID)
 }
 
-func GetCustomerID(c *gin.Context) {
+func GetPlatformID(c *gin.Context) {
 	r, _ := regexp.Compile("^([a-zA-Z0-9\\.]*).*$")
 	match := r.FindAllStringSubmatch(c.Request.Header["Hostname"][0], 1)
 
-	query := &frontend.CustomerQuery{}
+	query := &frontend.PlatformQuery{}
 	query.Hostname = match[0][1]
-	customer := query.Fetch()
+	platform := query.Fetch()
 
-	if customer.ID == 0 {
+	if platform.ID == 0 {
 		c.Abort()
 		c.JSON(404, gin.H{
 			"http_status": 404,
@@ -69,5 +71,7 @@ func GetCustomerID(c *gin.Context) {
 		})
 	}
 
-	c.Set("customer_id", customer.ID)
+	c.Set("platform_id", platform.ID)
+	c.Set("platform", platform)
+	c.Set("member_id", 0)
 }

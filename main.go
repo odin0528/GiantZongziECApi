@@ -35,8 +35,9 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	frontendApi := router.Group("/api/frontend", auth.GetCustomerID)
+	frontendApi := router.Group("/api/frontend", auth.GetPlatformID)
 	{
+		frontendApi.GET("/platform", frontend.PlatformFetch)
 		frontendApi.GET("/pages/:page", frontend.GetPageComponent)
 		// frontendApi.GET("/products/:layer/:category_id/:page", frontend.GetProductsByCategoryID)
 		frontendApi.POST("/products/:layer/:category_id/:page", frontend.GetProductsByCategoryID)
@@ -44,6 +45,8 @@ func main() {
 		frontendApi.GET("/product/:id", frontend.ProductFetch)
 
 		frontendApi.POST("/order/create", frontend.OrderCreate)
+
+		frontendApi.POST("/users/orders", frontend.GetUserOrders)
 	}
 
 	backendApi := router.Group("/api/backend")

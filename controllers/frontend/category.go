@@ -17,8 +17,8 @@ func CategoryList(c *gin.Context) {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
 		return
 	}
-	CustomerID, _ := c.Get("customer_id")
-	query.CustomerID = CustomerID.(int)
+	PlatformID, _ := c.Get("platform_id")
+	query.PlatformID = PlatformID.(int)
 	categories := query.FetchAll()
 
 	var breadcrumbs []models.Category
@@ -35,8 +35,8 @@ func CategoryChildList(c *gin.Context) {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
 		return
 	}
-	CustomerID, _ := c.Get("customer_id")
-	query.CustomerID = CustomerID.(int)
+	PlatformID, _ := c.Get("platform_id")
+	query.PlatformID = PlatformID.(int)
 	categories := query.FetchAll()
 
 	g.Response(http.StatusOK, e.Success, categories)

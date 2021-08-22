@@ -2,7 +2,7 @@ package frontend
 
 type ProductSubStyle struct {
 	ID         int    `json:"id" gorm:"<-:create"`
-	CustomerID int    `json:"-" gorm:"<-:create"`
+	PlatformID int    `json:"-" gorm:"<-:create"`
 	ProductID  int    `json:"-" gorm:"<-:create"`
 	Title      string `json:"title"`
 	Sort       int    `json:"sort"`

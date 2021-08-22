@@ -9,7 +9,7 @@ import (
 
 type CategoryQuery struct {
 	ID         int `json:"id"`
-	CustomerID int
+	PlatformID int
 	ParentID   int `uri:"parent_id"`
 	Sort       int
 	DeletedAt  int
@@ -28,7 +28,7 @@ type CategoryMoveReq struct {
 
 type Category struct {
 	ID         int    `json:"id"`
-	CustomerID int    `json:"-"`
+	PlatformID int    `json:"-"`
 	ParentID   int    `json:"parent_id"`
 	Layer      int    `json:"layer"`
 	Title      string `json:"title"`
@@ -56,7 +56,7 @@ func (category *Category) Update() (err error) {
 func (category *Category) Delete() (err error) {
 	category.DeletedAt = int(time.Now().Unix())
 	category.Update()
-	err = DB.Table("category").Where("parent_id = ? AND customer_id = ? AND sort > ?", category.ParentID, category.CustomerID, category.Sort).Update("sort", gorm.Expr("sort - 1")).Error
+	err = DB.Table("category").Where("parent_id = ? AND platform_id = ? AND sort > ?", category.ParentID, category.PlatformID, category.Sort).Update("sort", gorm.Expr("sort - 1")).Error
 	return
 }
 
@@ -70,8 +70,8 @@ func (query *CategoryQuery) Query() *gorm.DB {
 		sql.Where("parent_id = ?", query.ParentID)
 	}
 
-	if query.CustomerID != 0 {
-		sql.Where("customer_id = ?", query.CustomerID)
+	if query.PlatformID != 0 {
+		sql.Where("platform_id = ?", query.PlatformID)
 	}
 
 	if query.Sort != 0 {
@@ -111,8 +111,8 @@ func (query *CategoryQuery) GetBreadcrumbs(breadcrumbs *[]Category) {
 
 }
 
-func (category *Category) Validate(customerID int) bool {
-	if category.ID == 0 || category.CustomerID != customerID {
+func (category *Category) Validate(platformID int) bool {
+	if category.ID == 0 || category.PlatformID != platformID {
 		return false
 	}
 	return true

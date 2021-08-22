@@ -26,18 +26,18 @@ import (
 func DraftComponentDelete(c *gin.Context) {
 	g := Gin{c}
 	var req *models.PageComponentDraftQuery
-	customerID, _ := c.Get("customer_id")
+	platformID, _ := c.Get("platform_id")
 	err := c.BindJSON(&req)
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
 		return
 	}
 
-	req.CustomerID = customerID.(int)
+	req.PlatformID = platformID.(int)
 
 	component := req.Fetch()
-	component.Validate(customerID.(int))
-	if !component.Validate(customerID.(int)) {
+	component.Validate(platformID.(int))
+	if !component.Validate(platformID.(int)) {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
@@ -57,15 +57,15 @@ func DraftComponentEdit(c *gin.Context) {
 		return
 	}
 
-	customerID, _ := c.Get("customer_id")
+	platformID, _ := c.Get("platform_id")
 	componentQurey := &models.PageComponentDraftQuery{
 		PageID:     req.PageID,
-		CustomerID: customerID.(int),
+		PlatformID: platformID.(int),
 		Sort:       req.Sort,
 	}
 
 	component := componentQurey.Fetch()
-	if !component.Validate(customerID.(int)) {
+	if !component.Validate(platformID.(int)) {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
@@ -82,7 +82,7 @@ func DraftComponentEdit(c *gin.Context) {
 		data.ComID = component.ID
 		i := strings.Index(data.Img, ",") //有找到base64的編碼關鍵字
 		if i > 0 {
-			filename := fmt.Sprintf("/upload/%08d/%08d/%08d", customerID.(int), data.PageID, data.ComID)
+			filename := fmt.Sprintf("/upload/%08d/%08d/%08d", platformID.(int), data.PageID, data.ComID)
 			blob, _ := base64.StdEncoding.DecodeString(data.Img[i+1:])
 			var img image.Image
 			var maxSize uint
@@ -124,7 +124,7 @@ func DraftComponentEdit(c *gin.Context) {
 func DraftComponentChange(c *gin.Context) {
 	g := Gin{c}
 	var req *models.PageComponentDraftChangeReq
-	customerID, _ := c.Get("customer_id")
+	platformID, _ := c.Get("platform_id")
 	err := c.BindJSON(&req)
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
@@ -134,22 +134,22 @@ func DraftComponentChange(c *gin.Context) {
 	componentQuery1 := models.PageComponentDraftQuery{
 		PageID:     req.PageID,
 		Sort:       req.Sort,
-		CustomerID: customerID.(int),
+		PlatformID: platformID.(int),
 	}
 
 	componentQuery2 := models.PageComponentDraftQuery{
 		PageID:     req.PageID,
 		Sort:       req.NewSort,
-		CustomerID: customerID.(int),
+		PlatformID: platformID.(int),
 	}
 
 	component1 := componentQuery1.Fetch()
-	if !component1.Validate(customerID.(int)) {
+	if !component1.Validate(platformID.(int)) {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
 	component2 := componentQuery2.Fetch()
-	if !component2.Validate(customerID.(int)) {
+	if !component2.Validate(platformID.(int)) {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
@@ -169,8 +169,8 @@ func DraftComponentCreate(c *gin.Context) {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
 		return
 	}
-	CustomerID, _ := c.Get("customer_id")
-	component.CustomerID = CustomerID.(int)
+	PlatformID, _ := c.Get("platform_id")
+	component.PlatformID = PlatformID.(int)
 	component.CreatedAt = int(time.Now().Unix())
 	component.UpdatedAt = int(time.Now().Unix())
 	component.Create()

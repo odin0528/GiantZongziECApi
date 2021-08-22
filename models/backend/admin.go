@@ -8,14 +8,14 @@ import (
 
 type AdminQuery struct {
 	ID         int
-	CustomerID int
+	PlatformID int
 	Account    string
 	Title      string
 }
 
 type Admin struct {
 	ID         int
-	CustomerID int
+	PlatformID int
 	Account    string
 	Password   string
 	Title      string
@@ -33,8 +33,8 @@ func (query *AdminQuery) Query() *gorm.DB {
 		sql.Where("id = ?", query.ID)
 	}
 
-	if query.CustomerID != 0 {
-		sql.Where("customer_id = ?", query.CustomerID)
+	if query.PlatformID != 0 {
+		sql.Where("platform_id = ?", query.PlatformID)
 	}
 
 	if query.Account != "" {

@@ -2,7 +2,7 @@ package frontend
 
 type ProductStyleTable struct {
 	ID         int    `json:"id" gorm:"<-:create"`
-	CustomerID int    `json:"-" gorm:"<-:create"`
+	PlatformID int    `json:"-" gorm:"<-:create"`
 	ProductID  int    `json:"-" gorm:"<-:create"`
 	Group      int    `json:"-"`
 	Title      string `json:"title"`

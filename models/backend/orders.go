@@ -7,20 +7,20 @@ import (
 )
 
 type OrderListReq struct {
-	CustomerID int `json:"-"`
+	PlatformID int `json:"-"`
 	Status     int `json:"status"`
 	Pagination
 }
 
 type OrderQuery struct {
 	ID         int `json:"id"`
-	CustomerID int `json:"-"`
+	PlatformID int `json:"-"`
 	Status     int `json:"status"`
 }
 
 type Orders struct {
 	ID           int             `json:"id"`
-	CustomerID   int             `json:"-"`
+	PlatformID   int             `json:"-"`
 	MemberID     int             `json:"-"`
 	Fullname     string          `json:"fullname"`
 	Phone        string          `json:"phone"`
@@ -51,7 +51,7 @@ func (query *OrderQuery) GetCondition() *gorm.DB {
 		sql.Where("status = ?", query.Status)
 	}
 
-	sql.Where("customer_id = ?", query.CustomerID)
+	sql.Where("platform_id = ?", query.PlatformID)
 
 	return sql
 }
@@ -65,7 +65,7 @@ func (query *OrderQuery) Fetch() (order Orders, err error) {
 func (req *OrderListReq) FetchAll() (orders []Orders, pagination Pagination) {
 	var count int64
 	query := OrderQuery{
-		CustomerID: req.CustomerID,
+		PlatformID: req.PlatformID,
 		Status:     req.Status,
 	}
 	sql := query.GetCondition()

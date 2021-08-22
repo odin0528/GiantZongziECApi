@@ -6,7 +6,7 @@ import (
 
 type ProductPhotos struct {
 	ID         int    `json:"id"`
-	CustomerID int    `json:"-" gorm:"<-:create"`
+	PlatformID int    `json:"-" gorm:"<-:create"`
 	ProductID  int    `json:"-" gorm:"<-:create"`
 	Img        string `json:"photo"`
 	Sort       int    `json:"-"`
@@ -25,11 +25,11 @@ func (photo *ProductPhotos) Update() (err error) {
 }
 
 func (photo *ProductPhotos) Delete() (err error) {
-	err = DB.Debug().Where("id = ? AND customer_id = ?", photo.ID, photo.CustomerID).Delete(&ProductPhotos{}).Error
+	err = DB.Debug().Where("id = ? AND platform_id = ?", photo.ID, photo.PlatformID).Delete(&ProductPhotos{}).Error
 	return
 }
 
 func (photo *ProductPhotos) Fetch() (err error) {
-	err = DB.Debug().Table("product_photos").Where("id = ? AND customer_id = ?", photo.ID, photo.CustomerID).Scan(&photo).Error
+	err = DB.Debug().Table("product_photos").Where("id = ? AND platform_id = ?", photo.ID, photo.PlatformID).Scan(&photo).Error
 	return
 }

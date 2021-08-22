@@ -10,7 +10,7 @@ type ProductQuery struct {
 	ID         int `json:"id" uri:"id"`
 	CategoryID int `json:"category_id" uri:"category_id"`
 	Layer      int `json:"layer" uri:"layer"`
-	CustomerID int `json:"-"`
+	PlatformID int `json:"-"`
 	Min        int `json:"min"`
 	Max        int `json:"max"`
 	Pagination
@@ -18,7 +18,7 @@ type ProductQuery struct {
 
 type Products struct {
 	ID              int                   `json:"id"`
-	CustomerID      int                   `json:"-" gorm:"<-:create"`
+	PlatformID      int                   `json:"-" gorm:"<-:create"`
 	Title           string                `json:"title"`
 	StyleTitle      string                `json:"style_title"`
 	SubStyleTitle   string                `json:"sub_style_title"`
@@ -42,7 +42,7 @@ type Products struct {
 
 // 查詢功能
 func (query *ProductQuery) Query() *gorm.DB {
-	sql := DB.Debug().Table("products").Where("deleted_at = 0")
+	sql := DB.Debug().Table("products").Where("deleted_at = 0 AND is_public = 1")
 	if query.ID != 0 {
 		sql.Where("id = ?", query.ID)
 	}
@@ -60,8 +60,8 @@ func (query *ProductQuery) Query() *gorm.DB {
 		}
 	}
 
-	if query.CustomerID != 0 {
-		sql.Where("products.customer_id = ?", query.CustomerID)
+	if query.PlatformID != 0 {
+		sql.Where("products.platform_id = ?", query.PlatformID)
 	}
 
 	if query.Min > 0 || query.Max > 0 {

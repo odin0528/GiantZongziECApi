@@ -12,7 +12,7 @@ import (
 func GetPagesList(c *gin.Context) {
 	g := Gin{c}
 	req := &models.PageReq{
-		CustomerID: 1,
+		PlatformID: 1,
 	}
 
 	pages, _ := req.GetPageList()
@@ -29,14 +29,14 @@ func GetPageComponent(c *gin.Context) {
 		return
 	}
 
-	customerID, _ := c.Get("customer_id")
-	req.CustomerID = customerID.(int)
+	platformID, _ := c.Get("platform_id")
+	req.PlatformID = platformID.(int)
 	pages := req.Fetch()
-	pages.Validate(customerID.(int), *c)
+	pages.Validate(platformID.(int), *c)
 
 	componentReq := models.PageComponentDraftQuery{
 		PageID:     pages.PageID,
-		CustomerID: customerID.(int),
+		PlatformID: platformID.(int),
 	}
 
 	components := componentReq.FetchByPageID()

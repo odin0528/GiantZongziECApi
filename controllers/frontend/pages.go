@@ -18,8 +18,8 @@ func GetPageComponent(c *gin.Context) {
 		return
 	}
 
-	customerID, _ := c.Get("customer_id")
-	req.CustomerID = customerID.(int)
+	platformID, _ := c.Get("platform_id")
+	req.PlatformID = platformID.(int)
 	pages := req.Fetch()
 
 	if !pages.Validate() {
@@ -29,7 +29,7 @@ func GetPageComponent(c *gin.Context) {
 
 	componentReq := models.PageComponentQuery{
 		PageID:     pages.PageID,
-		CustomerID: customerID.(int),
+		PlatformID: platformID.(int),
 	}
 
 	components := componentReq.FetchByPageID()

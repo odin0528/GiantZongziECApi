@@ -18,8 +18,8 @@ func OrderFetch(c *gin.Context) {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
 		return
 	}
-	CustomerID, _ := c.Get("customer_id")
-	query.CustomerID = CustomerID.(int)
+	PlatformID, _ := c.Get("platform_id")
+	query.PlatformID = PlatformID.(int)
 	product := query.Fetch()
 	product.GetPhotos()
 	product.GetStyle()
@@ -37,8 +37,8 @@ func OrderList(c *gin.Context) {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
 		return
 	}
-	CustomerID, _ := c.Get("customer_id")
-	req.CustomerID = CustomerID.(int)
+	PlatformID, _ := c.Get("platform_id")
+	req.PlatformID = PlatformID.(int)
 	orders, pagination := req.FetchAll()
 
 	for index := range orders {
@@ -56,8 +56,8 @@ func OrderNextStep(c *gin.Context) {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
 		return
 	}
-	CustomerID, _ := c.Get("customer_id")
-	query.CustomerID = CustomerID.(int)
+	PlatformID, _ := c.Get("platform_id")
+	query.PlatformID = PlatformID.(int)
 	order, err := query.Fetch()
 
 	if err != nil {
@@ -87,8 +87,8 @@ func OrderNextStep(c *gin.Context) {
 func OrderUntreated(c *gin.Context) {
 	g := Gin{c}
 	var query models.OrderQuery
-	CustomerID, _ := c.Get("customer_id")
-	query.CustomerID = CustomerID.(int)
+	PlatformID, _ := c.Get("platform_id")
+	query.PlatformID = PlatformID.(int)
 	count := query.FetchUntreated()
 
 	g.Response(http.StatusOK, e.Success, count)

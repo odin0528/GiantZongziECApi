@@ -18,8 +18,8 @@ func GetProductsByCategoryID(c *gin.Context) {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
 		return
 	}
-	CustomerID, _ := c.Get("customer_id")
-	req.CustomerID = CustomerID.(int)
+	PlatformID, _ := c.Get("platform_id")
+	req.PlatformID = PlatformID.(int)
 	products, pagination := req.FetchAll()
 
 	for index := range products {
@@ -38,8 +38,8 @@ func ProductFetch(c *gin.Context) {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
 		return
 	}
-	CustomerID, _ := c.Get("customer_id")
-	query.CustomerID = CustomerID.(int)
+	PlatformID, _ := c.Get("platform_id")
+	query.PlatformID = PlatformID.(int)
 	products := query.Fetch()
 	products.GetPhotos()
 	products.GetStyle()

@@ -14,4 +14,7 @@ const (
 	TokenNotExist   = 90002
 	TokenExpired    = 90003
 	PasswordNoMatch = 90004
+
+	// auth frontend
+	EmailDuplicate = 91001
 )

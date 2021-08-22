@@ -8,7 +8,7 @@ import (
 
 type CategoryQuery struct {
 	ID         int `json:"id"`
-	CustomerID int
+	PlatformID int
 	ParentID   int `uri:"parent_id"`
 	Sort       int
 	DeletedAt  int
@@ -16,7 +16,7 @@ type CategoryQuery struct {
 
 type Category struct {
 	ID         int    `json:"id"`
-	CustomerID int    `json:"-"`
+	PlatformID int    `json:"-"`
 	ParentID   int    `json:"parent_id"`
 	Layer      int    `json:"layer"`
 	Title      string `json:"title"`
@@ -39,8 +39,8 @@ func (query *CategoryQuery) Query() *gorm.DB {
 		sql.Where("parent_id = ?", query.ParentID)
 	}
 
-	if query.CustomerID != 0 {
-		sql.Where("customer_id = ?", query.CustomerID)
+	if query.PlatformID != 0 {
+		sql.Where("platform_id = ?", query.PlatformID)
 	}
 
 	if query.Sort != 0 {
@@ -71,7 +71,7 @@ func (query *CategoryQuery) GetBreadcrumbs(breadcrumbs *[]Category) {
 	if query.ParentID != -1 {
 		parentCategoryQuery := CategoryQuery{
 			ID:         query.ParentID,
-			CustomerID: query.CustomerID,
+			PlatformID: query.PlatformID,
 		}
 		parentCategory := parentCategoryQuery.Fetch()
 		if parentCategory.ID != 0 {
