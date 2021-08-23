@@ -7,20 +7,21 @@ import (
 )
 
 type LoginReq struct {
-	Account  string `json:"email"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
 type MemberToken struct {
-	MemberID  int
-	Token     string
-	ExpiredAt int
-	CreatedAt int
-	DeletedAt soft_delete.DeletedAt
+	MemberID   int
+	PlatformID int
+	Token      string
+	ExpiredAt  int
+	CreatedAt  int
+	DeletedAt  soft_delete.DeletedAt
 }
 
 func (MemberToken) TableName() string {
-	return "admin_token"
+	return "member_token"
 }
 
 func (token *MemberToken) CancelOldToken() {
@@ -28,5 +29,5 @@ func (token *MemberToken) CancelOldToken() {
 }
 
 func (token *MemberToken) Fetch() {
-	DB.Debug().Model(MemberToken{}).Where("token = ?", token.Token).Scan(token)
+	DB.Debug().Model(MemberToken{}).Where("token = ? AND platform_id = ?", token.Token, token.PlatformID).Scan(token)
 }
