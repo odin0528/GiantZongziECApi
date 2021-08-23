@@ -34,5 +34,5 @@ func GetMsg(code int) string {
 		return msg
 	}
 
-	return MsgFlags[Error]
+	return MsgFlags[StatusInternalServerError]
 }

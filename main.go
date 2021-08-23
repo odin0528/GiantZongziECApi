@@ -48,6 +48,7 @@ func main() {
 
 		frontendApi.GET("/member", frontend.MemberFetch)
 		frontendApi.POST("/member/login", frontend.MemberLogin)
+		frontendApi.POST("/member/register", frontend.MemberRegister)
 
 		tokenRequired := frontendApi.Use(auth.TokenRequred)
 		{
