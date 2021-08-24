@@ -70,6 +70,12 @@ func OrderCreate(c *gin.Context) {
 
 		token, err = jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(os.Getenv("JWT_SIGN")))
 
+	} else if MemberID != 0 {
+		carts := models.Carts{
+			MemberID:   MemberID,
+			PlatformID: PlatformID,
+		}
+		carts.Clean()
 	}
 
 	switch order.Payment {

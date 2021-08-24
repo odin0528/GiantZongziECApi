@@ -16,6 +16,7 @@ const (
 	PasswordNoMatch = 90004
 
 	// auth frontend
-	MemberNotExist = 91000
-	EmailDuplicate = 91001
+	MemberNotExist         = 91000
+	EmailDuplicate         = 91001
+	NoLogginOrTokenExpired = 91002
 )

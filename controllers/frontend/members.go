@@ -48,7 +48,7 @@ func GetMemberOrders(c *gin.Context) {
 func MemberFetch(c *gin.Context) {
 	g := Gin{c}
 	if c.Request.Header.Get("Authorization") == "" {
-		g.Response(http.StatusOK, e.Success, nil)
+		g.Response(http.StatusOK, e.NoLogginOrTokenExpired, nil)
 		return
 	}
 
@@ -57,7 +57,7 @@ func MemberFetch(c *gin.Context) {
 	})
 
 	if err != nil {
-		g.Response(http.StatusOK, e.Success, nil)
+		g.Response(http.StatusOK, e.NoLogginOrTokenExpired, nil)
 		return
 	}
 
@@ -65,7 +65,7 @@ func MemberFetch(c *gin.Context) {
 		if claims, ok := tokenClaims.Claims.(*frontend.Claims); ok && tokenClaims.Valid {
 			g.Response(http.StatusOK, e.Success, models.Members{Nickname: claims.Nickname})
 		} else {
-			g.Response(http.StatusOK, e.Success, nil)
+			g.Response(http.StatusOK, e.NoLogginOrTokenExpired, nil)
 			return
 		}
 	}

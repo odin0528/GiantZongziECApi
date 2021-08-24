@@ -35,6 +35,7 @@ func (Carts) TableName() string {
 func (query *CartsQuery) FetchAll() (carts []Carts, err error) {
 	err = DB.Debug().Model(&Carts{}).
 		Where("member_id = ? and platform_id = ?", query.MemberID, query.PlatformID).
+		Order("created_at DESC").
 		Scan(&carts).Error
 
 	return
@@ -49,5 +50,11 @@ func (req *Carts) Update() error {
 func (req *Carts) Delete() error {
 	return DB.Debug().
 		Where("member_id = ? and platform_id = ? and product_id = ? and style_id = ?", req.MemberID, req.PlatformID, req.ProductID, req.StyleID).
+		Delete(&Carts{}).Error
+}
+
+func (req *Carts) Clean() error {
+	return DB.Debug().
+		Where("member_id = ? and platform_id = ?", req.MemberID, req.PlatformID).
 		Delete(&Carts{}).Error
 }
