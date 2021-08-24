@@ -49,12 +49,17 @@ func main() {
 		frontendApi.GET("/member", frontend.MemberFetch)
 		frontendApi.POST("/member/login", frontend.MemberLogin)
 		frontendApi.POST("/member/register", frontend.MemberRegister)
+	}
 
-		tokenRequired := frontendApi.Use(auth.TokenRequred)
-		{
-			tokenRequired.POST("/member/orders", frontend.GetMemberOrders)
-			tokenRequired.POST("/member/logout", frontend.MemberLogout)
-		}
+	tokenRequired := router.Group("/api/frontend", auth.TokenRequred)
+	{
+		tokenRequired.POST("/member/orders", frontend.GetMemberOrders)
+		tokenRequired.POST("/member/logout", frontend.MemberLogout)
+
+		tokenRequired.GET("/carts", frontend.CartsFetch)
+		tokenRequired.POST("/carts/add", frontend.CartsAddProduct)
+		tokenRequired.POST("/carts/update", frontend.CartsUpdate)
+		tokenRequired.POST("/carts/remove", frontend.CartsRemoveProduct)
 	}
 
 	backendApi := router.Group("/api/backend")

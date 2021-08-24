@@ -3,6 +3,7 @@ package frontend
 import (
 	. "eCommerce/internal/database"
 
+	"github.com/dgrijalva/jwt-go"
 	"gorm.io/plugin/soft_delete"
 )
 
@@ -18,6 +19,13 @@ type MemberToken struct {
 	ExpiredAt  int
 	CreatedAt  int
 	DeletedAt  soft_delete.DeletedAt
+}
+
+type Claims struct {
+	MemberID   int
+	PlatformID int
+	Nickname   string `json:"nickname"`
+	jwt.StandardClaims
 }
 
 func (MemberToken) TableName() string {

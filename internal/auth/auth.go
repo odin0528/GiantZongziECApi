@@ -1,8 +1,10 @@
 package auth
 
 import (
+	"os"
 	"regexp"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 
 	// "ec/internal/redis"
@@ -47,7 +49,26 @@ func TokenRequred(c *gin.Context) {
 		return
 	}
 
-	PlatformID, _ := c.Get("platform_id")
+	tokenClaims, err := jwt.ParseWithClaims(c.Request.Header.Get("Authorization"), &frontend.Claims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte("wJuan"), nil
+	})
+
+	if err != nil {
+		Unauthorized(c)
+		return
+	}
+
+	if tokenClaims != nil {
+		if claims, ok := tokenClaims.Claims.(*frontend.Claims); ok && tokenClaims.Valid {
+			c.Set("member_id", claims.MemberID)
+			c.Set("platform_id", claims.PlatformID)
+		} else {
+			Unauthorized(c)
+			return
+		}
+	}
+
+	/* PlatformID, _ := c.Get("platform_id")
 
 	token := frontend.MemberToken{
 		Token:      c.Request.Header.Get("Authorization"),
@@ -58,10 +79,28 @@ func TokenRequred(c *gin.Context) {
 	if token.MemberID == 0 {
 		Unauthorized(c)
 		return
+	} */
+
+	// c.Set("member_id", token.MemberID)
+
+}
+
+func JwtParser(c *gin.Context) *frontend.Claims {
+	tokenClaims, err := jwt.ParseWithClaims(c.Request.Header.Get("Authorization"), &frontend.Claims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SIGN")), nil
+	})
+
+	if err != nil {
+		return nil
 	}
 
-	c.Set("member_id", token.MemberID)
+	if tokenClaims != nil {
+		if claims, ok := tokenClaims.Claims.(*frontend.Claims); ok && tokenClaims.Valid {
+			return claims
+		}
+	}
 
+	return nil
 }
 
 func GetPlatformID(c *gin.Context) {

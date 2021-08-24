@@ -6,9 +6,10 @@ import (
 	"eCommerce/pkg/e"
 	"encoding/base64"
 	"net/http"
+	"os"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"golang.org/x/crypto/scrypt"
 
 	. "eCommerce/internal/database"
@@ -24,8 +25,20 @@ func OrderCreate(c *gin.Context) {
 		return
 	}
 
-	PlatformID, _ := c.Get("platform_id")
-	MemberID, _ := c.Get("member_id")
+	var PlatformID int
+	var MemberID int
+	member := auth.JwtParser(c)
+	if member == nil {
+		pid, _ := c.Get("platform_id")
+		PlatformID = pid.(int)
+		MemberID = 0
+	} else {
+		PlatformID = member.PlatformID
+		MemberID = member.MemberID
+	}
+
+	order.PlatformID = PlatformID
+	order.MemberID = MemberID
 
 	if len(order.Email) > 0 && MemberID == 0 {
 
@@ -34,7 +47,7 @@ func OrderCreate(c *gin.Context) {
 		member := models.Members{
 			Email:      order.Email,
 			Password:   base64.StdEncoding.EncodeToString(dk),
-			PlatformID: PlatformID.(int),
+			PlatformID: PlatformID,
 		}
 
 		err = DB.Create(&member).Error
@@ -45,18 +58,20 @@ func OrderCreate(c *gin.Context) {
 		order.MemberID = member.ID
 
 		// 一併幫會員做登入
-		token = uuid.New().String()
-
-		memberToken := models.MemberToken{
-			MemberID: member.ID,
-			Token:    token,
+		issuer := "GiantZongziEC"
+		claims := models.Claims{
+			MemberID:   member.ID,
+			PlatformID: PlatformID,
+			Nickname:   member.Nickname,
+			StandardClaims: jwt.StandardClaims{
+				Issuer: issuer,
+			},
 		}
-		memberToken.CancelOldToken()
-		DB.Create(&memberToken)
+
+		token, err = jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(os.Getenv("JWT_SIGN")))
 
 	}
 
-	order.PlatformID = PlatformID.(int)
 	switch order.Payment {
 	case 1:
 		order.Status = 11
@@ -75,7 +90,7 @@ func OrderCreate(c *gin.Context) {
 				Price:      style.Price,
 				Total:      float32(style.Qty) * style.Price,
 				Title:      product.Title,
-				StyleTitle: style.Title + style.SubTitle,
+				StyleTitle: style.StyleTitle,
 				Photo:      style.Photo,
 				Sku:        style.Sku,
 			}

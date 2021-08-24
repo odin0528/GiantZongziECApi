@@ -35,6 +35,10 @@ type Members struct {
 func (query *MemberQuery) GetCondition() *gorm.DB {
 	sql := DB.Debug().Model(Members{})
 
+	if query.ID != 0 {
+		sql.Where("id = ?", query.ID)
+	}
+
 	if query.Email != "" {
 		sql.Where("email like ?", query.Email)
 	}

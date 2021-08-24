@@ -83,3 +83,8 @@ func (query *OrderQuery) FetchAll() (orders []Orders, pagination Pagination) {
 	pagination = CreatePagination(query.Page, query.Items, count)
 	return
 }
+
+// 關連功能
+func (order *Orders) GetProducts() {
+	DB.Model(&OrderProducts{}).Where("order_id = ?", order.ID).Order("created_at ASC").Scan(&order.Products)
+}

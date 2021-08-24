@@ -5,17 +5,17 @@ import (
 )
 
 type OrderProducts struct {
-	ID         int
-	OrderID    int
-	ProductID  int
-	StyleID    int
-	Qty        int
-	Price      float32
-	Total      float32
-	Title      string
-	StyleTitle string
-	Photo      string
-	Sku        string
+	ID         int     `json:"-"`
+	OrderID    int     `json:"-"`
+	ProductID  int     `json:"-"`
+	StyleID    int     `json:"-"`
+	Qty        int     `json:"qty"`
+	Price      float32 `json:"price"`
+	Total      float32 `json:"total"`
+	Title      string  `json:"title"`
+	StyleTitle string  `json:"style_title"`
+	Photo      string  `json:"photo"`
+	Sku        string  `json:"sku"`
 	TimeDefault
 }
 
@@ -26,13 +26,13 @@ type OrderProductsCreateReq struct {
 }
 
 type OrderProductStyleCreateReq struct {
-	StyleID  int     `json:"id"`
-	Title    string  `json:"title"`
-	SubTitle string  `json:"subTitle"`
-	Photo    string  `json:"photo"`
-	Sku      string  `json:"sku"`
-	Qty      int     `json:"buyCount"`
-	Price    float32 `json:"price"`
+	StyleID    int     `json:"id"`
+	Title      string  `json:"title"`
+	StyleTitle string  `json:"style_title"`
+	Photo      string  `json:"photo"`
+	Sku        string  `json:"sku"`
+	Qty        int     `json:"buyCount"`
+	Price      float32 `json:"price"`
 }
 
 // 基本CURD功能

@@ -5,12 +5,14 @@ import (
 	"eCommerce/pkg/e"
 	"encoding/base64"
 	"net/http"
+	"os"
 	"time"
 
 	. "eCommerce/internal/database"
 	"eCommerce/models/frontend"
 	models "eCommerce/models/frontend"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
@@ -36,34 +38,37 @@ func GetMemberOrders(c *gin.Context) {
 
 	orders, pagination := req.FetchAll()
 
+	for index := range orders {
+		orders[index].GetProducts()
+	}
+
 	g.PaginationResponse(http.StatusOK, e.Success, orders, pagination)
 }
 
 func MemberFetch(c *gin.Context) {
 	g := Gin{c}
-	PlatformID, _ := c.Get("platform_id")
 	if c.Request.Header.Get("Authorization") == "" {
 		g.Response(http.StatusOK, e.Success, nil)
 		return
 	}
 
-	token := frontend.MemberToken{
-		Token:      c.Request.Header.Get("Authorization"),
-		PlatformID: PlatformID.(int),
-	}
+	tokenClaims, err := jwt.ParseWithClaims(c.Request.Header.Get("Authorization"), &frontend.Claims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SIGN")), nil
+	})
 
-	token.Fetch()
-	if token.MemberID == 0 {
+	if err != nil {
 		g.Response(http.StatusOK, e.Success, nil)
 		return
 	}
 
-	query := frontend.MemberQuery{
-		ID:         token.MemberID,
-		PlatformID: PlatformID.(int),
+	if tokenClaims != nil {
+		if claims, ok := tokenClaims.Claims.(*frontend.Claims); ok && tokenClaims.Valid {
+			g.Response(http.StatusOK, e.Success, models.Members{Nickname: claims.Nickname})
+		} else {
+			g.Response(http.StatusOK, e.Success, nil)
+			return
+		}
 	}
-	member := query.Fetch()
-	g.Response(http.StatusOK, e.Success, member)
 }
 
 func MemberLogin(c *gin.Context) {
@@ -95,7 +100,19 @@ func MemberLogin(c *gin.Context) {
 		return
 	}
 
-	token := uuid.New().String()
+	issuer := "GiantZongziEC"
+	claims := models.Claims{
+		MemberID:   member.ID,
+		PlatformID: PlatformID.(int),
+		Nickname:   member.Nickname,
+		StandardClaims: jwt.StandardClaims{
+			Issuer: issuer,
+		},
+	}
+
+	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(os.Getenv("JWT_SIGN")))
+
+	/* token := uuid.New().String()
 
 	memberToken := models.MemberToken{
 		MemberID:   member.ID,
@@ -103,7 +120,7 @@ func MemberLogin(c *gin.Context) {
 		PlatformID: PlatformID.(int),
 	}
 	memberToken.CancelOldToken()
-	DB.Create(&memberToken)
+	DB.Create(&memberToken) */
 
 	g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "member": member})
 }
@@ -153,8 +170,16 @@ func MemberRegister(c *gin.Context) {
 		return
 	}
 
+	token := uuid.New().String()
+	memberToken := models.MemberToken{
+		MemberID:   member.ID,
+		Token:      token,
+		PlatformID: PlatformID.(int),
+	}
+	DB.Create(&memberToken)
+
 	// req.Create()
-	g.Response(http.StatusOK, e.Success, nil)
+	g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "member": member})
 
 }
 
