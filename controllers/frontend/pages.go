@@ -20,15 +20,15 @@ func GetPageComponent(c *gin.Context) {
 
 	platformID, _ := c.Get("platform_id")
 	req.PlatformID = platformID.(int)
-	pages := req.Fetch()
+	pages, err := req.Fetch()
 
-	if !pages.Validate() {
+	if pages.ID == 0 || err != nil {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
 
 	componentReq := models.PageComponentQuery{
-		PageID:     pages.PageID,
+		PageID:     pages.ID,
 		PlatformID: platformID.(int),
 	}
 

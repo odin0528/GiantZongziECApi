@@ -70,7 +70,8 @@ func main() {
 		authRequired := backendApi.Use(auth.AuthRequred)
 		{
 			authRequired.GET("/pages", backend.GetPagesList)
-			authRequired.GET("/pages/:page_id", backend.GetPageComponent)
+			authRequired.GET("/pages/:id", backend.GetPageComponent)
+			authRequired.POST("/pages/release", backend.PageRelease)
 			authRequired.POST("/components/delete", backend.DraftComponentDelete)
 			authRequired.POST("/components/create", backend.DraftComponentCreate)
 			authRequired.POST("/components/change", backend.DraftComponentChange)

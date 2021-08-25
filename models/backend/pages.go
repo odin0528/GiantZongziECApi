@@ -2,40 +2,69 @@ package backend
 
 import (
 	. "eCommerce/internal/database"
-	"eCommerce/pkg/e"
-	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"gorm.io/plugin/soft_delete"
 )
 
 type PageReq struct {
-	PageID     int `json:"page_id" uri:"page_id"`
+	ID         int `json:"id" uri:"id"`
 	PlatformID int `json:"platform_id"`
 }
 
 type Pages struct {
-	PageID     int    `json:"page_id"`
+	ID         int    `json:"page_id"`
 	PlatformID int    `json:"-"`
-	Name       string `json:"name"`
+	Url        string `json:"url"`
+	Title      string `json:"title"`
+	IsMenu     bool   `json:"is_menu"`
 	ReleasedAt int    `json:"released_at"`
+	DeletedAt  soft_delete.DeletedAt
 	TimeDefault
 }
 
-func (req *PageReq) GetPageList() (pagesRowset []Pages, err error) {
-	err = DB.Table("rel_platform_pages as rel").Select("rel.*, pages.name").Joins("inner join pages on rel.page_id = pages.id").
-		Where("rel.platform_id = ?", req.PlatformID).
-		Scan(&pagesRowset).Error
+func (req *PageReq) GetPageList() (pages []Pages, err error) {
+	err = DB.Debug().Model(&Pages{}).
+		Where("platform_id = ?", req.PlatformID).
+		Scan(&pages).Error
 	return
 }
 
-func (req *PageReq) Fetch() (pages Pages) {
-	DB.Table("rel_platform_pages").Where("page_id = ? and platform_id = ?", req.PageID, req.PlatformID).Scan(&pages)
+func (req *PageReq) Fetch() (pages Pages, err error) {
+	err = DB.Debug().Model(&Pages{}).Where("id = ? and platform_id = ?", req.ID, req.PlatformID).Scan(&pages).Error
 	return
 }
 
-func (pages *Pages) Validate(platformID int, ctx gin.Context) {
+func (req *PageReq) Clear() {
+	DB.Exec("DELETE FROM page_component WHERE page_id = ?", req.ID)
+	DB.Exec("DELETE FROM page_component_data WHERE page_id = ?", req.ID)
+}
+
+func (req *PageReq) DeepDuplicate() error {
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Exec(`
+			INSERT INTO page_component 
+			(id, platform_id, page_id, sort, component_name, type, title, text, created_at, updated_at) 
+			(SELECT id, platform_id, page_id, sort, component_name, type, title, text, created_at, updated_at FROM page_component_draft WHERE page_id = ?)
+		`, req.ID, req.PlatformID).Error; err != nil {
+			return err
+		}
+		if err := tx.Exec(`
+			INSERT INTO page_component_data (id, page_id, com_id, title, img, link, text, start_time, end_time) 
+			(SELECT id, page_id, com_id, title, img, link, text, start_time, end_time FROM page_component_data_draft WHERE page_id = ?)
+		`, req.ID, req.PlatformID).Error; err != nil {
+			return err
+		}
+
+		tx.Model(&Pages{}).Where("id = ?", req.ID).Update("released_at", gorm.Expr("UNIX_TIMESTAMP()"))
+		return nil
+	})
+	return err
+}
+
+/* func (pages *Pages) Validate(platformID int, ctx gin.Context) {
 	// data is not exist
-	if pages.PageID == 0 {
+	if pages.ID == 0 {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"http_status": http.StatusBadRequest,
 			"code":        e.StatusNotFound,
@@ -55,4 +84,4 @@ func (pages *Pages) Validate(platformID int, ctx gin.Context) {
 		})
 		ctx.Abort()
 	}
-}
+} */

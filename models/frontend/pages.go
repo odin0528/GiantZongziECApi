@@ -2,31 +2,27 @@ package frontend
 
 import (
 	. "eCommerce/internal/database"
-	"eCommerce/pkg/e"
+
+	"gorm.io/plugin/soft_delete"
 )
 
 type PageReq struct {
-	Page       string `json:"page" uri:"page"`
-	PlatformID int    `json:"platform_id"`
+	Url        int `json:"url" uri:"url"`
+	PlatformID int `json:"platform_id"`
 }
 
 type Pages struct {
-	PageID     int  `json:"page_id"`
-	PlatformID int  `json:"-"`
-	ReleasedAt int  `json:"released_at"`
-	IsEnabled  bool `json:"is_enabled"`
+	ID         int    `json:"page_id"`
+	PlatformID int    `json:"-"`
+	Url        string `json:"url"`
+	Title      string `json:"title"`
+	IsMenu     bool   `json:"is_menu"`
+	ReleasedAt int    `json:"released_at"`
+	DeletedAt  soft_delete.DeletedAt
 	TimeDefault
 }
 
-func (req *PageReq) Fetch() (pages Pages) {
-	DB.Table("rel_platform_pages").Where("page_id = ? and platform_id = ?", e.PageList[req.Page], req.PlatformID).Scan(&pages)
+func (req *PageReq) Fetch() (pages Pages, err error) {
+	err = DB.Debug().Model(&Pages{}).Where("url = ? and platform_id = ?", req.Url, req.PlatformID).Scan(&pages).Error
 	return
-}
-
-func (pages *Pages) Validate() bool {
-	// data is not exist
-	if pages.PageID == 0 || !pages.IsEnabled {
-		return false
-	}
-	return true
 }

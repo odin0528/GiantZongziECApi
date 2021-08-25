@@ -11,8 +11,9 @@ import (
 
 func GetPagesList(c *gin.Context) {
 	g := Gin{c}
+	PlatformID, _ := c.Get("platform_id")
 	req := &models.PageReq{
-		PlatformID: 1,
+		PlatformID: PlatformID.(int),
 	}
 
 	pages, _ := req.GetPageList()
@@ -31,11 +32,15 @@ func GetPageComponent(c *gin.Context) {
 
 	platformID, _ := c.Get("platform_id")
 	req.PlatformID = platformID.(int)
-	pages := req.Fetch()
-	pages.Validate(platformID.(int), *c)
+	pages, err := req.Fetch()
+
+	if pages.ID == 0 || err != nil {
+		g.Response(http.StatusOK, e.StatusNotFound, nil)
+		return
+	}
 
 	componentReq := models.PageComponentDraftQuery{
-		PageID:     pages.PageID,
+		PageID:     pages.ID,
 		PlatformID: platformID.(int),
 	}
 
@@ -50,4 +55,30 @@ func GetPageComponent(c *gin.Context) {
 
 	g.Response(http.StatusOK, e.Success, components)
 
+}
+
+func PageRelease(c *gin.Context) {
+	g := Gin{c}
+	var req *models.PageReq
+	c.BindJSON(&req)
+
+	PlatformID, _ := c.Get("platform_id")
+	req.PlatformID = PlatformID.(int)
+
+	page, err := req.Fetch()
+
+	if page.ID == 0 || err != nil {
+		g.Response(http.StatusOK, e.StatusNotFound, nil)
+		return
+	}
+
+	req.Clear()
+	err = req.DeepDuplicate()
+
+	if err != nil {
+		g.Response(http.StatusInternalServerError, e.StatusInternalServerError, err)
+		return
+	}
+
+	g.Response(http.StatusOK, e.Success, nil)
 }

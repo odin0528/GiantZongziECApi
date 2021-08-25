@@ -35,12 +35,12 @@ type PageComponentQuery struct {
 }
 
 func (req *PageComponentQuery) Fetch() (component PageComponent) {
-	DB.Table("page_component_draft").Where("page_id = ? and sort = ? AND platform_id = ?", req.PageID, req.Sort, req.PlatformID).Scan(&component)
+	DB.Table("page_component").Where("page_id = ? and sort = ? AND platform_id = ?", req.PageID, req.Sort, req.PlatformID).Scan(&component)
 	return
 }
 
 func (req *PageComponentQuery) FetchByPageID() (components []PageComponent) {
-	DB.Table("page_component_draft").Select("id, sort, component_name, title, text, type").
+	DB.Table("page_component").Select("id, sort, component_name, title, text, type").
 		Where("page_id = ? AND platform_id = ?", req.PageID, req.PlatformID).Order("sort asc").Scan(&components)
 	return
 }

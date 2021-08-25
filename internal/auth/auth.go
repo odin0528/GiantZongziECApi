@@ -23,24 +23,24 @@ func AuthRequred(c *gin.Context) {
 		return
 	}
 
-	token := backend.AdminToken{
-		Token: c.Request.Header.Get("Authorization"),
-	}
+	tokenClaims, err := jwt.ParseWithClaims(c.Request.Header.Get("Authorization"), &backend.Claims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SIGN")), nil
+	})
 
-	token.Fetch()
-
-	if token.AdminID == 0 {
+	if err != nil {
 		Unauthorized(c)
 		return
 	}
 
-	query := backend.AdminQuery{
-		ID: token.AdminID,
+	if tokenClaims != nil {
+		if claims, ok := tokenClaims.Claims.(*backend.Claims); ok && tokenClaims.Valid {
+			c.Set("admin_id", claims.AdminID)
+			c.Set("platform_id", claims.PlatformID)
+		} else {
+			Unauthorized(c)
+			return
+		}
 	}
-
-	admin := query.Fetch()
-
-	c.Set("platform_id", admin.PlatformID)
 }
 
 func TokenRequred(c *gin.Context) {
@@ -50,7 +50,7 @@ func TokenRequred(c *gin.Context) {
 	}
 
 	tokenClaims, err := jwt.ParseWithClaims(c.Request.Header.Get("Authorization"), &frontend.Claims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte("wJuan"), nil
+		return []byte(os.Getenv("JWT_SIGN")), nil
 	})
 
 	if err != nil {
@@ -122,7 +122,7 @@ func GetPlatformID(c *gin.Context) {
 
 func Unauthorized(c *gin.Context) {
 	c.Abort()
-	c.JSON(401, gin.H{
+	c.JSON(200, gin.H{
 		"http_status": 401,
 		"code":        401,
 		"msg":         e.GetMsg(401),

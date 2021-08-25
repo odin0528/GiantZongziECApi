@@ -4,6 +4,7 @@ import (
 	"eCommerce/pkg/e"
 	"encoding/base64"
 	"net/http"
+	"os"
 	"time"
 
 	auth "eCommerce/internal/auth"
@@ -12,6 +13,7 @@ import (
 
 	"golang.org/x/crypto/scrypt"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -59,14 +61,26 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	token := uuid.New().String()
+	issuer := "GiantZongziEC"
+	claims := models.Claims{
+		AdminID:    admin.ID,
+		PlatformID: admin.PlatformID,
+		Title:      admin.Title,
+		StandardClaims: jwt.StandardClaims{
+			Issuer: issuer,
+		},
+	}
+
+	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(os.Getenv("JWT_SIGN")))
+
+	/* token := uuid.New().String()
 
 	adminToken := models.AdminToken{
 		AdminID: admin.ID,
 		Token:   token,
 	}
 	adminToken.CancelOldToken()
-	DB.Create(&adminToken)
+	DB.Create(&adminToken) */
 
 	g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "title": admin.Title})
 }

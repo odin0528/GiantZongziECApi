@@ -3,6 +3,7 @@ package backend
 import (
 	. "eCommerce/internal/database"
 
+	"github.com/dgrijalva/jwt-go"
 	"gorm.io/plugin/soft_delete"
 )
 
@@ -31,6 +32,13 @@ type AdminToken struct {
 	ExpiredAt int
 	CreatedAt int
 	DeletedAt soft_delete.DeletedAt
+}
+
+type Claims struct {
+	AdminID    int
+	PlatformID int
+	Title      string `json:"title"`
+	jwt.StandardClaims
 }
 
 func (AdminResetPassword) TableName() string {

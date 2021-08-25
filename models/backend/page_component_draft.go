@@ -21,6 +21,10 @@ type PageComponentDraft struct {
 	TimeDefault   `json:"-"`
 }
 
+func (PageComponentDraft) TableName() string {
+	return "page_component_draft"
+}
+
 // 基本CURD功能
 func (component *PageComponentDraft) Create() (err error) {
 	component.ID = 0
