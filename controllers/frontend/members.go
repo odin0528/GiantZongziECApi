@@ -15,8 +15,6 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"github.com/google/uuid"
-	"github.com/liudng/godump"
 	"golang.org/x/crypto/scrypt"
 )
 
@@ -165,18 +163,29 @@ func MemberRegister(c *gin.Context) {
 	err = DB.Create(&member).Error
 
 	if err != nil {
-		godump.Dump(err)
 		g.Response(http.StatusOK, e.EmailDuplicate, err)
 		return
 	}
 
-	token := uuid.New().String()
+	/* token := uuid.New().String()
 	memberToken := models.MemberToken{
 		MemberID:   member.ID,
 		Token:      token,
 		PlatformID: PlatformID.(int),
 	}
-	DB.Create(&memberToken)
+	DB.Create(&memberToken) */
+
+	issuer := "GiantZongziEC"
+	claims := models.Claims{
+		MemberID:   member.ID,
+		PlatformID: PlatformID.(int),
+		Nickname:   member.Nickname,
+		StandardClaims: jwt.StandardClaims{
+			Issuer: issuer,
+		},
+	}
+
+	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(os.Getenv("JWT_SIGN")))
 
 	// req.Create()
 	g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "member": member})

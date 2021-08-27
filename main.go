@@ -39,6 +39,7 @@ func main() {
 	{
 		frontendApi.GET("/platform", frontend.PlatformFetch)
 		frontendApi.GET("/pages/:page", frontend.GetPageComponent)
+
 		// frontendApi.GET("/products/:layer/:category_id/:page", frontend.GetProductsByCategoryID)
 		frontendApi.POST("/products/:layer/:category_id/:page", frontend.GetProductsByCategoryID)
 		frontendApi.GET("/categories/:parent_id", frontend.CategoryList)
@@ -72,6 +73,8 @@ func main() {
 			authRequired.GET("/pages", backend.GetPagesList)
 			authRequired.GET("/pages/:id", backend.GetPageComponent)
 			authRequired.POST("/pages/release", backend.PageRelease)
+			authRequired.POST("/pages/modify", backend.PageModify)
+			authRequired.POST("/pages/sort", backend.PageSort)
 			authRequired.POST("/components/delete", backend.DraftComponentDelete)
 			authRequired.POST("/components/create", backend.DraftComponentCreate)
 			authRequired.POST("/components/change", backend.DraftComponentChange)
@@ -92,6 +95,8 @@ func main() {
 			authRequired.GET("/orders/untreated", backend.OrderUntreated)
 			authRequired.POST("/orders", backend.OrderList)
 			authRequired.POST("/order/next", backend.OrderNextStep)
+
+			authRequired.POST("/members/list", backend.MemberList)
 		}
 	}
 

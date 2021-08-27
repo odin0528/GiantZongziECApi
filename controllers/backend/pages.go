@@ -4,9 +4,11 @@ import (
 	"eCommerce/pkg/e"
 	"net/http"
 
+	. "eCommerce/internal/database"
 	models "eCommerce/models/backend"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 func GetPagesList(c *gin.Context) {
@@ -81,4 +83,66 @@ func PageRelease(c *gin.Context) {
 	}
 
 	g.Response(http.StatusOK, e.Success, nil)
+}
+
+func PageModify(c *gin.Context) {
+	g := Gin{c}
+	var page models.Pages
+	err := c.BindJSON(&page)
+	if err != nil {
+		g.Response(http.StatusBadRequest, e.InvalidParams, err)
+		return
+	}
+
+	validate := validator.New()
+	err = validate.Struct(page)
+	if err != nil {
+		g.Response(http.StatusOK, e.InvalidParams, err.(validator.ValidationErrors)[0].Field())
+		return
+	}
+
+	PlatformID, _ := c.Get("platform_id")
+	page.PlatformID = PlatformID.(int)
+
+	if page.ID == 0 {
+		err = DB.Create(&page).Error
+		if err != nil {
+			g.Response(http.StatusBadRequest, e.StatusInternalServerError, err)
+			return
+		}
+
+		g.Response(http.StatusOK, e.Success, nil)
+		return
+	} else {
+		err = DB.Debug().Select("url", "title", "is_menu", "is_enabled").Updates(&page).Error
+		if err != nil {
+			g.Response(http.StatusBadRequest, e.StatusInternalServerError, err)
+			return
+		}
+
+		g.Response(http.StatusOK, e.Success, nil)
+		return
+	}
+}
+
+func PageSort(c *gin.Context) {
+	g := Gin{c}
+	var pages []models.Pages
+	err := c.BindJSON(&pages)
+	if err != nil {
+		g.Response(http.StatusBadRequest, e.InvalidParams, err)
+		return
+	}
+
+	for index, page := range pages {
+		page.Sort = index
+		err = DB.Debug().Select("sort").Updates(&page).Error
+		if err != nil {
+			g.Response(http.StatusBadRequest, e.StatusInternalServerError, err)
+			return
+		}
+	}
+
+	g.Response(http.StatusOK, e.Success, nil)
+	return
 }

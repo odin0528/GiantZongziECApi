@@ -5,10 +5,14 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	models "eCommerce/models/frontend"
 )
 
 func PlatformFetch(c *gin.Context) {
 	g := Gin{c}
 	platform, _ := c.Get("platform")
-	g.Response(http.StatusOK, e.Success, platform)
+	Platform := platform.(models.Platform)
+	menu := Platform.GetMenu()
+	g.Response(http.StatusOK, e.Success, map[string]interface{}{"info": platform, "menu": menu})
 }

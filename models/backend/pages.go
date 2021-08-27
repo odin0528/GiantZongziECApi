@@ -13,11 +13,13 @@ type PageReq struct {
 }
 
 type Pages struct {
-	ID         int    `json:"page_id"`
+	ID         int    `json:"id"`
 	PlatformID int    `json:"-"`
 	Url        string `json:"url"`
 	Title      string `json:"title"`
 	IsMenu     bool   `json:"is_menu"`
+	IsEnabled  bool   `json:"is_enabled"`
+	Sort       int    `json:"sort"`
 	ReleasedAt int    `json:"released_at"`
 	DeletedAt  soft_delete.DeletedAt
 	TimeDefault
@@ -25,7 +27,7 @@ type Pages struct {
 
 func (req *PageReq) GetPageList() (pages []Pages, err error) {
 	err = DB.Debug().Model(&Pages{}).
-		Where("platform_id = ?", req.PlatformID).
+		Where("platform_id = ?", req.PlatformID).Order("sort ASC").
 		Scan(&pages).Error
 	return
 }

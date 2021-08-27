@@ -7,16 +7,17 @@ import (
 )
 
 type PageReq struct {
-	Url        int `json:"url" uri:"url"`
-	PlatformID int `json:"platform_id"`
+	Url        string `json:"url" uri:"page"`
+	PlatformID int    `json:"platform_id"`
 }
 
 type Pages struct {
-	ID         int    `json:"page_id"`
+	ID         int    `json:"id"`
 	PlatformID int    `json:"-"`
-	Url        string `json:"url"`
-	Title      string `json:"title"`
+	Url        string `json:"url"  validate:"required,alphanum"`
+	Title      string `json:"title"  validate:"required"`
 	IsMenu     bool   `json:"is_menu"`
+	IsEnabled  bool   `json:"is_enabled"`
 	ReleasedAt int    `json:"released_at"`
 	DeletedAt  soft_delete.DeletedAt
 	TimeDefault

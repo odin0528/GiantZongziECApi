@@ -23,3 +23,8 @@ func (query *PlatformQuery) Fetch() (platform Platform) {
 	DB.Model(&Platform{}).Select("id, title, logo_url, code").Where("hostname = ?", query.Hostname).Scan(&platform)
 	return
 }
+
+func (platform *Platform) GetMenu() (pages []Pages) {
+	DB.Model(&Pages{}).Where("platform_id = ? AND is_menu = 1 AND is_enabled = 1 AND released_at > 0", platform.ID).Scan(&pages)
+	return
+}
