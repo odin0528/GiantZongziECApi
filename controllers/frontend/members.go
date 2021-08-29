@@ -9,7 +9,6 @@ import (
 	"time"
 
 	. "eCommerce/internal/database"
-	"eCommerce/models/frontend"
 	models "eCommerce/models/frontend"
 
 	"github.com/dgrijalva/jwt-go"
@@ -29,11 +28,6 @@ func GetMemberOrders(c *gin.Context) {
 	MemeberID, _ := c.Get("member_id")
 	req.MemberID = MemeberID.(int)
 
-	if req.MemberID == 0 {
-		g.Response(http.StatusUnauthorized, e.Unauthorized, err)
-		return
-	}
-
 	orders, pagination := req.FetchAll()
 
 	for index := range orders {
@@ -43,6 +37,17 @@ func GetMemberOrders(c *gin.Context) {
 	g.PaginationResponse(http.StatusOK, e.Success, orders, pagination)
 }
 
+func GetMemberDelivery(c *gin.Context) {
+	g := Gin{c}
+	MemberID, _ := c.Get("member_id")
+	query := &models.MemberDeliveryQuery{
+		MemberID: MemberID.(int),
+	}
+	deliveries := query.FetchAll()
+
+	g.Response(http.StatusOK, e.Success, deliveries)
+}
+
 func MemberFetch(c *gin.Context) {
 	g := Gin{c}
 	if c.Request.Header.Get("Authorization") == "" {
@@ -50,7 +55,7 @@ func MemberFetch(c *gin.Context) {
 		return
 	}
 
-	tokenClaims, err := jwt.ParseWithClaims(c.Request.Header.Get("Authorization"), &frontend.Claims{}, func(token *jwt.Token) (interface{}, error) {
+	tokenClaims, err := jwt.ParseWithClaims(c.Request.Header.Get("Authorization"), &models.Claims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("JWT_SIGN")), nil
 	})
 
@@ -60,7 +65,7 @@ func MemberFetch(c *gin.Context) {
 	}
 
 	if tokenClaims != nil {
-		if claims, ok := tokenClaims.Claims.(*frontend.Claims); ok && tokenClaims.Valid {
+		if claims, ok := tokenClaims.Claims.(*models.Claims); ok && tokenClaims.Valid {
 			g.Response(http.StatusOK, e.Success, models.Members{Nickname: claims.Nickname})
 		} else {
 			g.Response(http.StatusOK, e.NoLogginOrTokenExpired, nil)
@@ -199,6 +204,56 @@ func MemberLogout(c *gin.Context) {
 		MemberID: MemberID.(int),
 	}
 	memberToken.CancelOldToken()
+
+	g.Response(http.StatusOK, e.Success, nil)
+}
+
+func MemberDeliveryModify(c *gin.Context) {
+	g := Gin{c}
+	var delivery *models.MemberDelivery
+	err := c.BindJSON(&delivery)
+	if err != nil {
+		g.Response(http.StatusBadRequest, e.InvalidParams, err)
+		return
+	}
+
+	PlatformID, _ := c.Get("platform_id")
+	MemberID, _ := c.Get("member_id")
+	delivery.PlatformID = PlatformID.(int)
+	delivery.MemberID = MemberID.(int)
+
+	if delivery.ID > 0 {
+		err = DB.Updates(&delivery).Error
+	} else {
+		err = DB.Create(&delivery).Error
+	}
+
+	if err != nil {
+		g.Response(http.StatusBadRequest, e.InvalidParams, err)
+		return
+	}
+
+	g.Response(http.StatusOK, e.Success, nil)
+}
+
+func MemberDeliveryDelete(c *gin.Context) {
+	g := Gin{c}
+	var delivery *models.MemberDelivery
+	err := c.BindJSON(&delivery)
+	if err != nil {
+		g.Response(http.StatusBadRequest, e.InvalidParams, err)
+		return
+	}
+
+	MemberID, _ := c.Get("member_id")
+	delivery.MemberID = MemberID.(int)
+
+	err = DB.Debug().Delete(&delivery).Error
+
+	if err != nil {
+		g.Response(http.StatusBadRequest, e.InvalidParams, err)
+		return
+	}
 
 	g.Response(http.StatusOK, e.Success, nil)
 }

@@ -55,6 +55,9 @@ func main() {
 	tokenRequired := router.Group("/api/frontend", auth.TokenRequred)
 	{
 		tokenRequired.POST("/member/orders", frontend.GetMemberOrders)
+		tokenRequired.POST("/member/delivery", frontend.GetMemberDelivery)
+		tokenRequired.POST("/member/delivery/modify", frontend.MemberDeliveryModify)
+		tokenRequired.POST("/member/delivery/delete", frontend.MemberDeliveryDelete)
 		tokenRequired.POST("/member/logout", frontend.MemberLogout)
 
 		tokenRequired.GET("/carts", frontend.CartsFetch)
