@@ -76,6 +76,24 @@ func OrderCreate(c *gin.Context) {
 			PlatformID: PlatformID,
 		}
 		carts.Clean()
+
+		if order.SaveDelivery {
+			delivery := models.MemberDelivery{
+				PlatformID:   PlatformID,
+				MemberID:     MemberID,
+				Fullname:     order.Fullname,
+				Phone:        order.Phone,
+				Address:      order.Address,
+				Memo:         order.Memo,
+				Method:       order.Method,
+				StoreID:      order.StoreID,
+				StoreName:    order.StoreName,
+				StoreAddress: order.StoreAddress,
+				StorePhone:   order.StorePhone,
+			}
+
+			DB.Create(&delivery)
+		}
 	}
 
 	switch order.Payment {

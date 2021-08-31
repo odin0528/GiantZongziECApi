@@ -30,6 +30,7 @@ type OrderCreateRequest struct {
 	StoreAddress string                   `json:"store_address"`
 	StorePhone   string                   `json:"store_phone"`
 	Status       int                      `json:"-"`
+	SaveDelivery bool                     `json:"save_delivery" gorm:"-"`
 	Products     []OrderProductsCreateReq `json:"products" gorm:"-"`
 	TimeDefault
 }
