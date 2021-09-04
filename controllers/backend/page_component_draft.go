@@ -77,12 +77,12 @@ func DraftComponentEdit(c *gin.Context) {
 	component.Update()
 
 	component.DeleteChildren()
-	for _, data := range req.Data.Data {
+	for index, data := range req.Data.Data {
 		data.PageID = component.PageID
 		data.ComID = component.ID
 		i := strings.Index(data.Img, ",") //有找到base64的編碼關鍵字
 		if i > 0 {
-			filename := fmt.Sprintf("/upload/%08d/%08d/%08d", platformID.(int), data.PageID, data.ComID)
+			filename := fmt.Sprintf("/upload/%08d/%08d/%08d_%d", platformID.(int), data.PageID, data.ComID, index)
 			blob, _ := base64.StdEncoding.DecodeString(data.Img[i+1:])
 			var img image.Image
 			var maxSize uint
