@@ -21,7 +21,7 @@ func (Platform) TableName() string {
 }
 
 func (query *PlatformQuery) Fetch() (platform Platform) {
-	DB.Model(&Platform{}).Select("id, title, logo_url, code").Where("hostname = ?", query.Hostname).Scan(&platform)
+	DB.Model(&Platform{}).Select("id, title, logo_url, code, fb_pixel").Where("hostname = ?", query.Hostname).Scan(&platform)
 	return
 }
 
