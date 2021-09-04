@@ -13,6 +13,7 @@ type Platform struct {
 	Title   string `json:"title"`
 	LogoUrl string `json:"logo_url"`
 	Code    string `json:"code"`
+	FBPixel string `json:"fb_pixel"`
 }
 
 func (Platform) TableName() string {
