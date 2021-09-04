@@ -24,7 +24,7 @@ func main() {
 	gin.SetMode("debug")
 	gin.ForceConsoleColor()
 	router := gin.New()
-	// router.Use(LoggerToFile())
+	router.Use(LoggerToFile())
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 	router.Use(cors.New(cors.Config{
@@ -126,7 +126,7 @@ func main() {
 
 func LoggerToFile() gin.HandlerFunc {
 
-	f, err := os.OpenFile("testlogfile.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	f, err := os.OpenFile(fmt.Sprintf("logfile_%s%d.log", time.Now().Month(), time.Now().Day()), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("error opening file: %v", err)
 	}
