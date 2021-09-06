@@ -34,8 +34,6 @@ type Products struct {
 	StyleTable      [][]ProductStyleTable `json:"style_table" gorm:"-"`
 	StyleEnabled    bool                  `json:"style_enabled"`
 	SubStyleEnabled bool                  `json:"sub_style_enabled"`
-	MinPrice        int                   `json:"min"`
-	MaxPrice        int                   `json:"max"`
 	IsPublic        bool                  `json:"is_public"`
 	DeletedAt       int                   `json:"-"`
 	TimeDefault
@@ -45,7 +43,7 @@ type Products struct {
 func (query *ProductQuery) Query() *gorm.DB {
 	sql := DB.Debug().Table("products").Where("deleted_at = 0 AND is_public = 1")
 	if query.ID != 0 {
-		sql.Where("id = ?", query.ID)
+		sql.Where("products.id = ?", query.ID)
 	}
 
 	if query.CategoryID > 0 && query.Layer > 0 {
@@ -65,7 +63,7 @@ func (query *ProductQuery) Query() *gorm.DB {
 		sql.Where("products.platform_id = ?", query.PlatformID)
 	}
 
-	if query.Min > 0 || query.Max > 0 || query.Sort != "new_arrival" {
+	if query.Min > 0 || query.Max > 0 || (query.Sort != "new_arrival" && query.Sort != "") {
 		sql.Joins("inner join product_style_table on products.id = product_style_table.product_id")
 		if query.Min > 0 {
 			sql.Where("product_style_table.price >= ?", query.Min)
@@ -106,7 +104,7 @@ func (query *ProductQuery) FetchRelated() (products []Products) {
 	id := query.ID
 	query.ID = 0
 	sql := query.Query()
-	sql.Where("id != ?", id).Limit(10).Scan(&products)
+	sql.Where("products.id != ?", id).Limit(10).Scan(&products)
 	return
 }
 
