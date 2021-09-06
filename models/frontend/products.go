@@ -130,7 +130,8 @@ func (product *Products) GetStyleTable() {
 
 func (product *Products) GetRelated() (products []Products) {
 	query := ProductQuery{
-		ID: product.ID,
+		ID:         product.ID,
+		PlatformID: product.PlatformID,
 	}
 
 	if product.CategoryLayer4 != -1 {
