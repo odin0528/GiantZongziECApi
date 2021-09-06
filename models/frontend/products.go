@@ -34,6 +34,8 @@ type Products struct {
 	StyleTable      [][]ProductStyleTable `json:"style_table" gorm:"-"`
 	StyleEnabled    bool                  `json:"style_enabled"`
 	SubStyleEnabled bool                  `json:"sub_style_enabled"`
+	MinPrice        int                   `json:"min"`
+	MaxPrice        int                   `json:"max"`
 	IsPublic        bool                  `json:"is_public"`
 	DeletedAt       int                   `json:"-"`
 	TimeDefault
