@@ -21,7 +21,7 @@ type CategoryModifyReq struct {
 }
 
 type CategoryMoveReq struct {
-	ParentID  int `uri:"parent_id"`
+	ParentID  int `json:"parent_id"`
 	Sort      int `json:"sort"`
 	Direction int `json:"direction"`
 }
