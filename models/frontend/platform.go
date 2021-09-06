@@ -13,6 +13,7 @@ type Platform struct {
 	Title   string `json:"title"`
 	LogoUrl string `json:"logo_url"`
 	Code    string `json:"code"`
+	FBPixel string `json:"fb_pixel"`
 }
 
 func (Platform) TableName() string {
@@ -20,7 +21,7 @@ func (Platform) TableName() string {
 }
 
 func (query *PlatformQuery) Fetch() (platform Platform) {
-	DB.Model(&Platform{}).Select("id, title, logo_url, code").Where("hostname = ?", query.Hostname).Scan(&platform)
+	DB.Model(&Platform{}).Select("id, title, logo_url, code, fb_pixel").Where("hostname = ?", query.Hostname).Scan(&platform)
 	return
 }
 

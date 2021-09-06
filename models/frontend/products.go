@@ -7,12 +7,13 @@ import (
 )
 
 type ProductQuery struct {
-	ID         int `json:"id" uri:"id"`
-	CategoryID int `json:"category_id" uri:"category_id"`
-	Layer      int `json:"layer" uri:"layer"`
-	PlatformID int `json:"-"`
-	Min        int `json:"min"`
-	Max        int `json:"max"`
+	ID         int    `json:"id" uri:"id"`
+	CategoryID int    `json:"category_id" uri:"category_id"`
+	Layer      int    `json:"layer" uri:"layer"`
+	PlatformID int    `json:"-"`
+	Min        int    `json:"min"`
+	Max        int    `json:"max"`
+	Sort       string `json:"sort"`
 	Pagination
 }
 
@@ -64,7 +65,7 @@ func (query *ProductQuery) Query() *gorm.DB {
 		sql.Where("products.platform_id = ?", query.PlatformID)
 	}
 
-	if query.Min > 0 || query.Max > 0 {
+	if query.Min > 0 || query.Max > 0 || query.Sort != "new_arrival" {
 		sql.Joins("inner join product_style_table on products.id = product_style_table.product_id")
 		if query.Min > 0 {
 			sql.Where("product_style_table.price >= ?", query.Min)
@@ -72,6 +73,12 @@ func (query *ProductQuery) Query() *gorm.DB {
 
 		if query.Max > 0 {
 			sql.Where("product_style_table.price <= ?", query.Max)
+		}
+
+		if query.Sort == "price-asc" {
+			sql.Order("product_style_table.price ASC")
+		} else if query.Sort == "price-desc" {
+			sql.Order("product_style_table.price DESC")
 		}
 
 		sql.Group("products.id")
