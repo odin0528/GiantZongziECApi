@@ -107,24 +107,24 @@ func CategoryMove(c *gin.Context) {
 	}
 
 	categoryQuery1 := models.CategoryQuery{
-		ParentID: req.ParentID,
-		Sort:     req.Sort,
+		ParentID:   req.ParentID,
+		PlatformID: platformID.(int),
+		Sort:       req.Sort,
 	}
 
 	categoryQuery2 := models.CategoryQuery{
-		ParentID: req.ParentID,
-		Sort:     req.Sort + req.Direction,
+		ParentID:   req.ParentID,
+		PlatformID: platformID.(int),
+		Sort:       req.Sort + req.Direction,
 	}
 
 	category1 := categoryQuery1.Fetch()
-	category1.Validate(platformID.(int))
-	if !category1.Validate(platformID.(int)) {
+	if category1.ID == 0 {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
 	category2 := categoryQuery2.Fetch()
-	category2.Validate(platformID.(int))
-	if !category2.Validate(platformID.(int)) {
+	if category2.ID == 0 {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
