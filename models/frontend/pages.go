@@ -24,6 +24,6 @@ type Pages struct {
 }
 
 func (req *PageReq) Fetch() (pages Pages, err error) {
-	err = DB.Debug().Model(&Pages{}).Where("url = ? and platform_id = ?", req.Url, req.PlatformID).Scan(&pages).Error
+	err = DB.Model(&Pages{}).Where("url = ? and platform_id = ?", req.Url, req.PlatformID).Scan(&pages).Error
 	return
 }

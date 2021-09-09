@@ -20,16 +20,16 @@ func (photo *ProductPhotos) Create() (err error) {
 }
 
 func (photo *ProductPhotos) Update() (err error) {
-	err = DB.Debug().Save(&photo).Error
+	err = DB.Save(&photo).Error
 	return
 }
 
 func (photo *ProductPhotos) Delete() (err error) {
-	err = DB.Debug().Where("id = ? AND platform_id = ?", photo.ID, photo.PlatformID).Delete(&ProductPhotos{}).Error
+	err = DB.Where("id = ? AND platform_id = ?", photo.ID, photo.PlatformID).Delete(&ProductPhotos{}).Error
 	return
 }
 
 func (photo *ProductPhotos) Fetch() (err error) {
-	err = DB.Debug().Table("product_photos").Where("id = ? AND platform_id = ?", photo.ID, photo.PlatformID).Scan(&photo).Error
+	err = DB.Table("product_photos").Where("id = ? AND platform_id = ?", photo.ID, photo.PlatformID).Scan(&photo).Error
 	return
 }

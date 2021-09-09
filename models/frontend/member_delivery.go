@@ -34,13 +34,13 @@ func (MemberDelivery) TableName() string {
 
 // 基本CURD功能
 func (req *MemberDelivery) Create() (err error) {
-	err = DB.Debug().Create(&req).Error
+	err = DB.Create(&req).Error
 	return
 }
 
 // 查詢功能
 func (query *MemberDeliveryQuery) GetCondition() *gorm.DB {
-	sql := DB.Debug().Model(MemberDelivery{})
+	sql := DB.Model(MemberDelivery{})
 	sql.Where("member_id = ?", query.MemberID)
 
 	return sql

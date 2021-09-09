@@ -49,17 +49,17 @@ func (AdminToken) TableName() string {
 }
 
 func (reset *AdminResetPassword) CancelOldToken() {
-	DB.Debug().Where("admin_id = ?", reset.AdminID).Delete(&AdminResetPassword{})
+	DB.Where("admin_id = ?", reset.AdminID).Delete(&AdminResetPassword{})
 }
 
 func (token *AdminToken) CancelOldToken() {
-	DB.Debug().Where("admin_id = ?", token.AdminID).Delete(&AdminToken{})
+	DB.Where("admin_id = ?", token.AdminID).Delete(&AdminToken{})
 }
 
 func (reset *AdminResetPassword) Fetch() {
-	DB.Debug().Model(AdminResetPassword{}).Where("token = ?", reset.Token).Scan(reset)
+	DB.Model(AdminResetPassword{}).Where("token = ?", reset.Token).Scan(reset)
 }
 
 func (token *AdminToken) Fetch() {
-	DB.Debug().Model(AdminToken{}).Where("token = ?", token.Token).Scan(token)
+	DB.Model(AdminToken{}).Where("token = ?", token.Token).Scan(token)
 }

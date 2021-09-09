@@ -46,7 +46,7 @@ func (products *Products) Create() (err error) {
 }
 
 func (products *Products) Update() (err error) {
-	err = DB.Debug().Save(&products).Error
+	err = DB.Save(&products).Error
 	return
 }
 
@@ -87,7 +87,7 @@ func (query *ProductQuery) FetchAll() (products []Products) {
 
 func (req *ProductListReq) FetchAll() (products []Products, pagination Pagination) {
 	var count int64
-	sql := DB.Debug().Table("products").Where("platform_id = ?", req.PlatformID)
+	sql := DB.Table("products").Where("platform_id = ?", req.PlatformID)
 	sql.Count(&count)
 	sql.Offset((req.Page - 1) * req.Items).Limit(req.Items).Scan(&products)
 	pagination = CreatePagination(req.Page, req.Items, count)
@@ -121,5 +121,5 @@ func (product *Products) GetStyleTable() {
 
 func (product *Products) ChangePubliced() {
 	godump.Dump(product)
-	DB.Debug().Table("products").Where("id = ?", product.ID).Update("is_public", product.IsPublic)
+	DB.Table("products").Where("id = ?", product.ID).Update("is_public", product.IsPublic)
 }

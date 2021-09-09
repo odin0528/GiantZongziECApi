@@ -49,7 +49,7 @@ func (category *Category) Create() (err error) {
 }
 
 func (category *Category) Update() (err error) {
-	err = DB.Debug().Save(&category).Error
+	err = DB.Save(&category).Error
 	return
 }
 

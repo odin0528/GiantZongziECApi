@@ -33,9 +33,9 @@ func (MemberToken) TableName() string {
 }
 
 func (token *MemberToken) CancelOldToken() {
-	DB.Debug().Where("member_id = ?", token.MemberID).Delete(&MemberToken{})
+	DB.Where("member_id = ?", token.MemberID).Delete(&MemberToken{})
 }
 
 func (token *MemberToken) Fetch() {
-	DB.Debug().Model(MemberToken{}).Where("token = ? AND platform_id = ?", token.Token, token.PlatformID).Scan(token)
+	DB.Model(MemberToken{}).Where("token = ? AND platform_id = ?", token.Token, token.PlatformID).Scan(token)
 }

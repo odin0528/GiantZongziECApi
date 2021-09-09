@@ -33,7 +33,7 @@ type Members struct {
 }
 
 func (query *MemberQuery) GetCondition() *gorm.DB {
-	sql := DB.Debug().Model(Members{})
+	sql := DB.Model(Members{})
 
 	if query.ID != 0 {
 		sql.Where("id = ?", query.ID)
@@ -55,5 +55,5 @@ func (query *MemberQuery) Fetch() (member Members) {
 }
 
 func (req *MemberRegisterReq) Create() {
-	DB.Debug().Model(Members{}).Create(&req)
+	DB.Model(Members{}).Create(&req)
 }
