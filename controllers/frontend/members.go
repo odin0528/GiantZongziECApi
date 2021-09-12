@@ -248,7 +248,7 @@ func MemberDeliveryDelete(c *gin.Context) {
 	MemberID, _ := c.Get("member_id")
 	delivery.MemberID = MemberID.(int)
 
-	err = DB.Debug().Delete(&delivery).Error
+	err = DB.Delete(&delivery).Error
 
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)

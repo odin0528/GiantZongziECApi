@@ -114,7 +114,7 @@ func PageModify(c *gin.Context) {
 		g.Response(http.StatusOK, e.Success, nil)
 		return
 	} else {
-		err = DB.Debug().Select("url", "title", "is_menu", "is_enabled").Updates(&page).Error
+		err = DB.Select("url", "title", "is_menu", "is_enabled").Updates(&page).Error
 		if err != nil {
 			g.Response(http.StatusBadRequest, e.StatusInternalServerError, err)
 			return
@@ -136,7 +136,7 @@ func PageSort(c *gin.Context) {
 
 	for index, page := range pages {
 		page.Sort = index
-		err = DB.Debug().Select("sort").Updates(&page).Error
+		err = DB.Select("sort").Updates(&page).Error
 		if err != nil {
 			g.Response(http.StatusBadRequest, e.StatusInternalServerError, err)
 			return

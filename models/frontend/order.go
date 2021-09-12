@@ -72,7 +72,7 @@ func (query *OrderQuery) GetCondition() *gorm.DB {
 // 基本CURD功能
 func (req *OrderCreateRequest) Create() (err error) {
 	req.Total = req.Price + req.Shipping
-	err = DB.Debug().Create(&req).Error
+	err = DB.Create(&req).Error
 	return
 }
 

@@ -115,7 +115,7 @@ func ResetPassword(c *gin.Context) {
 	}
 
 	dk, err := scrypt.Key([]byte(req.Password), auth.Salt, 1<<15, 8, 1, 64)
-	DB.Debug().Select("password", "is_reset_pwd").Where("id = ?", reset.AdminID).Updates(models.Admin{
+	DB.Select("password", "is_reset_pwd").Where("id = ?", reset.AdminID).Updates(models.Admin{
 		Password:   base64.StdEncoding.EncodeToString(dk),
 		IsResetPwd: false,
 	})

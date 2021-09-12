@@ -26,14 +26,14 @@ type Pages struct {
 }
 
 func (req *PageReq) GetPageList() (pages []Pages, err error) {
-	err = DB.Debug().Model(&Pages{}).
+	err = DB.Model(&Pages{}).
 		Where("platform_id = ?", req.PlatformID).Order("sort ASC").
 		Scan(&pages).Error
 	return
 }
 
 func (req *PageReq) Fetch() (pages Pages, err error) {
-	err = DB.Debug().Model(&Pages{}).Where("id = ? and platform_id = ?", req.ID, req.PlatformID).Scan(&pages).Error
+	err = DB.Model(&Pages{}).Where("id = ? and platform_id = ?", req.ID, req.PlatformID).Scan(&pages).Error
 	return
 }
 

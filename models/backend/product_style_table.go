@@ -33,7 +33,7 @@ func (style *ProductStyleTable) Update() (err error) {
 }
 
 func (style *ProductStyleTable) DeleteNotExistStyle(ids []int) (err error) {
-	err = DB.Debug().
+	err = DB.
 		Where("product_id = ? AND platform_id = ? AND id NOT IN (?)", style.ProductID, style.PlatformID, ids).
 		Delete(&ProductStyleTable{}).Error
 	return

@@ -25,12 +25,12 @@ func (style *ProductSubStyle) Create() (err error) {
 }
 
 func (style *ProductSubStyle) Update() (err error) {
-	err = DB.Debug().Save(&style).Error
+	err = DB.Save(&style).Error
 	return
 }
 
 func (style *ProductSubStyle) DeleteNotExistStyle(ids []int) (err error) {
-	sql := DB.Debug().Where("product_id = ? AND platform_id = ?", style.ProductID, style.PlatformID)
+	sql := DB.Where("product_id = ? AND platform_id = ?", style.ProductID, style.PlatformID)
 	if len(ids) > 0 {
 		sql.Where("id NOT IN (?)", ids)
 	}

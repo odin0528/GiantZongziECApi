@@ -74,7 +74,7 @@ func OrderNextStep(c *gin.Context) {
 		order.Status = 99
 	}
 
-	err = DB.Debug().Select("status").Updates(&order).Error
+	err = DB.Select("status").Updates(&order).Error
 
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)

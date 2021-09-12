@@ -37,6 +37,6 @@ type OrderProductStyleCreateReq struct {
 
 // 基本CURD功能
 func (req *OrderProducts) Create() (err error) {
-	err = DB.Debug().Create(&req).Error
+	err = DB.Create(&req).Error
 	return
 }
