@@ -100,6 +100,9 @@ func main() {
 			authRequired.POST("/order/next", backend.OrderNextStep)
 
 			authRequired.POST("/members/list", backend.MemberList)
+
+			authRequired.POST("/promotions", backend.PromotionList)
+			authRequired.POST("/promotions/modify", backend.PromotionModify)
 		}
 	}
 

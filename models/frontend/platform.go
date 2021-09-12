@@ -29,3 +29,8 @@ func (platform *Platform) GetMenu() (pages []Pages) {
 	DB.Model(&Pages{}).Where("platform_id = ? AND is_menu = 1 AND is_enabled = 1 AND released_at > 0", platform.ID).Scan(&pages)
 	return
 }
+
+func (platform *Platform) GetPromotions() (promotions []Promotions) {
+	DB.Debug().Model(&Promotions{}).Where("platform_id = ? AND is_enabled = 1 AND start_timestamp <= UNIX_TIMESTAMP() AND end_timestamp > UNIX_TIMESTAMP()", platform.ID).Scan(&promotions)
+	return
+}

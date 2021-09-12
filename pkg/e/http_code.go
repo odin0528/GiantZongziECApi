@@ -19,4 +19,7 @@ const (
 	MemberNotExist         = 91000
 	EmailDuplicate         = 91001
 	NoLogginOrTokenExpired = 91002
+
+	// order frontend
+	ProductPriceChange = 91100
 )

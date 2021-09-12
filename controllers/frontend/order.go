@@ -37,6 +37,10 @@ func OrderCreate(c *gin.Context) {
 		MemberID = member.MemberID
 	}
 
+	errCode := OrderValidation(PlatformID, order.Products)
+	g.Response(http.StatusBadRequest, errCode, nil)
+	return
+
 	order.PlatformID = PlatformID
 	order.MemberID = MemberID
 
@@ -124,4 +128,22 @@ func OrderCreate(c *gin.Context) {
 	}
 
 	g.Response(http.StatusOK, e.Success, token)
+}
+
+func OrderValidation(PlatformID int, Products []models.OrderProductsCreateReq) int {
+	for _, product := range Products {
+		for _, style := range product.Styles {
+			query := &models.ProductStyleQuery{
+				StyleID:    style.StyleID,
+				PlatformID: PlatformID,
+				ProductID:  product.ProductID,
+			}
+			item := query.Fetch()
+
+			if item.Price != style.Price {
+				return e.ProductPriceChange
+			}
+		}
+	}
+	return e.Success
 }

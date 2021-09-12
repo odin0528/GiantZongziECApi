@@ -14,5 +14,6 @@ func PlatformFetch(c *gin.Context) {
 	platform, _ := c.Get("platform")
 	Platform := platform.(models.Platform)
 	menu := Platform.GetMenu()
-	g.Response(http.StatusOK, e.Success, map[string]interface{}{"info": platform, "menu": menu})
+	promotions := Platform.GetPromotions()
+	g.Response(http.StatusOK, e.Success, map[string]interface{}{"info": platform, "menu": menu, "promotions": promotions})
 }
