@@ -37,9 +37,11 @@ func OrderCreate(c *gin.Context) {
 		MemberID = member.MemberID
 	}
 
-	errCode := OrderValidation(PlatformID, order.Products)
-	g.Response(http.StatusBadRequest, errCode, nil)
-	return
+	errCode := OrderValidation(PlatformID, order)
+	if errCode != 200 {
+		g.Response(http.StatusOK, errCode, nil)
+		return
+	}
 
 	order.PlatformID = PlatformID
 	order.MemberID = MemberID
@@ -75,11 +77,11 @@ func OrderCreate(c *gin.Context) {
 		token, err = jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(os.Getenv("JWT_SIGN")))
 
 	} else if MemberID != 0 {
-		carts := models.Carts{
+		/* carts := models.Carts{
 			MemberID:   MemberID,
 			PlatformID: PlatformID,
 		}
-		carts.Clean()
+		carts.Clean() */
 
 		if order.SaveDelivery {
 			delivery := models.MemberDelivery{
@@ -130,8 +132,10 @@ func OrderCreate(c *gin.Context) {
 	g.Response(http.StatusOK, e.Success, token)
 }
 
-func OrderValidation(PlatformID int, Products []models.OrderProductsCreateReq) int {
-	for _, product := range Products {
+func OrderValidation(PlatformID int, order *models.OrderCreateRequest) int {
+	count := 0
+	var total, shipping, percent, discount float32 = 0, 0, 100, 0
+	for _, product := range order.Products {
 		for _, style := range product.Styles {
 			query := &models.ProductStyleQuery{
 				StyleID:    style.StyleID,
@@ -140,10 +144,53 @@ func OrderValidation(PlatformID int, Products []models.OrderProductsCreateReq) i
 			}
 			item := query.Fetch()
 
+			// 判斷價格是否有異動或正確
 			if item.Price != style.Price {
 				return e.ProductPriceChange
 			}
+
+			count += style.Qty
+			total += float32(style.Qty) * style.Price
 		}
 	}
+
+	order.Qty = count
+
+	switch order.Method {
+	case 1:
+		shipping = 120
+	default:
+		shipping = 60
+	}
+
+	if total != order.Price || shipping != order.Shipping {
+		return e.ProductPriceChange
+	}
+
+	// 取得優惠活動，並算完折扣
+	promotions := models.GetPromotionByID(PlatformID)
+	for _, promotion := range promotions {
+		switch promotion.Type {
+		case "sitewide_discount":
+			if promotion.Mode == "total_qty" && promotion.Qty <= count {
+				if promotion.Method == "percent" {
+					percent *= promotion.Percent / 100
+				} else if promotion.Method == "discount" {
+					discount += promotion.Discount
+				}
+			} else if promotion.Mode == "total_price" && promotion.Money <= total {
+				if promotion.Method == "percent" {
+					percent *= promotion.Percent / 100
+				} else if promotion.Method == "discount" {
+					discount += promotion.Discount
+				}
+			}
+		}
+	}
+
+	if total-(total*(percent/100)-discount) != order.Discount {
+		return e.PromotionChange
+	}
+
 	return e.Success
 }

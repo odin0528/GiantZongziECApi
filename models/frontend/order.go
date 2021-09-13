@@ -24,6 +24,8 @@ type OrderCreateRequest struct {
 	Total        float32                  `json:"-"`
 	Price        float32                  `json:"price"`
 	Shipping     float32                  `json:"shipping"`
+	Discount     float32                  `json:"discount"`
+	Qty          int                      `json:"-"`
 	Payment      int                      `json:"payment"`
 	StoreID      string                   `json:"store_id"`
 	StoreName    string                   `json:"store_name"`
@@ -71,7 +73,7 @@ func (query *OrderQuery) GetCondition() *gorm.DB {
 
 // 基本CURD功能
 func (req *OrderCreateRequest) Create() (err error) {
-	req.Total = req.Price + req.Shipping
+	req.Total = req.Price + req.Shipping - req.Discount
 	err = DB.Create(&req).Error
 	return
 }

@@ -22,4 +22,5 @@ const (
 
 	// order frontend
 	ProductPriceChange = 91100
+	PromotionChange    = 91101
 )

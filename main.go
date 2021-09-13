@@ -40,7 +40,6 @@ func main() {
 		frontendApi.GET("/platform", frontend.PlatformFetch)
 		frontendApi.GET("/pages/:page", frontend.GetPageComponent)
 
-		// frontendApi.GET("/products/:layer/:category_id/:page", frontend.GetProductsByCategoryID)
 		frontendApi.POST("/products/:layer/:category_id/:page", frontend.GetProductsByCategoryID)
 		frontendApi.GET("/categories/:parent_id", frontend.CategoryList)
 		frontendApi.GET("/product/:id", frontend.ProductFetch)
