@@ -17,7 +17,7 @@ import (
 
 func OrderCreate(c *gin.Context) {
 	g := Gin{c}
-	var order *models.OrderCreateRequest
+	var order models.OrderCreateRequest
 	var token string
 	err := c.BindJSON(&order)
 	if err != nil {
@@ -37,9 +37,27 @@ func OrderCreate(c *gin.Context) {
 		MemberID = member.MemberID
 	}
 
-	errCode := OrderValidation(PlatformID, order)
+	errCode := OrderValidation(PlatformID, &order)
 	if errCode != 200 {
-		g.Response(http.StatusOK, errCode, nil)
+		if errCode == e.ProductPriceChange {
+			if MemberID != 0 {
+				for _, product := range order.Products {
+					for _, style := range product.Styles {
+						carts := models.Carts{
+							MemberID:   MemberID,
+							PlatformID: PlatformID,
+							ProductID:  product.ProductID,
+							StyleID:    style.StyleID,
+							Price:      style.Price,
+						}
+						DB.Debug().Model(&carts).Where("platform_id = ? and member_id = ? and product_id = ? and style_id = ? and deleted_at = 0",
+							PlatformID, MemberID, product.ProductID, style.StyleID).
+							Update("price", carts.Price)
+					}
+				}
+			}
+			g.Response(http.StatusOK, errCode, order.Products)
+		}
 		return
 	}
 
@@ -77,11 +95,11 @@ func OrderCreate(c *gin.Context) {
 		token, err = jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(os.Getenv("JWT_SIGN")))
 
 	} else if MemberID != 0 {
-		/* carts := models.Carts{
+		carts := models.Carts{
 			MemberID:   MemberID,
 			PlatformID: PlatformID,
 		}
-		carts.Clean() */
+		carts.Clean()
 
 		if order.SaveDelivery {
 			delivery := models.MemberDelivery{
@@ -133,10 +151,11 @@ func OrderCreate(c *gin.Context) {
 }
 
 func OrderValidation(PlatformID int, order *models.OrderCreateRequest) int {
+	priceChange := false
 	count := 0
 	var total, shipping, percent, discount float32 = 0, 0, 100, 0
-	for _, product := range order.Products {
-		for _, style := range product.Styles {
+	for productIndex, product := range order.Products {
+		for styleIndex, style := range product.Styles {
 			query := &models.ProductStyleQuery{
 				StyleID:    style.StyleID,
 				PlatformID: PlatformID,
@@ -146,12 +165,17 @@ func OrderValidation(PlatformID int, order *models.OrderCreateRequest) int {
 
 			// 判斷價格是否有異動或正確
 			if item.Price != style.Price {
-				return e.ProductPriceChange
+				order.Products[productIndex].Styles[styleIndex].Price = item.Price
+				priceChange = true
 			}
 
 			count += style.Qty
 			total += float32(style.Qty) * style.Price
 		}
+	}
+
+	if priceChange {
+		return e.ProductPriceChange
 	}
 
 	order.Qty = count
