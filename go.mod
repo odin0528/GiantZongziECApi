@@ -10,6 +10,7 @@ require (
 	github.com/go-playground/validator/v10 v10.9.0
 	github.com/go-redis/redis/v8 v8.11.0
 	github.com/google/uuid v1.3.0
+	github.com/huandu/facebook/v2 v2.5.3 // indirect
 	github.com/joho/godotenv v1.3.0
 	github.com/liudng/godump v0.0.0-20150708094948-5c7e73aafb21
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646

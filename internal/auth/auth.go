@@ -104,6 +104,12 @@ func JwtParser(c *gin.Context) *frontend.Claims {
 }
 
 func GetPlatformID(c *gin.Context) {
+
+	if len(c.Request.Header["Hostname"]) == 0 {
+		Unauthorized(c)
+		return
+	}
+
 	r, _ := regexp.Compile("^([a-zA-Z0-9\\.]*).*$")
 	match := r.FindAllStringSubmatch(c.Request.Header["Hostname"][0], 1)
 

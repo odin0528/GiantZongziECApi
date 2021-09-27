@@ -49,6 +49,7 @@ func main() {
 		frontendApi.GET("/member", frontend.MemberFetch)
 		frontendApi.POST("/member/login", frontend.MemberLogin)
 		frontendApi.POST("/member/register", frontend.MemberRegister)
+		frontendApi.POST("/member/oauth", frontend.MemberOAuth)
 	}
 
 	tokenRequired := router.Group("/api/frontend", auth.TokenRequred)
@@ -57,7 +58,7 @@ func main() {
 		tokenRequired.POST("/member/delivery", frontend.GetMemberDelivery)
 		tokenRequired.POST("/member/delivery/modify", frontend.MemberDeliveryModify)
 		tokenRequired.POST("/member/delivery/delete", frontend.MemberDeliveryDelete)
-		tokenRequired.POST("/member/logout", frontend.MemberLogout)
+		// tokenRequired.POST("/member/logout", frontend.MemberLogout)
 
 		tokenRequired.GET("/carts", frontend.CartsFetch)
 		tokenRequired.POST("/carts/add", frontend.CartsAddProduct)

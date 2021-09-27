@@ -31,6 +31,6 @@ func (platform *Platform) GetMenu() (pages []Pages) {
 }
 
 func (platform *Platform) GetPromotions() (promotions []Promotions) {
-	DB.Debug().Model(&Promotions{}).Where("platform_id = ? AND is_enabled = 1 AND start_timestamp <= UNIX_TIMESTAMP() AND end_timestamp > UNIX_TIMESTAMP()", platform.ID).Scan(&promotions)
+	DB.Model(&Promotions{}).Where("platform_id = ? AND is_enabled = 1 AND start_timestamp <= UNIX_TIMESTAMP() AND end_timestamp > UNIX_TIMESTAMP()", platform.ID).Scan(&promotions)
 	return
 }

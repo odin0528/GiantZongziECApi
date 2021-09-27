@@ -11,6 +11,8 @@ import (
 	. "eCommerce/internal/database"
 	models "eCommerce/models/frontend"
 
+	fb "github.com/huandu/facebook/v2"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -103,27 +105,57 @@ func MemberLogin(c *gin.Context) {
 		return
 	}
 
-	issuer := "GiantZongziEC"
-	claims := models.Claims{
-		MemberID:   member.ID,
-		PlatformID: PlatformID.(int),
-		Nickname:   member.Nickname,
-		StandardClaims: jwt.StandardClaims{
-			Issuer: issuer,
-		},
+	token := models.GenerateToken(member.ID, PlatformID.(int), member.Nickname)
+
+	g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "member": member})
+}
+
+func MemberOAuth(c *gin.Context) {
+	g := Gin{c}
+	var req models.OAuthReq
+	err := c.BindJSON(&req)
+	if err != nil {
+		g.Response(http.StatusBadRequest, e.InvalidParams, err)
+		return
 	}
 
-	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(os.Getenv("JWT_SIGN")))
+	res, err := fb.Get("/me?fields=id,name,gender,email,birthday,picture.type(large)", fb.Params{
+		"access_token": req.Token,
+	})
 
-	/* token := uuid.New().String()
+	var user models.FbUser
+	res.Decode(&user)
 
-	memberToken := models.MemberToken{
-		MemberID:   member.ID,
-		Token:      token,
-		PlatformID: PlatformID.(int),
+	PlatformID, _ := c.Get("platform_id")
+
+	query := models.MemberQuery{
+		OAuthUserID:   user.ID,
+		OAuthPlatform: req.Platform,
+		PlatformID:    PlatformID.(int),
 	}
-	memberToken.CancelOldToken()
-	DB.Create(&memberToken) */
+
+	member := query.Fetch()
+
+	if member.ID == 0 {
+		member.Nickname = user.Name
+		member.Email = user.Email
+		birthday, _ := time.Parse("01/02/2006", user.Birthday)
+		member.Birthday = birthday
+		member.OAuthPlatform = req.Platform
+		member.OAuthUserID = user.ID
+		member.PlatformID = PlatformID.(int)
+		member.Avatar = user.Picture.Data.Url
+
+		if user.Gender == "male" {
+			member.Gender = 1
+		} else if user.Gender == "female" {
+			member.Gender = 0
+		}
+
+		DB.Create(&member)
+	}
+
+	token := models.GenerateToken(member.ID, member.PlatformID, member.Nickname)
 
 	g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "member": member})
 }
@@ -180,17 +212,7 @@ func MemberRegister(c *gin.Context) {
 	}
 	DB.Create(&memberToken) */
 
-	issuer := "GiantZongziEC"
-	claims := models.Claims{
-		MemberID:   member.ID,
-		PlatformID: PlatformID.(int),
-		Nickname:   member.Nickname,
-		StandardClaims: jwt.StandardClaims{
-			Issuer: issuer,
-		},
-	}
-
-	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(os.Getenv("JWT_SIGN")))
+	token := models.GenerateToken(member.ID, PlatformID.(int), member.Nickname)
 
 	// req.Create()
 	g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "member": member})

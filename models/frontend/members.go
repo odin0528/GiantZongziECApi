@@ -8,9 +8,11 @@ import (
 )
 
 type MemberQuery struct {
-	ID         int
-	PlatformID int
-	Email      string
+	ID            int
+	PlatformID    int
+	Email         string
+	OAuthPlatform string
+	OAuthUserID   string
 }
 
 type MemberRegisterReq struct {
@@ -22,13 +24,17 @@ type MemberRegisterReq struct {
 }
 
 type Members struct {
-	ID         int       `json:"-" gorm:"<-create"`
-	PlatformID int       `json:"-"`
-	Email      string    `json:"email"`
-	Password   string    `json:"-"`
-	Nickname   string    `json:"nickname" gorm:"default:null"`
-	Phone      string    `json:"phone" gorm:"default:null"`
-	Birthday   time.Time `json:"birthday" gorm:"default:null"`
+	ID            int       `json:"-" gorm:"<-create"`
+	PlatformID    int       `json:"-"`
+	Email         string    `json:"email"`
+	Password      string    `json:"-"`
+	Nickname      string    `json:"nickname" gorm:"default:null"`
+	Phone         string    `json:"phone" gorm:"default:null"`
+	Birthday      time.Time `json:"birthday" gorm:"default:null"`
+	Gender        int       `json:"gender" gorm:"default:null"`
+	OAuthPlatform string    `json:"-" gorm:"column:oauth_platform"`
+	OAuthUserID   string    `json:"-" gorm:"column:oauth_user_id"`
+	Avatar        string    `json:"avatar"`
 	TimeDefault
 }
 
@@ -41,6 +47,14 @@ func (query *MemberQuery) GetCondition() *gorm.DB {
 
 	if query.Email != "" {
 		sql.Where("email like ?", query.Email)
+	}
+
+	if query.OAuthPlatform != "" {
+		sql.Where("oauth_platform = ?", query.OAuthPlatform)
+	}
+
+	if query.OAuthUserID != "" {
+		sql.Where("oauth_user_id = ?", query.OAuthUserID)
 	}
 
 	sql.Where("platform_id = ?", query.PlatformID)
