@@ -31,6 +31,7 @@ type Claims struct {
 	MemberID   int
 	PlatformID int
 	Nickname   string `json:"nickname"`
+	Avatar     string `json:"avatar"`
 	jwt.StandardClaims
 }
 
@@ -63,12 +64,13 @@ func (token *MemberToken) Fetch() {
 	DB.Model(MemberToken{}).Where("token = ? AND platform_id = ?", token.Token, token.PlatformID).Scan(token)
 }
 
-func GenerateToken(id int, platformID int, nickname string) (token string) {
+func GenerateToken(member Members) (token string) {
 	issuer := "GiantZongziEC"
 	claims := Claims{
-		MemberID:   id,
-		PlatformID: platformID,
-		Nickname:   nickname,
+		MemberID:   member.ID,
+		PlatformID: member.PlatformID,
+		Nickname:   member.Nickname,
+		Avatar:     member.Avatar,
 		StandardClaims: jwt.StandardClaims{
 			Issuer: issuer,
 		},

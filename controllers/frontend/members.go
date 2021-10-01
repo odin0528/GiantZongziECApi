@@ -4,8 +4,12 @@ import (
 	"eCommerce/internal/auth"
 	"eCommerce/pkg/e"
 	"encoding/base64"
+	"encoding/json"
+	"io"
 	"net/http"
+	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	. "eCommerce/internal/database"
@@ -68,7 +72,7 @@ func MemberFetch(c *gin.Context) {
 
 	if tokenClaims != nil {
 		if claims, ok := tokenClaims.Claims.(*models.Claims); ok && tokenClaims.Valid {
-			g.Response(http.StatusOK, e.Success, models.Members{Nickname: claims.Nickname})
+			g.Response(http.StatusOK, e.Success, models.Members{Nickname: claims.Nickname, Avatar: claims.Avatar})
 		} else {
 			g.Response(http.StatusOK, e.NoLogginOrTokenExpired, nil)
 			return
@@ -105,57 +109,111 @@ func MemberLogin(c *gin.Context) {
 		return
 	}
 
-	token := models.GenerateToken(member.ID, PlatformID.(int), member.Nickname)
+	token := models.GenerateToken(member)
 
 	g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "member": member})
 }
 
 func MemberOAuth(c *gin.Context) {
 	g := Gin{c}
+
 	var req models.OAuthReq
+	var member models.Members
+
+	PlatformID, _ := c.Get("platform_id")
+
 	err := c.BindJSON(&req)
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
 		return
 	}
 
-	res, err := fb.Get("/me?fields=id,name,gender,email,birthday,picture.type(large)", fb.Params{
-		"access_token": req.Token,
-	})
+	if req.Platform == "fb" {
+		var user models.FbUser
+		res, _ := fb.Get("/me?fields=id,name,gender,email,birthday,picture.type(large)", fb.Params{
+			"access_token": req.Token,
+		})
 
-	var user models.FbUser
-	res.Decode(&user)
+		res.Decode(&user)
 
-	PlatformID, _ := c.Get("platform_id")
-
-	query := models.MemberQuery{
-		OAuthUserID:   user.ID,
-		OAuthPlatform: req.Platform,
-		PlatformID:    PlatformID.(int),
-	}
-
-	member := query.Fetch()
-
-	if member.ID == 0 {
-		member.Nickname = user.Name
-		member.Email = user.Email
-		birthday, _ := time.Parse("01/02/2006", user.Birthday)
-		member.Birthday = birthday
-		member.OAuthPlatform = req.Platform
-		member.OAuthUserID = user.ID
-		member.PlatformID = PlatformID.(int)
-		member.Avatar = user.Picture.Data.Url
-
-		if user.Gender == "male" {
-			member.Gender = 1
-		} else if user.Gender == "female" {
-			member.Gender = 0
+		query := models.MemberQuery{
+			OAuthUserID:   user.ID,
+			OAuthPlatform: req.Platform,
+			PlatformID:    PlatformID.(int),
 		}
 
-		DB.Create(&member)
+		member = query.Fetch()
+
+		if member.ID == 0 {
+			member.Nickname = user.Name
+			member.Email = user.Email
+			birthday, _ := time.Parse("01/02/2006", user.Birthday)
+			member.Birthday = birthday
+			member.OAuthPlatform = req.Platform
+			member.OAuthUserID = user.ID
+			member.PlatformID = PlatformID.(int)
+			member.Avatar = user.Picture.Data.Url
+
+			if user.Gender == "male" {
+				member.Gender = 1
+			} else if user.Gender == "female" {
+				member.Gender = 0
+			}
+
+			DB.Create(&member)
+		}
+	} else if req.Platform == "line" {
+
+		var result map[string]interface{}
+		var userData map[string]interface{}
+
+		params := url.Values{}
+		params.Add("grant_type", "authorization_code")
+		params.Add("code", req.Token)
+		params.Add("redirect_uri", "https://example.com:3000/oauth/line")
+		params.Add("client_id", "1656429639")
+		params.Add("client_secret", "e5e879d1fce5c001042a2ad531ccc7bf")
+		body := strings.NewReader(params.Encode())
+
+		curl, _ := http.NewRequest("POST", "https://api.line.me/oauth2/v2.1/token", body)
+		curl.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+		resp, _ := http.DefaultClient.Do(curl)
+		rbody, _ := io.ReadAll(resp.Body)
+		json.Unmarshal(rbody, &result)
+
+		params = url.Values{}
+		params.Add("id_token", result["id_token"].(string))
+		params.Add("client_id", "1656429639")
+		body = strings.NewReader(params.Encode())
+		curl, _ = http.NewRequest("POST", "https://api.line.me/oauth2/v2.1/verify", body)
+		curl.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+		resp, _ = http.DefaultClient.Do(curl)
+		rbody, _ = io.ReadAll(resp.Body)
+		json.Unmarshal(rbody, &userData)
+
+		defer resp.Body.Close()
+
+		query := models.MemberQuery{
+			OAuthUserID:   userData["sub"].(string),
+			OAuthPlatform: req.Platform,
+			PlatformID:    PlatformID.(int),
+		}
+
+		member = query.Fetch()
+
+		if member.ID == 0 {
+			member.Nickname = userData["name"].(string)
+			member.OAuthPlatform = req.Platform
+			member.OAuthUserID = userData["sub"].(string)
+			member.PlatformID = PlatformID.(int)
+			member.Avatar = userData["picture"].(string)
+			DB.Create(&member)
+		}
 	}
 
-	token := models.GenerateToken(member.ID, member.PlatformID, member.Nickname)
+	token := models.GenerateToken(member)
 
 	g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "member": member})
 }
@@ -212,7 +270,7 @@ func MemberRegister(c *gin.Context) {
 	}
 	DB.Create(&memberToken) */
 
-	token := models.GenerateToken(member.ID, PlatformID.(int), member.Nickname)
+	token := models.GenerateToken(member)
 
 	// req.Create()
 	g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "member": member})
