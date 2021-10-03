@@ -7,7 +7,9 @@ import (
 )
 
 type OrderQuery struct {
-	MemberID int `json:"-"`
+	MemberID      int    `json:"-"`
+	TransactionID string `json:"-"`
+	OrderUuid     string `json:"-"`
 	Pagination
 }
 
@@ -59,6 +61,12 @@ type Orders struct {
 	TimeDefault
 }
 
+type OrderUpdateReq struct {
+	OrderUuid     string `json:"order_id"`
+	TransactionID string `json:"transaction_id"`
+	Status        int    `json:"status"`
+}
+
 func (OrderCreateRequest) TableName() string {
 	return "orders"
 }
@@ -66,7 +74,18 @@ func (OrderCreateRequest) TableName() string {
 // 查詢功能
 func (query *OrderQuery) GetCondition() *gorm.DB {
 	sql := DB.Model(Orders{})
-	sql.Where("member_id = ?", query.MemberID)
+
+	if query.MemberID != 0 {
+		sql.Where("member_id = ?", query.MemberID)
+	}
+
+	if query.TransactionID != "" {
+		sql.Where("transaction_id = ?", query.TransactionID)
+	}
+
+	if query.OrderUuid != "" {
+		sql.Where("order_uuid = ?", query.OrderUuid)
+	}
 
 	return sql
 }
@@ -75,6 +94,11 @@ func (query *OrderQuery) GetCondition() *gorm.DB {
 func (req *OrderCreateRequest) Create() (err error) {
 	req.Total = req.Price + req.Shipping - req.Discount
 	err = DB.Create(&req).Error
+	return
+}
+
+func (query *OrderQuery) Fetch() (order Orders) {
+	query.GetCondition().Scan(&order)
 	return
 }
 

@@ -1,13 +1,17 @@
 package frontend
 
 import (
+	"context"
 	"eCommerce/internal/auth"
 	models "eCommerce/models/frontend"
 	"eCommerce/pkg/e"
 	"encoding/base64"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/gotokatsuya/line-pay-sdk-go/linepay"
 	"golang.org/x/crypto/scrypt"
 
 	. "eCommerce/internal/database"
@@ -110,6 +114,7 @@ func OrderCreate(c *gin.Context) {
 
 	switch order.Payment {
 	case 1:
+	case 4:
 		order.Status = 11
 	case 2:
 		order.Status = 21
@@ -135,7 +140,115 @@ func OrderCreate(c *gin.Context) {
 		}
 	}
 
+	if order.Payment == 4 {
+
+		platform, _ := c.Get("platform")
+		Platform := platform.(models.Platform)
+		orderUuid := uuid.New().String()
+
+		pay, _ := linepay.New("1656472600", "ecc5e953a89199d59a8a12011ce1e204")
+		requestReq := &linepay.RequestRequest{
+			Amount:   int(order.Price + order.Shipping),
+			Currency: "TWD",
+			OrderID:  orderUuid,
+			Packages: []*linepay.RequestPackage{},
+			RedirectURLs: &linepay.RequestRedirectURLs{
+				ConfirmURL: fmt.Sprintf("https://%s:3000/checkout/finish", c.Request.Header["Hostname"][0]),
+				CancelURL:  fmt.Sprintf("https://%s:3000/checkout/cancel", c.Request.Header["Hostname"][0]),
+			},
+		}
+
+		for _, product := range order.Products {
+			for _, style := range product.Styles {
+				requestReq.Packages = append(requestReq.Packages,
+					&linepay.RequestPackage{
+						ID:     fmt.Sprintf("%d", order.ID),
+						Amount: style.Qty * int(style.Price),
+						Name:   Platform.Title,
+						Products: []*linepay.RequestPackageProduct{
+							&linepay.RequestPackageProduct{
+								ID:       fmt.Sprintf("%d-%d", product.ProductID, style.StyleID),
+								Name:     fmt.Sprintf("%s %s", product.Title, style.StyleTitle),
+								Quantity: style.Qty,
+								Price:    int(style.Price),
+								ImageURL: style.Photo,
+							},
+						},
+					},
+				)
+			}
+		}
+
+		/* requestReq.Packages[0].Products = append(requestReq.Packages[0].Products, &linepay.RequestPackageProduct{
+			ID:       fmt.Sprintf("order-shipping-%d", order.ID),
+			Name:     "運費",
+			Quantity: 1,
+			Price:    int(order.Shipping),
+		}) */
+
+		requestReq.Packages = append(requestReq.Packages,
+			&linepay.RequestPackage{
+				ID:     fmt.Sprintf("%d", order.ID),
+				Amount: int(order.Shipping),
+				Name:   Platform.Title,
+				Products: []*linepay.RequestPackageProduct{
+					&linepay.RequestPackageProduct{
+						ID:       fmt.Sprintf("%d-%s", order.ID, "shipping"),
+						Name:     "運費",
+						Quantity: 1,
+						Price:    int(order.Shipping),
+					},
+				},
+			},
+		)
+
+		requestResp, _, _ := pay.Request(context.Background(), requestReq)
+
+		if requestResp.ReturnCode == "0000" {
+			DB.Debug().Model(models.Orders{}).Where("id = ?", order.ID).
+				Updates(map[string]interface{}{"order_uuid": orderUuid, "transaction_id": requestResp.Info.TransactionID})
+		}
+
+		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "payment": requestResp.Info.PaymentURL, "request": requestReq})
+		return
+	}
+
 	g.Response(http.StatusOK, e.Success, token)
+}
+
+func OrderUpdate(c *gin.Context) {
+	g := Gin{c}
+	var req *models.OrderUpdateReq
+	err := c.BindJSON(&req)
+	if err != nil {
+		g.Response(http.StatusBadRequest, e.InvalidParams, err)
+		return
+	}
+
+	query := models.OrderQuery{
+		TransactionID: req.TransactionID,
+		OrderUuid:     req.OrderUuid,
+	}
+
+	order := query.Fetch()
+
+	if order.ID == 0 {
+		g.Response(http.StatusBadRequest, e.OrderNotExist, err)
+		return
+	}
+
+	switch req.Status {
+	case 21:
+		if order.Status != 11 {
+			g.Response(http.StatusBadRequest, e.InvalidParams, err)
+			return
+		}
+	}
+
+	order.Status = req.Status
+	DB.Select("status").Save(&order)
+
+	g.Response(http.StatusOK, e.Success, order)
 }
 
 func OrderValidation(PlatformID int, order *models.OrderCreateRequest) int {

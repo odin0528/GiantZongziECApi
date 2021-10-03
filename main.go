@@ -45,6 +45,7 @@ func main() {
 		frontendApi.GET("/product/:id", frontend.ProductFetch)
 
 		frontendApi.POST("/order/create", frontend.OrderCreate)
+		frontendApi.POST("/order/update", frontend.OrderUpdate)
 
 		frontendApi.GET("/member", frontend.MemberFetch)
 		frontendApi.POST("/member/login", frontend.MemberLogin)
