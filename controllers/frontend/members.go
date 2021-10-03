@@ -5,7 +5,7 @@ import (
 	"eCommerce/pkg/e"
 	"encoding/base64"
 	"encoding/json"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -179,7 +179,7 @@ func MemberOAuth(c *gin.Context) {
 		curl.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 		resp, _ := http.DefaultClient.Do(curl)
-		rbody, _ := io.ReadAll(resp.Body)
+		rbody, _ := ioutil.ReadAll(resp.Body)
 		json.Unmarshal(rbody, &result)
 
 		params = url.Values{}
@@ -190,7 +190,7 @@ func MemberOAuth(c *gin.Context) {
 		curl.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 		resp, _ = http.DefaultClient.Do(curl)
-		rbody, _ = io.ReadAll(resp.Body)
+		rbody, _ = ioutil.ReadAll(resp.Body)
 		json.Unmarshal(rbody, &userData)
 
 		defer resp.Body.Close()

@@ -6,9 +6,7 @@ import (
 	"eCommerce/pkg/e"
 	"encoding/base64"
 	"net/http"
-	"os"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/scrypt"
 
@@ -82,17 +80,7 @@ func OrderCreate(c *gin.Context) {
 		order.MemberID = member.ID
 
 		// 一併幫會員做登入
-		issuer := "GiantZongziEC"
-		claims := models.Claims{
-			MemberID:   member.ID,
-			PlatformID: PlatformID,
-			Nickname:   member.Nickname,
-			StandardClaims: jwt.StandardClaims{
-				Issuer: issuer,
-			},
-		}
-
-		token, err = jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(os.Getenv("JWT_SIGN")))
+		token = models.GenerateToken(member)
 
 	} else if MemberID != 0 {
 		carts := models.Carts{
