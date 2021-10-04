@@ -86,30 +86,23 @@ func OrderCreate(c *gin.Context) {
 		// 一併幫會員做登入
 		token = models.GenerateToken(member)
 
-	} else if MemberID != 0 {
-		carts := models.Carts{
-			MemberID:   MemberID,
-			PlatformID: PlatformID,
+	} else if MemberID != 0 && order.SaveDelivery {
+		// 如果本身有登入，又有勾儲存運送方式
+		delivery := models.MemberDelivery{
+			PlatformID:   PlatformID,
+			MemberID:     MemberID,
+			Fullname:     order.Fullname,
+			Phone:        order.Phone,
+			Address:      order.Address,
+			Memo:         order.Memo,
+			Method:       order.Method,
+			StoreID:      order.StoreID,
+			StoreName:    order.StoreName,
+			StoreAddress: order.StoreAddress,
+			StorePhone:   order.StorePhone,
 		}
-		carts.Clean()
 
-		if order.SaveDelivery {
-			delivery := models.MemberDelivery{
-				PlatformID:   PlatformID,
-				MemberID:     MemberID,
-				Fullname:     order.Fullname,
-				Phone:        order.Phone,
-				Address:      order.Address,
-				Memo:         order.Memo,
-				Method:       order.Method,
-				StoreID:      order.StoreID,
-				StoreName:    order.StoreName,
-				StoreAddress: order.StoreAddress,
-				StorePhone:   order.StorePhone,
-			}
-
-			DB.Create(&delivery)
-		}
+		DB.Create(&delivery)
 	}
 
 	switch order.Payment {
@@ -211,6 +204,13 @@ func OrderCreate(c *gin.Context) {
 
 		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "payment": requestResp.Info.PaymentURL, "request": requestReq})
 		return
+	} else {
+		// 如果不是三方支付，交易完就先清
+		carts := models.Carts{
+			MemberID:   MemberID,
+			PlatformID: PlatformID,
+		}
+		carts.Clean()
 	}
 
 	g.Response(http.StatusOK, e.Success, token)
