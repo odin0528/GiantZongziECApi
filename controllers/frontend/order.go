@@ -139,6 +139,7 @@ func OrderCreate(c *gin.Context) {
 		Platform := platform.(models.Platform)
 		orderUuid := uuid.New().String()
 
+		// pay, _ := linepay.New("1656472600", "ecc5e953a89199d59a8a12011ce1e204", linepay.WithSandbox())
 		pay, _ := linepay.New("1656472600", "ecc5e953a89199d59a8a12011ce1e204")
 		requestReq := &linepay.RequestRequest{
 			Amount:   int(order.Price + order.Shipping),
@@ -213,7 +214,7 @@ func OrderCreate(c *gin.Context) {
 		carts.Clean()
 	}
 
-	g.Response(http.StatusOK, e.Success, token)
+	g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token})
 }
 
 func OrderUpdate(c *gin.Context) {
@@ -237,11 +238,20 @@ func OrderUpdate(c *gin.Context) {
 		return
 	}
 
+	if order.Status != 11 {
+		g.Response(http.StatusOK, e.OrderIsFinish, err)
+		return
+	}
+
 	switch req.Status {
 	case 21:
-		if order.Status != 11 {
-			g.Response(http.StatusBadRequest, e.InvalidParams, err)
-			return
+		// 第三方付款成功後，清掉會員的購物車
+		if order.MemberID != 0 {
+			carts := models.Carts{
+				MemberID:   order.MemberID,
+				PlatformID: order.PlatformID,
+			}
+			carts.Clean()
 		}
 	}
 
