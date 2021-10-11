@@ -42,10 +42,15 @@ func Thumbnail(filename string, base64String string, maxSize uint) string {
 		img, _ = png.Decode(bytes.NewReader(blob))
 		thumbnail := resize.Resize(maxSize, 0, img, resize.Lanczos3)
 		png.Encode(buff, thumbnail)
+		filename = filename + ".png"
+		break
 	case "image/jpeg":
+		fallthrough
+	case "image/jpe":
 		img, _ = jpeg.Decode(bytes.NewReader(blob))
 		thumbnail := resize.Resize(maxSize, 0, img, resize.Lanczos3)
 		jpeg.Encode(buff, thumbnail, nil)
+		filename = filename + ".jpg"
 	}
 
 	result, _ := Uploader.Upload(&s3manager.UploadInput{

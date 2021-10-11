@@ -38,6 +38,8 @@ func main() {
 	frontendApi := router.Group("/api/frontend", auth.GetPlatformID)
 	{
 		frontendApi.GET("/platform", frontend.PlatformFetch)
+		frontendApi.GET("/platform/payment", frontend.PlatformPaymentFetch)
+
 		frontendApi.GET("/pages/:page", frontend.GetPageComponent)
 
 		frontendApi.POST("/products/:layer/:category_id/:page", frontend.GetProductsByCategoryID)
@@ -104,6 +106,12 @@ func main() {
 
 			authRequired.POST("/promotions", backend.PromotionList)
 			authRequired.POST("/promotions/modify", backend.PromotionModify)
+
+			authRequired.GET("/platform", backend.PlatformFetch)
+			authRequired.GET("/platform/payment", backend.PlatformPaymentFetch)
+			authRequired.POST("/platform", backend.PlatformUpdate)
+			authRequired.POST("/platform/payment", backend.PlatformPaymentUpdate)
+
 		}
 	}
 
