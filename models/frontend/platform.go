@@ -16,7 +16,7 @@ type Platform struct {
 	IconUrl            string `json:"icon_url"`
 	Code               string `json:"code"`
 	FBPageID           string `json:"fb_page_id"`
-	FBMessengerEnabled string `json:"fb_messenger_enabled"`
+	FBMessengerEnabled bool   `json:"fb_messenger_enabled"`
 	FBPixel            string `json:"fb_pixel"`
 }
 
