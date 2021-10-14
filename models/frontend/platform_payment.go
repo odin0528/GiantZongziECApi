@@ -10,7 +10,7 @@ type PlatformPayment struct {
 	TransferBank    string `json:"transfer_bank"`
 	TransferAccount string `json:"transfer_account"`
 	DeliveryEnabled bool   `json:"delivery_enabled"`
-	Delivery711     bool   `json:"delivery_711"`
+	Delivery711     bool   `json:"delivery_711" gorm:"column:delivery_711"`
 	DeliveryFamily  bool   `json:"delivery_family"`
 	DeliveryHilife  bool   `json:"delivery_hilife"`
 	DeliveryOK      bool   `json:"delivery_ok"`
@@ -23,6 +23,6 @@ func (PlatformPayment) TableName() string {
 }
 
 func (platform *PlatformPayment) Fetch() {
-	DB.Debug().Where("platform_id = ?", platform.PlatformID).First(&platform)
+	DB.Where("platform_id = ?", platform.PlatformID).First(&platform)
 	return
 }

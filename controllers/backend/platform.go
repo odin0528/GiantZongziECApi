@@ -42,7 +42,7 @@ func PlatformUpdate(c *gin.Context) {
 		platform.IconUrl = uploader.Thumbnail(filename, platform.IconUrl, 2048)
 	}
 
-	DB.Debug().Select("title", "description", "logo_url", "icon_url", "fb_messenger_enabled", "fb_pixel").Updates(&platform)
+	DB.Select("title", "description", "logo_url", "icon_url", "fb_messenger_enabled", "fb_pixel").Updates(&platform)
 
 	g.Response(http.StatusOK, e.Success, platform)
 }
@@ -65,7 +65,7 @@ func PlatformPaymentUpdate(c *gin.Context) {
 	PlatformID, _ := c.Get("platform_id")
 	c.BindJSON(&payment)
 
-	DB.Debug().Where("platform_id = ?", PlatformID.(int)).Updates(&payment)
+	DB.Where("platform_id = ?", PlatformID.(int)).Updates(&payment)
 
 	g.Response(http.StatusOK, e.Success, nil)
 }
