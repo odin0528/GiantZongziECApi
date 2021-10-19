@@ -15,6 +15,7 @@ type PageComponentData struct {
 	Title     string `json:"title"`
 	Img       string `json:"img"`
 	Link      string `json:"link"`
+	LinkType  int    `json:"link_type"`
 	Text      string `json:"text"`
 	StartTime int    `json:"start_time"`
 	EndTime   int    `json:"end_time"`

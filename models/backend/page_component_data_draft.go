@@ -16,7 +16,6 @@ type PageComponentDataDraft struct {
 	Img       string `json:"img"`
 	Link      string `json:"link"`
 	LinkType  int    `json:"linkType"`
-	LinkID    int    `json:"linkID"`
 	Text      string `json:"text"`
 	StartTime int    `json:"start_time"`
 	EndTime   int    `json:"end_time"`
