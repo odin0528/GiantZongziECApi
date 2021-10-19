@@ -14,6 +14,7 @@ type PageReq struct {
 type Pages struct {
 	ID         int    `json:"id"`
 	PlatformID int    `json:"-"`
+	Type       int    `json:"type"`
 	Url        string `json:"url"  validate:"required,alphanum"`
 	Title      string `json:"title"  validate:"required"`
 	IsMenu     bool   `json:"is_menu"`

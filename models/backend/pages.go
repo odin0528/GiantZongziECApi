@@ -15,6 +15,7 @@ type PageReq struct {
 type Pages struct {
 	ID         int    `json:"id"`
 	PlatformID int    `json:"-"`
+	Type       int    `json:"type"`
 	Url        string `json:"url"`
 	Title      string `json:"title"`
 	IsMenu     bool   `json:"is_menu"`
