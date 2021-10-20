@@ -80,7 +80,7 @@ func main() {
 			authRequired.GET("/pages/:id", backend.GetPageComponent)
 			authRequired.POST("/pages/release", backend.PageRelease)
 			authRequired.POST("/pages/modify", backend.PageModify)
-			authRequired.POST("/pages/sort", backend.PageSort)
+			// authRequired.POST("/pages/sort", backend.PageSort)
 			authRequired.POST("/components/delete", backend.DraftComponentDelete)
 			authRequired.POST("/components/create", backend.DraftComponentCreate)
 			authRequired.POST("/components/change", backend.DraftComponentChange)
@@ -111,6 +111,8 @@ func main() {
 			authRequired.GET("/platform/payment", backend.PlatformPaymentFetch)
 			authRequired.POST("/platform", backend.PlatformUpdate)
 			authRequired.POST("/platform/payment", backend.PlatformPaymentUpdate)
+
+			authRequired.POST("/menu", backend.MenuModify)
 
 		}
 	}

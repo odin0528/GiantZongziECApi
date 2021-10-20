@@ -125,7 +125,7 @@ func PageModify(c *gin.Context) {
 	}
 }
 
-func PageSort(c *gin.Context) {
+/* func PageSort(c *gin.Context) {
 	g := Gin{c}
 	var pages []models.Pages
 	err := c.BindJSON(&pages)
@@ -145,4 +145,4 @@ func PageSort(c *gin.Context) {
 
 	g.Response(http.StatusOK, e.Success, nil)
 	return
-}
+} */
