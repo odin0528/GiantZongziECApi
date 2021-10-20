@@ -112,7 +112,8 @@ func main() {
 			authRequired.POST("/platform", backend.PlatformUpdate)
 			authRequired.POST("/platform/payment", backend.PlatformPaymentUpdate)
 
-			authRequired.POST("/menu", backend.MenuModify)
+			authRequired.GET("/menus", backend.MenuList)
+			authRequired.POST("/menus", backend.MenuModify)
 
 		}
 	}

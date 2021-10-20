@@ -1,8 +1,9 @@
 package backend
 
 import (
-	// . "eCommerce/internal/database"
+	. "eCommerce/internal/database"
 
+	"gorm.io/gorm"
 	"gorm.io/plugin/soft_delete"
 )
 
@@ -26,4 +27,22 @@ type Menu struct {
 
 func (Menu) TableName() string {
 	return "platform_menu"
+}
+
+type MenuQuery struct {
+	PlatformID int
+}
+
+func (query *MenuQuery) GetCondition() *gorm.DB {
+	sql := DB.Model(Menu{})
+
+	sql.Where("platform_id = ?", query.PlatformID)
+
+	return sql
+}
+
+func (query *MenuQuery) FetchAll() (menus []Menu, err error) {
+	sql := query.GetCondition()
+	err = sql.Scan(&menus).Error
+	return
 }

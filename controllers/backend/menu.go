@@ -12,20 +12,17 @@ import (
 
 func MenuList(c *gin.Context) {
 	g := Gin{c}
-	var query models.CategoryQuery
-	err := c.ShouldBindUri(&query)
+	var query models.MenuQuery
+	PlatformID, _ := c.Get("platform_id")
+	query.PlatformID = PlatformID.(int)
+	menus, err := query.FetchAll()
+
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
 		return
 	}
-	PlatformID, _ := c.Get("platform_id")
-	query.PlatformID = PlatformID.(int)
-	categories := query.FetchAll()
 
-	var breadcrumbs []models.Category
-	query.GetBreadcrumbs(&breadcrumbs)
-
-	g.Response(http.StatusOK, e.Success, map[string]interface{}{"categories": categories, "breadcrumbs": breadcrumbs})
+	g.Response(http.StatusOK, e.Success, menus)
 }
 
 func MenuModify(c *gin.Context) {
