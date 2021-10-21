@@ -27,7 +27,7 @@ func MenuList(c *gin.Context) {
 
 func MenuModify(c *gin.Context) {
 	g := Gin{c}
-	var req *models.Menu
+	var req *models.Menus
 	err := c.BindJSON(&req)
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
@@ -43,12 +43,12 @@ func MenuModify(c *gin.Context) {
 		err = DB.Debug().Select("title", "link", "link_type", "is_enabled").Where("id = ? and platform_id = ?", req.ID, platformID.(int)).Updates(&req).Error
 	}
 
-	g.Response(http.StatusOK, e.Success, nil)
+	g.Response(http.StatusOK, e.Success, req.ID)
 }
 
 func MenuMove(c *gin.Context) {
 	g := Gin{c}
-	var req *models.CategoryMoveReq
+	var req *models.MenuMoveReq
 	platformID, _ := c.Get("platform_id")
 	err := c.BindJSON(&req)
 	if err != nil {
@@ -56,39 +56,38 @@ func MenuMove(c *gin.Context) {
 		return
 	}
 
-	categoryQuery1 := models.CategoryQuery{
-		ParentID:   req.ParentID,
+	menuQuery1 := models.MenuQuery{
 		PlatformID: platformID.(int),
 		Sort:       req.Sort,
 	}
 
-	categoryQuery2 := models.CategoryQuery{
-		ParentID:   req.ParentID,
+	menuQuery2 := models.MenuQuery{
 		PlatformID: platformID.(int),
 		Sort:       req.Sort + req.Direction,
 	}
 
-	category1 := categoryQuery1.Fetch()
-	if category1.ID == 0 {
+	menu1 := menuQuery1.Fetch()
+	if menu1.ID == 0 {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
-	category2 := categoryQuery2.Fetch()
-	if category2.ID == 0 {
+	menu2 := menuQuery2.Fetch()
+	if menu2.ID == 0 {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
-	category2.Sort = req.Sort
-	category1.Sort = req.Sort + req.Direction
-	category1.Update()
-	category2.Update()
+	menu2.Sort = req.Sort
+	menu1.Sort = req.Sort + req.Direction
+
+	DB.Debug().Save(&menu1)
+	DB.Debug().Save(&menu2)
 
 	g.Response(http.StatusOK, e.Success, nil)
 }
 
 func MenuDelete(c *gin.Context) {
 	g := Gin{c}
-	var req *models.Category
+	var req *models.Menus
 	err := c.BindJSON(&req)
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
@@ -96,17 +95,13 @@ func MenuDelete(c *gin.Context) {
 	}
 
 	platformID, _ := c.Get("platform_id")
-	query := &models.CategoryQuery{
-		ID: req.ID,
+	query := &models.MenuQuery{
+		ID:         req.ID,
+		PlatformID: platformID.(int),
 	}
 
-	category := query.Fetch()
-	if !category.Validate(platformID.(int)) {
-		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
-		return
-	}
-
-	category.Delete()
+	menu := query.Fetch()
+	menu.Delete()
 
 	g.Response(http.StatusOK, e.Success, nil)
 }

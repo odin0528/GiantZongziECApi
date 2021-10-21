@@ -114,6 +114,8 @@ func main() {
 
 			authRequired.GET("/menus", backend.MenuList)
 			authRequired.POST("/menus", backend.MenuModify)
+			authRequired.POST("/menus/move", backend.MenuMove)
+			authRequired.POST("/menus/delete", backend.MenuDelete)
 
 		}
 	}
