@@ -29,8 +29,8 @@ func (query *PlatformQuery) Fetch() (platform Platform) {
 	return
 }
 
-func (platform *Platform) GetMenu() (pages []Pages) {
-	DB.Model(&Pages{}).Where("platform_id = ? AND is_menu = 1 AND is_enabled = 1 AND released_at > 0", platform.ID).Scan(&pages)
+func (platform *Platform) GetMenu() (menus []Menus) {
+	DB.Model(&Menus{}).Debug().Where("platform_id = ? and is_enabled = 1", platform.ID).Order("sort ASC").Scan(&menus)
 	return
 }
 
