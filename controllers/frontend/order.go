@@ -8,7 +8,9 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/http"
+	"time"
 
+	"github.com/Laysi/go-ecpay-sdk"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/gotokatsuya/line-pay-sdk-go/linepay"
@@ -328,4 +330,14 @@ func OrderValidation(PlatformID int, order *models.OrderCreateRequest) int {
 	}
 
 	return e.Success
+}
+
+func Ecpay(c *gin.Context) {
+	g := Gin{c}
+	client := ecpay.NewStageClient(ecpay.WithReturnURL("https://ec.giantzongzi.com/ecpay/return"), ecpay.WithDebug)
+	html, _ := client.CreateOrder("gianttext0004", time.Now(), 1000, "<Description>", []string{"ItemName1", "ItemName2"}).
+		SetAllPayment().
+		GenerateRequestHtml()
+
+	g.Response(http.StatusOK, e.Success, html)
 }

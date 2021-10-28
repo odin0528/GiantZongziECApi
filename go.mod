@@ -3,6 +3,7 @@ module eCommerce
 go 1.16
 
 require (
+	github.com/Laysi/go-ecpay-sdk v0.0.31
 	github.com/aws/aws-sdk-go v1.40.10
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/cors v1.3.1
