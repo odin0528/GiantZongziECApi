@@ -48,7 +48,7 @@ func main() {
 
 		frontendApi.POST("/order/create", frontend.OrderCreate)
 		frontendApi.POST("/order/update", frontend.OrderUpdate)
-		frontendApi.POST("/order/ecpay", frontend.Ecpay)
+		// frontendApi.POST("/order/ecpay", frontend.Ecpay)
 
 		frontendApi.GET("/member", frontend.MemberFetch)
 		frontendApi.POST("/member/login", frontend.MemberLogin)

@@ -5,16 +5,18 @@ import (
 )
 
 type PlatformPayment struct {
-	PlatformID      int    `json:"-"`
-	TransferEnabled bool   `json:"transfer_enabled"`
-	TransferBank    string `json:"transfer_bank"`
-	TransferAccount string `json:"transfer_account"`
-	DeliveryEnabled bool   `json:"delivery_enabled"`
-	Delivery711     bool   `json:"delivery_711" gorm:"column:delivery_711"`
-	DeliveryFamily  bool   `json:"delivery_family"`
-	DeliveryHilife  bool   `json:"delivery_hilife"`
-	DeliveryOK      bool   `json:"delivery_ok"`
-	LinePayEnabled  bool   `json:"line_pay_enabled"`
+	PlatformID        int  `json:"-"`
+	DeliveryEnabled   bool `json:"delivery_enabled"`
+	Delivery711       bool `json:"delivery_711" gorm:"column:delivery_711"`
+	DeliveryFamily    bool `json:"delivery_family"`
+	DeliveryHilife    bool `json:"delivery_hilife"`
+	DeliveryOK        bool `json:"delivery_ok"`
+	CreditCardEnabled bool `json:"credit_card_enabled"`
+	LinePayEnabled    bool `json:"line_pay_enabled"`
+	WebatmEnabled     bool `json:"transfer_enabled"`
+	AtmEnabled        bool `json:"atm_enabled"`
+	CvsEnabled        bool `json:"cvs_enabled"`
+	BarcodeEnabled    bool `json:"barcode_enabled"`
 	TimeDefault
 }
 

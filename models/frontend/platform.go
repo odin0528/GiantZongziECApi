@@ -40,6 +40,6 @@ func (platform *Platform) GetPromotions() (promotions []Promotions) {
 }
 
 func (platform *Platform) GetPayments() (payment PlatformPayment) {
-	DB.Model(&PlatformPayment{}).Where("platform_id = ?", platform.ID).Scan(&payment)
+	DB.Debug().Model(&PlatformPayment{}).Where("platform_id = ?", platform.ID).Scan(&payment)
 	return
 }

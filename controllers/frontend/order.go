@@ -31,6 +31,7 @@ func OrderCreate(c *gin.Context) {
 
 	var PlatformID int
 	var MemberID int
+	var itemName []string
 	member := auth.JwtParser(c)
 	if member == nil {
 		pid, _ := c.Get("platform_id")
@@ -108,16 +109,16 @@ func OrderCreate(c *gin.Context) {
 	}
 
 	switch order.Payment {
-	case 1:
-	case 4:
-		order.Status = 11
 	case 2:
 		order.Status = 21
+	default:
+		order.Status = 11
 	}
 	order.Create()
 
 	for _, product := range order.Products {
 		for _, style := range product.Styles {
+			itemName = append(itemName, fmt.Sprintf("%s %s", product.Title, style.StyleTitle))
 			orderProduct := models.OrderProducts{
 				OrderID:    order.ID,
 				ProductID:  product.ProductID,
@@ -207,16 +208,27 @@ func OrderCreate(c *gin.Context) {
 
 		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "payment": requestResp.Info.PaymentURL, "request": requestReq})
 		return
-	} else {
+	} else if order.Payment == 2 {
 		// 如果不是三方支付，交易完就先清
 		carts := models.Carts{
 			MemberID:   MemberID,
 			PlatformID: PlatformID,
 		}
 		carts.Clean()
+		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token})
+	} else {
+		p, _ := c.Get("platform")
+		platform := p.(models.Platform)
+		client := ecpay.NewStageClient(
+			ecpay.WithReturnURL("https://ec.giantzongzi.com/ecpay/return"),
+			ecpay.WithOrderResultURL("https://%s:3000/checkout/finish"),
+			ecpay.WithDebug)
+		aio := client.CreateOrder(fmt.Sprintf("gianttest%d", order.ID), time.Now(), int(order.Total), fmt.Sprintf("%s %s", platform.Title, order.Memo), itemName)
+		aio.SetCreditPayment()
+		html, _ := aio.GenerateRequestHtml()
+		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "ecpay": html})
 	}
 
-	g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token})
 }
 
 func OrderUpdate(c *gin.Context) {
@@ -330,14 +342,4 @@ func OrderValidation(PlatformID int, order *models.OrderCreateRequest) int {
 	}
 
 	return e.Success
-}
-
-func Ecpay(c *gin.Context) {
-	g := Gin{c}
-	client := ecpay.NewStageClient(ecpay.WithReturnURL("https://ec.giantzongzi.com/ecpay/return"), ecpay.WithDebug)
-	html, _ := client.CreateOrder("gianttext0004", time.Now(), 1000, "<Description>", []string{"ItemName1", "ItemName2"}).
-		SetAllPayment().
-		GenerateRequestHtml()
-
-	g.Response(http.StatusOK, e.Success, html)
 }
