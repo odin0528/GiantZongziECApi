@@ -8,6 +8,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/Laysi/go-ecpay-sdk"
@@ -220,13 +221,31 @@ func OrderCreate(c *gin.Context) {
 		p, _ := c.Get("platform")
 		platform := p.(models.Platform)
 		client := ecpay.NewStageClient(
-			ecpay.WithReturnURL("https://api.giantzongzi.com/api/backend/ecpay"),
-			ecpay.WithOrderResultURL(fmt.Sprintf("https://%s:3000/checkout/finish", c.Request.Header["Hostname"][0])),
-			ecpay.WithDebug)
+			ecpay.WithReturnURL(fmt.Sprintf("%s/api/backend/ecpay", os.Getenv("API_URL"))),
+			ecpay.WithOrderResultURL(fmt.Sprintf(os.Getenv("ECPAY_CLIENT_RETURN_URL"), c.Request.Header["Hostname"][0], "%2Fcheckout%2Ffinish")),
+			ecpay.WithDebug,
+		)
 		aio := client.CreateOrder(fmt.Sprintf("gianttest%d", order.ID), time.Now(), int(order.Total), fmt.Sprintf("%s %s", platform.Title, order.Memo), itemName)
-		aio.SetCreditPayment()
+
+		switch order.Payment {
+		case 3:
+			aio.SetCreditPayment()
+		case 1:
+			aio.SetWebAtmPayment()
+		case 5:
+			aio.SetAtmPayment()
+		case 6:
+			aio.SetCvsPayment()
+		case 7:
+			aio.SetBarcodePayment()
+		}
+
+		mac, _ := aio.GenerateCheckMac()
 		html, _ := aio.GenerateRequestHtml()
-		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "ecpay": html})
+
+		DB.Model(&order).Update("ecpay_mac", mac)
+
+		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "ecpay": html, "mac": mac})
 	}
 
 }
