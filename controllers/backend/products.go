@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	. "eCommerce/internal/database"
 	"eCommerce/internal/uploader"
 	models "eCommerce/models/backend"
 
@@ -250,5 +251,25 @@ func ProductPublic(c *gin.Context) {
 	}
 
 	req.ChangePubliced()
+	g.Response(http.StatusOK, e.Success, nil)
+}
+
+func ProductDelete(c *gin.Context) {
+	g := Gin{c}
+	var req *models.Products
+	err := c.BindJSON(&req)
+	platformID, _ := c.Get("platform_id")
+
+	// 編輯產品
+	var query models.ProductQuery
+	query.ID = req.ID
+	query.PlatformID = platformID.(int)
+	product := query.Fetch()
+	if product.ID == 0 {
+		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
+		return
+	}
+
+	DB.Delete(&product)
 	g.Response(http.StatusOK, e.Success, nil)
 }

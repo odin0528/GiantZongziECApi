@@ -13,7 +13,7 @@ type PlatformPayment struct {
 	DeliveryOK        bool `json:"delivery_ok"`
 	CreditCardEnabled bool `json:"credit_card_enabled"`
 	LinePayEnabled    bool `json:"line_pay_enabled"`
-	WebatmEnabled     bool `json:"transfer_enabled"`
+	WebatmEnabled     bool `json:"webatm_enabled"`
 	AtmEnabled        bool `json:"atm_enabled"`
 	CvsEnabled        bool `json:"cvs_enabled"`
 	BarcodeEnabled    bool `json:"barcode_enabled"`

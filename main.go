@@ -74,6 +74,7 @@ func main() {
 	{
 		backendApi.POST("/login", backend.Login)
 		backendApi.POST("/reset", backend.ResetPassword)
+		backendApi.POST("/ecpay/finish", backend.EcpayPaymentFinish)
 
 		authRequired := backendApi.Use(auth.AuthRequred)
 		{
@@ -98,6 +99,7 @@ func main() {
 			authRequired.GET("/products/:id", backend.ProductFetch)
 			authRequired.POST("/products/save", backend.ProductModify)
 			authRequired.POST("/products/public", backend.ProductPublic)
+			authRequired.POST("/products/delete", backend.ProductDelete)
 
 			authRequired.GET("/orders/untreated", backend.OrderUntreated)
 			authRequired.POST("/orders", backend.OrderList)

@@ -5,6 +5,7 @@ import (
 
 	"github.com/liudng/godump"
 	"gorm.io/gorm"
+	"gorm.io/plugin/soft_delete"
 )
 
 type ProductQuery struct {
@@ -35,7 +36,7 @@ type Products struct {
 	StyleEnabled    bool                  `json:"style_enabled"`
 	SubStyleEnabled bool                  `json:"sub_style_enabled"`
 	IsPublic        bool                  `json:"is_public"`
-	DeletedAt       int                   `json:"-"`
+	DeletedAt       soft_delete.DeletedAt `json:"-"`
 	TimeDefault
 }
 
@@ -87,7 +88,7 @@ func (query *ProductQuery) FetchAll() (products []Products) {
 
 func (req *ProductListReq) FetchAll() (products []Products, pagination Pagination) {
 	var count int64
-	sql := DB.Table("products").Where("platform_id = ?", req.PlatformID)
+	sql := DB.Model(&Products{}).Where("platform_id = ?", req.PlatformID)
 	sql.Count(&count)
 	sql.Offset((req.Page - 1) * req.Items).Limit(req.Items).Scan(&products)
 	pagination = CreatePagination(req.Page, req.Items, count)

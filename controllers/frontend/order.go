@@ -220,8 +220,8 @@ func OrderCreate(c *gin.Context) {
 		p, _ := c.Get("platform")
 		platform := p.(models.Platform)
 		client := ecpay.NewStageClient(
-			ecpay.WithReturnURL("https://ec.giantzongzi.com/ecpay/return"),
-			ecpay.WithOrderResultURL("https://%s:3000/checkout/finish"),
+			ecpay.WithReturnURL("https://api.giantzongzi.com/api/backend/ecpay"),
+			ecpay.WithOrderResultURL(fmt.Sprintf("https://%s:3000/checkout/finish", c.Request.Header["Hostname"][0])),
 			ecpay.WithDebug)
 		aio := client.CreateOrder(fmt.Sprintf("gianttest%d", order.ID), time.Now(), int(order.Total), fmt.Sprintf("%s %s", platform.Title, order.Memo), itemName)
 		aio.SetCreditPayment()
