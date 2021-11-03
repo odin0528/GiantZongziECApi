@@ -84,7 +84,6 @@ func QueryTradeInfo(merchantTradeNo string) url.Values {
 	data.Add("TimeStamp", fmt.Sprintf("%d", timestamp))
 	data.Add("CheckMacValue", checkMac)
 	data.Add("PlatformID", "")
-	fmt.Println(data.Encode())
 	resp, err := http.PostForm(os.Getenv("ECPAY_QUERY_TRADE_URL"), data)
 
 	if err != nil {
