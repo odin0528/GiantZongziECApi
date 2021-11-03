@@ -40,16 +40,13 @@ func EcpayPaymentFinish(c *gin.Context) {
 		ecpay.WithDebug,
 	)
 	mac := client.GenerateCheckMacValue(params)
-	fmt.Println(senderMac)
-	fmt.Println(mac)
 	if mac != senderMac {
 		c.String(http.StatusBadRequest, "0|Error")
 		c.Abort()
 	}
 
-	info, resp, err := client.QueryTradeInfo(params["MerchantTradeNo"], time.Now())
+	info, _, _ := client.QueryTradeInfo(params["MerchantTradeNo"], time.Now())
 	godump.Dump(info)
-	godump.Dump(resp)
 
 	fmt.Println("1|ok")
 }
