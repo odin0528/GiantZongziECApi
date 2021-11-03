@@ -11,14 +11,28 @@ import (
 	models "eCommerce/models/backend"
 
 	"github.com/Laysi/go-ecpay-sdk"
+	ecpayBase "github.com/Laysi/go-ecpay-sdk/base"
 	ecpayGin "github.com/Laysi/go-ecpay-sdk/gin"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/liudng/godump"
 )
 
 func EcpayPaymentFinish(c *gin.Context) {
-	ecpayGin.ResponseBodyDateTimePatchHelper(c)
+	data := ecpayBase.OrderResult{}
+	err := ecpayGin.ResponseBodyDateTimePatchHelper(c)
+	if err != nil {
+		fmt.Println(err.Error())
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+	if err = c.MustBindWith(&data, binding.FormPost); err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	godump.Dump(data)
 
 	params := ecpay.ECPayValues{c.Request.PostForm}.ToMap()
 	c.Request.Form = nil
