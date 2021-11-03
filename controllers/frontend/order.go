@@ -143,16 +143,16 @@ func OrderCreate(c *gin.Context) {
 		Platform := platform.(models.Platform)
 		orderUuid := uuid.New().String()
 
-		// pay, _ := linepay.New("1656472600", "ecc5e953a89199d59a8a12011ce1e204", linepay.WithSandbox())
-		pay, _ := linepay.New("1656472600", "ecc5e953a89199d59a8a12011ce1e204")
+		// pay, _ := linepay.New(os.Getenv("LINE_PAY_ID"), os.Getenv("LINE_PAY_KEY"), linepay.WithSandbox())
+		pay, _ := linepay.New(os.Getenv("LINE_PAY_ID"), os.Getenv("LINE_PAY_KEY"))
 		requestReq := &linepay.RequestRequest{
 			Amount:   int(order.Price + order.Shipping),
 			Currency: "TWD",
 			OrderID:  orderUuid,
 			Packages: []*linepay.RequestPackage{},
 			RedirectURLs: &linepay.RequestRedirectURLs{
-				ConfirmURL: fmt.Sprintf("https://%s:3000/checkout/finish", c.Request.Header["Hostname"][0]),
-				CancelURL:  fmt.Sprintf("https://%s:3000/checkout/cancel", c.Request.Header["Hostname"][0]),
+				ConfirmURL: fmt.Sprintf(os.Getenv("LINE_PAYMENT_FINISH_URL"), c.Request.Header["Hostname"][0]),
+				CancelURL:  fmt.Sprintf(os.Getenv("LINE_PAYMENT_CANCEL_URL"), c.Request.Header["Hostname"][0]),
 			},
 		}
 
@@ -225,7 +225,7 @@ func OrderCreate(c *gin.Context) {
 			ecpay.WithOrderResultURL(fmt.Sprintf(os.Getenv("ECPAY_CLIENT_RETURN_URL"), c.Request.Header["Hostname"][0], "%2Fcheckout%2Ffinish")),
 			ecpay.WithDebug,
 		)
-		aio := client.CreateOrder(fmt.Sprintf("gianttest%d", order.ID), time.Now(), int(order.Total), fmt.Sprintf("%s %s", platform.Title, order.Memo), itemName)
+		aio := client.CreateOrder(fmt.Sprintf("gzec%d", order.ID), time.Now(), int(order.Total), fmt.Sprintf("%s %s", platform.Title, order.Memo), itemName)
 
 		switch order.Payment {
 		case 3:
@@ -239,7 +239,6 @@ func OrderCreate(c *gin.Context) {
 		case 7:
 			aio.SetBarcodePayment()
 		}
-
 		mac, _ := aio.GenerateCheckMac()
 		html, _ := aio.GenerateRequestHtml()
 

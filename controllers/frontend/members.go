@@ -5,6 +5,7 @@ import (
 	"eCommerce/pkg/e"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -16,7 +17,6 @@ import (
 	models "eCommerce/models/frontend"
 
 	fb "github.com/huandu/facebook/v2"
-	"github.com/liudng/godump"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -171,9 +171,9 @@ func MemberOAuth(c *gin.Context) {
 		params := url.Values{}
 		params.Add("grant_type", "authorization_code")
 		params.Add("code", req.Token)
-		params.Add("redirect_uri", "https://example.com:3000/oauth/line")
-		params.Add("client_id", "1656498603")
-		params.Add("client_secret", "dc9e16a0b2a0d05c6a9870bc60ab7f9c")
+		params.Add("redirect_uri", fmt.Sprintf(os.Getenv("LINE_LOGIN_REDIRECT_URL"), c.Request.Header["Hostname"][0]))
+		params.Add("client_id", os.Getenv("LINE_CHANNEL_ID"))
+		params.Add("client_secret", os.Getenv("LINE_CHANNEL_SECRET"))
 		body := strings.NewReader(params.Encode())
 
 		curl, _ := http.NewRequest("POST", "https://api.line.me/oauth2/v2.1/token", body)
@@ -185,7 +185,7 @@ func MemberOAuth(c *gin.Context) {
 
 		params = url.Values{}
 		params.Add("id_token", result["id_token"].(string))
-		params.Add("client_id", "1656498603")
+		params.Add("client_id", os.Getenv("LINE_CHANNEL_ID"))
 		body = strings.NewReader(params.Encode())
 		curl, _ = http.NewRequest("POST", "https://api.line.me/oauth2/v2.1/verify", body)
 		curl.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -193,8 +193,6 @@ func MemberOAuth(c *gin.Context) {
 		resp, _ = http.DefaultClient.Do(curl)
 		rbody, _ = ioutil.ReadAll(resp.Body)
 		json.Unmarshal(rbody, &userData)
-
-		godump.Dump(userData)
 
 		defer resp.Body.Close()
 
