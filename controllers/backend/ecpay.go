@@ -57,6 +57,7 @@ func EcpayPaymentFinish(c *gin.Context) {
 		godump.Dump(params)
 	}
 
+	godump.Dump(params["MerchantTradeNo"])
 	info := QueryTradeInfo(params["MerchantTradeNo"])
 	godump.Dump(info)
 
@@ -65,7 +66,7 @@ func EcpayPaymentFinish(c *gin.Context) {
 	}
 
 	fmt.Println("1|ok")
-	c.String(http.StatusBadRequest, "1|ok")
+	c.String(http.StatusOK, "1|ok")
 }
 
 func QueryTradeInfo(merchantTradeNo string) url.Values {
