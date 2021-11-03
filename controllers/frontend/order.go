@@ -149,8 +149,8 @@ func OrderCreate(c *gin.Context) {
 		Platform := platform.(models.Platform)
 		orderUuid := uuid.New().String()
 
-		pay, _ := linepay.New(os.Getenv("LINE_PAY_ID"), os.Getenv("LINE_PAY_KEY"), linepay.WithSandbox())
-		// pay, _ := linepay.New(os.Getenv("LINE_PAY_ID"), os.Getenv("LINE_PAY_KEY"))
+		// pay, _ := linepay.New(os.Getenv("LINE_PAY_ID"), os.Getenv("LINE_PAY_KEY"), linepay.WithSandbox())
+		pay, _ := linepay.New(os.Getenv("LINE_PAY_ID"), os.Getenv("LINE_PAY_KEY"))
 		requestReq := &linepay.RequestRequest{
 			Amount:   int(order.Price + order.Shipping),
 			Currency: "TWD",
