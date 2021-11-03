@@ -56,13 +56,11 @@ func EcpayPaymentFinish(c *gin.Context) {
 		godump.Dump(params)
 	} */
 
-	godump.Dump(params)
 	info := QueryTradeInfo(params["MerchantTradeNo"])
-	godump.Dump(info)
 	godump.Dump(info.Get("TradeStatus"))
 
 	if info.Get("TradeStatus") == "1" {
-		DB.Model(&models.Orders{}).Where("id = ? and status = 11", strings.Replace(info.Get("MerchantTradeNo"), "GZEC", "", 1)).Update("status", 21)
+		DB.Debug().Model(&models.Orders{}).Where("id = ? and status = 11", strings.Replace(info.Get("MerchantTradeNo"), "GZEC", "", 1)).Update("status", 21)
 	}
 
 	c.String(http.StatusOK, "1|OK")
