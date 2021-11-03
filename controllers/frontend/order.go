@@ -151,8 +151,8 @@ func OrderCreate(c *gin.Context) {
 			OrderID:  orderUuid,
 			Packages: []*linepay.RequestPackage{},
 			RedirectURLs: &linepay.RequestRedirectURLs{
-				ConfirmURL: fmt.Sprintf(os.Getenv("LINE_PAYMENT_FINISH_URL"), c.Request.Header["Hostname"][0]),
-				CancelURL:  fmt.Sprintf(os.Getenv("LINE_PAYMENT_CANCEL_URL"), c.Request.Header["Hostname"][0]),
+				ConfirmURL: fmt.Sprintf(os.Getenv("EC_CHECKOUT_FINISH_URL"), c.Request.Header["Hostname"][0]),
+				CancelURL:  fmt.Sprintf(os.Getenv("EC_CHECKOUT_URL"), c.Request.Header["Hostname"][0]),
 			},
 		}
 
@@ -222,6 +222,7 @@ func OrderCreate(c *gin.Context) {
 		platform := p.(models.Platform)
 		client := ecpay.NewStageClient(
 			ecpay.WithReturnURL(fmt.Sprintf("%s%s", os.Getenv("API_URL"), os.Getenv("ECPAY_PAYMENT_FINISH_URL"))),
+			ecpay.WithClientBackURL(fmt.Sprintf(os.Getenv("EC_CHECKOUT_URL"), c.Request.Header["Hostname"][0])),
 			ecpay.WithOrderResultURL(fmt.Sprintf(os.Getenv("ECPAY_CLIENT_RETURN_URL"), c.Request.Header["Hostname"][0], "%2Fcheckout%2Ffinish")),
 			ecpay.WithDebug,
 		)
