@@ -75,7 +75,7 @@ func main() {
 		backendApi.POST("/login", backend.Login)
 		backendApi.POST("/reset", backend.ResetPassword)
 		backendApi.POST("/ecpay/finish", backend.EcpayPaymentFinish)
-		// backendApi.GET("/ecpay/test", backend.EcpayPaymentTest)
+		backendApi.GET("/ecpay/test", backend.EcpayPaymentTest)
 
 		authRequired := backendApi.Use(auth.AuthRequred)
 		{

@@ -61,6 +61,10 @@ func EcpayPaymentFinish(c *gin.Context) {
 		DB.Model(&models.Orders{}).Where("id = ? and status = 11", strings.Replace(info.Get("MerchantTradeNo"), "GZEC", "", 1)).Update("status", 21)
 	}
 
+	c.String(http.StatusOK, "1|OK")
+}
+
+func EcpayPaymentTest(c *gin.Context) {
 	c.String(http.StatusOK, "1|ok")
 }
 
