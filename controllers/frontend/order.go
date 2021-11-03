@@ -244,12 +244,9 @@ func OrderCreate(c *gin.Context) {
 		case 7:
 			aio.SetBarcodePayment()
 		}
-		mac, _ := aio.GenerateCheckMac()
 		html, _ := aio.GenerateRequestHtml()
 
-		DB.Model(&order).Update("ecpay_mac", mac)
-
-		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "ecpay": html, "mac": mac})
+		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "ecpay": html})
 	}
 
 }

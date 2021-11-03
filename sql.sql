@@ -15,3 +15,6 @@ ADD COLUMN `barcode_enabled` tinyint(4) NULL AFTER `cvs_enabled`;
 
 ALTER TABLE `ec`.`orders` 
 ADD COLUMN `ecpay_mac` varchar(255) NULL COMMENT '綠界檢查碼' AFTER `transaction_id`;
+
+ALTER TABLE `ec`.`orders` 
+DROP COLUMN `ecpay_mac`;
