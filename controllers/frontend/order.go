@@ -221,8 +221,11 @@ func OrderCreate(c *gin.Context) {
 	} else {
 		p, _ := c.Get("platform")
 		platform := p.(models.Platform)
-		client := ecpay.NewStageClient(
-			ecpay.WithReturnURL(fmt.Sprintf("%s%s", os.Getenv("API_URL"), os.Getenv("ECPAY_PAYMENT_FINISH_URL"))),
+		client := ecpay.NewClient(
+			os.Getenv("ECPAY_MERCHANT_ID"),
+			os.Getenv("ECPAY_MERCHANT_HASH_KEY"),
+			os.Getenv("ECPAY_MERCHANT_HASH_IV"),
+			fmt.Sprintf("%s%s", os.Getenv("API_URL"), os.Getenv("ECPAY_PAYMENT_FINISH_URL")),
 			ecpay.WithClientBackURL(fmt.Sprintf(os.Getenv("EC_URL"), c.Request.Header["Hostname"][0])),
 			ecpay.WithOrderResultURL(fmt.Sprintf(os.Getenv("ECPAY_CLIENT_RETURN_URL"), c.Request.Header["Hostname"][0], "%2Fcheckout%2Ffinish")),
 			ecpay.WithDebug,
