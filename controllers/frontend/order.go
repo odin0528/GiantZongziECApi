@@ -137,6 +137,12 @@ func OrderCreate(c *gin.Context) {
 		}
 	}
 
+	/* carts := models.Carts{
+		MemberID:   MemberID,
+		PlatformID: PlatformID,
+	}
+	carts.Clean() */
+
 	if order.Payment == 4 {
 
 		platform, _ := c.Get("platform")
@@ -210,19 +216,14 @@ func OrderCreate(c *gin.Context) {
 		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "payment": requestResp.Info.PaymentURL, "request": requestReq})
 		return
 	} else if order.Payment == 2 {
-		// 如果不是三方支付，交易完就先清
-		carts := models.Carts{
-			MemberID:   MemberID,
-			PlatformID: PlatformID,
-		}
-		carts.Clean()
+		// 貨到付款就等後台出託運單
 		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token})
 	} else {
 		p, _ := c.Get("platform")
 		platform := p.(models.Platform)
 		client := ecpay.NewStageClient(
 			ecpay.WithReturnURL(fmt.Sprintf("%s%s", os.Getenv("API_URL"), os.Getenv("ECPAY_PAYMENT_FINISH_URL"))),
-			ecpay.WithClientBackURL(fmt.Sprintf(os.Getenv("EC_CHECKOUT_URL"), c.Request.Header["Hostname"][0])),
+			ecpay.WithClientBackURL(fmt.Sprintf(os.Getenv("EC_URL"), c.Request.Header["Hostname"][0])),
 			ecpay.WithOrderResultURL(fmt.Sprintf(os.Getenv("ECPAY_CLIENT_RETURN_URL"), c.Request.Header["Hostname"][0], "%2Fcheckout%2Ffinish")),
 			ecpay.WithDebug,
 		)

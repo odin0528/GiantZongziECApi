@@ -18,6 +18,7 @@ import (
 
 	"github.com/Laysi/go-ecpay-sdk"
 	"github.com/gin-gonic/gin"
+	"github.com/liudng/godump"
 )
 
 func EcpayPaymentFinish(c *gin.Context) {
@@ -55,7 +56,10 @@ func EcpayPaymentFinish(c *gin.Context) {
 		godump.Dump(params)
 	} */
 
+	godump.Dump(params)
 	info := QueryTradeInfo(params["MerchantTradeNo"])
+	godump.Dump(info)
+	godump.Dump(info.Get("TradeStatus"))
 
 	if info.Get("TradeStatus") == "1" {
 		DB.Model(&models.Orders{}).Where("id = ? and status = 11", strings.Replace(info.Get("MerchantTradeNo"), "GZEC", "", 1)).Update("status", 21)
