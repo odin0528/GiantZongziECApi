@@ -1,9 +1,7 @@
 package backend
 
 import (
-	"bytes"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -13,25 +11,14 @@ import (
 	models "eCommerce/models/backend"
 
 	"github.com/Laysi/go-ecpay-sdk"
+	ecpayGin "github.com/Laysi/go-ecpay-sdk/gin"
+
 	"github.com/gin-gonic/gin"
 	"github.com/liudng/godump"
 )
 
 func EcpayPaymentFinish(c *gin.Context) {
-	body, err := c.GetRawData()
-	if err != nil {
-		c.Status(http.StatusBadRequest)
-		return
-	}
-
-	c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
-	err = c.Request.ParseForm()
-	if err != nil {
-		c.Status(http.StatusBadRequest)
-		return
-	}
-
-	c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+	ecpayGin.ResponseBodyDateTimePatchHelper(c)
 
 	params := ecpay.ECPayValues{c.Request.PostForm}.ToMap()
 	c.Request.Form = nil
@@ -49,7 +36,9 @@ func EcpayPaymentFinish(c *gin.Context) {
 		c.Abort()
 	}
 
-	godump.Dump(params)
+	if params["SimulatePaid"] == "1" {
+		godump.Dump(params)
+	}
 
 	info, _, _ := client.QueryTradeInfo(params["MerchantTradeNo"], time.Now())
 	godump.Dump(info)
