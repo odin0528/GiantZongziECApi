@@ -51,7 +51,7 @@ func EcpayPaymentFinish(c *gin.Context) {
 	info, _, _ := client.QueryTradeInfo(params["MerchantTradeNo"], time.Now())
 
 	if info.TradeStatus == "1" {
-		DB.Debug().Model(&models.Orders{}).Where("id = ? and status = 11 and deleted_at = 0", strings.Replace(info.MerchantTradeNo, "GZEC", "", 1)).Update("status", 21)
+		DB.Debug().Model(&models.Orders{}).Where("id = ? and status = 11", strings.Replace(info.MerchantTradeNo, "GZEC", "", 1)).Update("status", 21)
 	}
 
 	fmt.Println("1|ok")
