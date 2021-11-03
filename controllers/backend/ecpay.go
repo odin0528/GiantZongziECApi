@@ -35,7 +35,6 @@ func EcpayPaymentFinish(c *gin.Context) {
 	delete(params, "CheckMacValue")
 	client := ecpay.NewStageClient(
 		ecpay.WithReturnURL(fmt.Sprintf("%s%s", os.Getenv("API_URL"), os.Getenv("ECPAY_PAYMENT_FINISH_URL"))),
-		ecpay.WithOrderResultURL(fmt.Sprintf(os.Getenv("ECPAY_CLIENT_RETURN_URL"), c.Request.Header["Hostname"][0], "%2Fcheckout%2Ffinish")),
 		ecpay.WithDebug,
 	)
 	mac := client.GenerateCheckMacValue(params)
