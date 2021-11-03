@@ -6,11 +6,14 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 	"time"
+
+	. "eCommerce/internal/database"
+	models "eCommerce/models/backend"
 
 	"github.com/Laysi/go-ecpay-sdk"
 	"github.com/gin-gonic/gin"
-	"github.com/liudng/godump"
 )
 
 func EcpayPaymentFinish(c *gin.Context) {
@@ -46,7 +49,10 @@ func EcpayPaymentFinish(c *gin.Context) {
 	}
 
 	info, _, _ := client.QueryTradeInfo(params["MerchantTradeNo"], time.Now())
-	godump.Dump(info)
+
+	if info.TradeStatus == "1" {
+		DB.Debug().Model(&models.Orders{}).Where("id = ? and status = 11 and deleted_at = 0", strings.Replace(info.MerchantTradeNo, "GZEC", "", 1)).Update("status", 21)
+	}
 
 	fmt.Println("1|ok")
 }
