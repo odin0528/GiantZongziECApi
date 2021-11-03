@@ -18,7 +18,6 @@ import (
 
 	"github.com/Laysi/go-ecpay-sdk"
 	"github.com/gin-gonic/gin"
-	"github.com/liudng/godump"
 )
 
 func EcpayPaymentFinish(c *gin.Context) {
@@ -53,19 +52,16 @@ func EcpayPaymentFinish(c *gin.Context) {
 		c.Abort()
 	}
 
-	if params["SimulatePaid"] == "1" {
+	/* if params["SimulatePaid"] == "1" {
 		godump.Dump(params)
-	}
+	} */
 
-	godump.Dump(params["MerchantTradeNo"])
 	info := QueryTradeInfo(params["MerchantTradeNo"])
-	godump.Dump(info)
 
 	if info.Get("TradeStatus") == "1" {
 		DB.Model(&models.Orders{}).Where("id = ? and status = 11", strings.Replace(info.Get("MerchantTradeNo"), "GZEC", "", 1)).Update("status", 21)
 	}
 
-	fmt.Println("1|ok")
 	c.String(http.StatusOK, "1|ok")
 }
 
