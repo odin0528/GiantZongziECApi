@@ -31,7 +31,7 @@ func EcpayPaymentFinish(c *gin.Context) {
 		fmt.Println(err.Error())
 		return
 	}
-
+	fmt.Println("================")
 	godump.Dump(data)
 
 	params := ecpay.ECPayValues{c.Request.PostForm}.ToMap()
@@ -42,7 +42,6 @@ func EcpayPaymentFinish(c *gin.Context) {
 	delete(params, "CheckMacValue")
 	client := ecpay.NewStageClient(
 		ecpay.WithReturnURL(fmt.Sprintf("%s%s", os.Getenv("API_URL"), os.Getenv("ECPAY_PAYMENT_FINISH_URL"))),
-		ecpay.WithDebug,
 	)
 	mac := client.GenerateCheckMacValue(params)
 	if mac != senderMac {
@@ -51,10 +50,12 @@ func EcpayPaymentFinish(c *gin.Context) {
 	}
 
 	if params["SimulatePaid"] == "1" {
+		fmt.Println("================")
 		godump.Dump(params)
 	}
 
 	info, _, _ := client.QueryTradeInfo(params["MerchantTradeNo"], time.Now())
+	fmt.Println("================")
 	godump.Dump(info)
 
 	if info.TradeStatus == "1" {
