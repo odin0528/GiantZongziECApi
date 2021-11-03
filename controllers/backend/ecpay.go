@@ -52,10 +52,12 @@ func EcpayPaymentFinish(c *gin.Context) {
 	godump.Dump(params)
 
 	info, _, _ := client.QueryTradeInfo(params["MerchantTradeNo"], time.Now())
+	godump.Dump(info)
 
 	if info.TradeStatus == "1" {
 		DB.Model(&models.Orders{}).Where("id = ? and status = 11", strings.Replace(info.MerchantTradeNo, "GZEC", "", 1)).Update("status", 21)
 	}
 
 	fmt.Println("1|ok")
+	c.String(http.StatusBadRequest, "1|ok")
 }
