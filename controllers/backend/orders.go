@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	. "eCommerce/internal/database"
+	"eCommerce/internal/money"
 	models "eCommerce/models/backend"
 
 	"github.com/gin-gonic/gin"
@@ -75,6 +76,40 @@ func OrderNextStep(c *gin.Context) {
 	}
 
 	err = DB.Select("status").Updates(&order).Error
+
+	if err != nil {
+		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
+		return
+	}
+
+	g.Response(http.StatusOK, e.Success, nil)
+}
+
+func OrderMakeShipmentNo(c *gin.Context) {
+	g := Gin{c}
+	var query models.OrderQuery
+	err := c.BindJSON(&query)
+	if err != nil {
+		g.Response(http.StatusBadRequest, e.InvalidParams, err)
+		return
+	}
+	PlatformID, _ := c.Get("platform_id")
+	query.PlatformID = PlatformID.(int)
+	query.Status = 21
+	order, err := query.Fetch()
+
+	if err != nil {
+		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
+		return
+	}
+
+	order.GetProducts()
+
+	shipmentNo, _ := money.CreateLogisticsOrder(order)
+
+	order.ShipmentNo = shipmentNo
+
+	err = DB.Select("status", "shipment_no").Updates(&order).Error
 
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)

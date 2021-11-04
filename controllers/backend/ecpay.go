@@ -2,7 +2,6 @@ package backend
 
 import (
 	"bytes"
-	"crypto/md5"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
@@ -65,51 +64,6 @@ func EcpayPaymentFinish(c *gin.Context) {
 	}
 
 	c.String(http.StatusOK, "1|OK")
-}
-
-func EcpayLogisticsCreate(c *gin.Context) {
-	ecpayValue := map[string]string{}
-	ecpayValue["GoodsAmount"] = "978"
-	ecpayValue["IsCollection"] = "Y"
-	ecpayValue["LogisticsSubType"] = "UNIMART"
-	ecpayValue["LogisticsType"] = "CVS"
-	ecpayValue["MerchantID"] = "2000132"
-	ecpayValue["MerchantTradeNo"] = ""
-	ecpayValue["MerchantTradeDate"] = time.Now().Format("2006/01/02 15:04:05")
-	ecpayValue["ReceiverCellPhone"] = "0958259061"
-	ecpayValue["ReceiverName"] = "李晧瑋"
-	ecpayValue["ReceiverStoreID"] = "210960"
-	ecpayValue["SenderName"] = "李晧瑋"
-	ecpayValue["ServerReplyURL"] = fmt.Sprintf("%s/api/backend/ecpay/logistics", os.Getenv("API_URL"))
-
-	encodedParams := fmt.Sprintf(
-		"HashKey=%s&%s&HashIV=%s",
-		"5294y06JbISpM5x9",
-		ecpay.NewECPayValuesFromMap(ecpayValue).Encode(),
-		"v77hoKGq4kWxNNIS",
-	)
-
-	encodedParams = FormUrlEncode(encodedParams)
-	encodedParams = strings.ToLower(encodedParams)
-	sum := md5.Sum([]byte(encodedParams))
-	checkMac := strings.ToUpper(fmt.Sprintf("%x", sum))
-
-	resp, err := http.Post(
-		"https://logistics-stage.ecpay.com.tw/Express/Create",
-		"application/x-www-form-urlencoded",
-		strings.NewReader(ecpay.NewECPayValuesFromMap(ecpayValue).Encode()+"&CheckMacValue="+checkMac),
-	)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
-	bodyString := string(bodyBytes)
-	fmt.Println(bodyString)
-	response, _ := url.ParseQuery(bodyString)
-	godump.Dump(response)
-
 }
 
 func EcpayPaymentTest(c *gin.Context) {

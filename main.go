@@ -76,7 +76,7 @@ func main() {
 		backendApi.POST("/reset", backend.ResetPassword)
 		backendApi.POST("/ecpay/finish", backend.EcpayPaymentFinish)
 		backendApi.GET("/ecpay/test", backend.EcpayPaymentTest)
-		backendApi.GET("/ecpay/logistics", backend.EcpayLogisticsCreate)
+		// backendApi.GET("/ecpay/logistics", backend.EcpayLogisticsCreate)
 
 		authRequired := backendApi.Use(auth.AuthRequred)
 		{
@@ -106,6 +106,7 @@ func main() {
 			authRequired.GET("/orders/untreated", backend.OrderUntreated)
 			authRequired.POST("/orders", backend.OrderList)
 			authRequired.POST("/order/next", backend.OrderNextStep)
+			authRequired.POST("/order/shipment", backend.OrderMakeShipmentNo)
 
 			authRequired.POST("/members/list", backend.MemberList)
 

@@ -19,24 +19,27 @@ type OrderQuery struct {
 }
 
 type Orders struct {
-	ID           int             `json:"id"`
-	PlatformID   int             `json:"-"`
-	MemberID     int             `json:"-"`
-	Fullname     string          `json:"fullname"`
-	Phone        string          `json:"phone"`
-	Address      string          `json:"address"`
-	Memo         string          `json:"memo"`
-	Method       int             `json:"method"`
-	Total        float32         `json:"total"`
-	Price        float32         `json:"price"`
-	Shipping     float32         `json:"shipping"`
-	Payment      int             `json:"payment"`
-	StoreID      string          `json:"store_id"`
-	StoreName    string          `json:"store_name"`
-	StoreAddress string          `json:"store_address"`
-	StorePhone   string          `json:"store_phone"`
-	Status       int             `json:"status"`
-	Products     []OrderProducts `json:"products" gorm:"-"`
+	ID              int             `json:"id"`
+	PlatformID      int             `json:"-"`
+	MemberID        int             `json:"-"`
+	Fullname        string          `json:"fullname"`
+	Phone           string          `json:"phone"`
+	Address         string          `json:"address"`
+	Memo            string          `json:"memo"`
+	Method          int             `json:"method"`
+	Total           float32         `json:"total"`
+	Price           float32         `json:"price"`
+	Shipping        float32         `json:"shipping"`
+	Payment         int             `json:"payment"`
+	StoreID         string          `json:"store_id"`
+	StoreName       string          `json:"store_name"`
+	StoreAddress    string          `json:"store_address"`
+	StorePhone      string          `json:"store_phone"`
+	Status          int             `json:"status"`
+	ShipmentNo      string          `json:"shipment_no"`
+	LogisticsStatus string          `json:"logistics_status"`
+	LogisticsMsg    string          `json:"logistics_msg"`
+	Products        []OrderProducts `json:"products" gorm:"-"`
 	TimeDefault
 }
 
