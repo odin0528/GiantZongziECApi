@@ -23,3 +23,6 @@ ALTER TABLE `orders`
 ADD COLUMN `shipment_no` varchar(63) NULL COMMENT '託運單號' AFTER `store_phone`,
 ADD COLUMN `logistics_status` varchar(255) NULL COMMENT '物流狀態' AFTER `shipment_no`,
 ADD COLUMN `logistics_msg` varchar(255) NULL COMMENT '物流狀態說明' AFTER `logistics_status`;
+
+ALTER TABLE `orders` 
+MODIFY COLUMN `logistics_status` tinyint(4) NULL DEFAULT NULL COMMENT '物流狀態' AFTER `shipment_no`;

@@ -105,11 +105,24 @@ func OrderMakeShipmentNo(c *gin.Context) {
 
 	order.GetProducts()
 
-	shipmentNo, _ := money.CreateLogisticsOrder(order)
+	response, err := money.CreateLogisticsOrder(order)
 
-	order.ShipmentNo = shipmentNo
+	if err != nil {
+		g.Response(http.StatusOK, e.StatusInternalServerError, err.Error())
+		return
+	}
 
-	err = DB.Select("status", "shipment_no").Updates(&order).Error
+	order.Status = 22
+	order.LogisticsID = response.Get("AllPayLogisticsID")
+	order.LogisticsStatus = 1
+	order.LogisticsMsg = "託運單號建立完成"
+	if order.Method == 1 {
+		order.ShipmentNo = response.Get("BookingNote")
+	} else {
+		order.ShipmentNo = response.Get("ShipmentNo")
+	}
+
+	err = DB.Select("status", "logistics_id", "shipment_no", "logistics_status", "logistics_msg").Updates(&order).Error
 
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)

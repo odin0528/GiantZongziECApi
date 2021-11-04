@@ -36,8 +36,9 @@ type Orders struct {
 	StoreAddress    string          `json:"store_address"`
 	StorePhone      string          `json:"store_phone"`
 	Status          int             `json:"status"`
+	LogisticsID     string          `json:"logistics_id"`
 	ShipmentNo      string          `json:"shipment_no"`
-	LogisticsStatus string          `json:"logistics_status"`
+	LogisticsStatus int             `json:"logistics_status"`
 	LogisticsMsg    string          `json:"logistics_msg"`
 	Products        []OrderProducts `json:"products" gorm:"-"`
 	TimeDefault

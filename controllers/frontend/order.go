@@ -230,7 +230,7 @@ func OrderCreate(c *gin.Context) {
 			ecpay.WithOrderResultURL(fmt.Sprintf(os.Getenv("ECPAY_CLIENT_RETURN_URL"), c.Request.Header["Hostname"][0], "%2Fcheckout%2Ffinish")),
 			ecpay.WithDebug,
 		)
-		aio := client.CreateOrder(fmt.Sprintf("GZEC%d", order.ID), time.Now(), int(order.Total), fmt.Sprintf("%s %s", platform.Title, order.Memo), itemName)
+		aio := client.CreateOrder(fmt.Sprintf("%s%d", os.Getenv("ECPAY_MERCHANT_TRADE_NO_PREFIX"), order.ID), time.Now(), int(order.Total), fmt.Sprintf("%s %s", platform.Title, order.Memo), itemName)
 
 		switch order.Payment {
 		case 3:

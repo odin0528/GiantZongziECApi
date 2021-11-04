@@ -60,7 +60,7 @@ func EcpayPaymentFinish(c *gin.Context) {
 	godump.Dump(info.Get("TradeStatus"))
 
 	if info.Get("TradeStatus") == "1" {
-		DB.Debug().Model(&models.Orders{}).Where("id = ? and status = 11", strings.Replace(info.Get("MerchantTradeNo"), "GZEC", "", 1)).Update("status", 21)
+		DB.Debug().Model(&models.Orders{}).Where("id = ? and status = 11", strings.Replace(info.Get("MerchantTradeNo"), os.Getenv("ECPAY_MERCHANT_TRADE_NO_PREFIX"), "", 1)).Update("status", 21)
 	}
 
 	c.String(http.StatusOK, "1|OK")
