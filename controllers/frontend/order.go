@@ -149,8 +149,14 @@ func OrderCreate(c *gin.Context) {
 		Platform := platform.(models.Platform)
 		orderUuid := uuid.New().String()
 
-		// pay, _ := linepay.New(os.Getenv("LINE_PAY_ID"), os.Getenv("LINE_PAY_KEY"), linepay.WithSandbox())
-		pay, _ := linepay.New(os.Getenv("LINE_PAY_ID"), os.Getenv("LINE_PAY_KEY"))
+		var pay *linepay.Client
+
+		if os.Getenv("ENV") != "production" {
+			pay, _ = linepay.New(os.Getenv("LINE_PAY_ID"), os.Getenv("LINE_PAY_KEY"), linepay.WithSandbox())
+		} else {
+			pay, _ = linepay.New(os.Getenv("LINE_PAY_ID"), os.Getenv("LINE_PAY_KEY"))
+		}
+
 		requestReq := &linepay.RequestRequest{
 			Amount:   int(order.Price + order.Shipping),
 			Currency: "TWD",
@@ -158,7 +164,7 @@ func OrderCreate(c *gin.Context) {
 			Packages: []*linepay.RequestPackage{},
 			RedirectURLs: &linepay.RequestRedirectURLs{
 				ConfirmURL: fmt.Sprintf(os.Getenv("EC_CHECKOUT_FINISH_URL"), c.Request.Header["Hostname"][0]),
-				CancelURL:  fmt.Sprintf(os.Getenv("EC_CHECKOUT_URL"), c.Request.Header["Hostname"][0]),
+				CancelURL:  fmt.Sprintf(os.Getenv("EC_CHECKOUT_CANCEL_URL"), c.Request.Header["Hostname"][0]),
 			},
 		}
 
@@ -219,17 +225,27 @@ func OrderCreate(c *gin.Context) {
 		// 貨到付款就等後台出託運單
 		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token})
 	} else {
+		var client *ecpay.Client
 		p, _ := c.Get("platform")
 		platform := p.(models.Platform)
-		client := ecpay.NewClient(
-			os.Getenv("ECPAY_MERCHANT_ID"),
-			os.Getenv("ECPAY_MERCHANT_HASH_KEY"),
-			os.Getenv("ECPAY_MERCHANT_HASH_IV"),
-			fmt.Sprintf("%s%s", os.Getenv("API_URL"), os.Getenv("ECPAY_PAYMENT_FINISH_URL")),
-			ecpay.WithClientBackURL(fmt.Sprintf(os.Getenv("EC_URL"), c.Request.Header["Hostname"][0])),
-			ecpay.WithOrderResultURL(fmt.Sprintf(os.Getenv("ECPAY_CLIENT_RETURN_URL"), c.Request.Header["Hostname"][0], "%2Fcheckout%2Ffinish")),
-			ecpay.WithDebug,
-		)
+		if os.Getenv("ENV") != "production" {
+			client = ecpay.NewStageClient(
+				ecpay.WithReturnURL(fmt.Sprintf("%s%s", os.Getenv("API_URL"), os.Getenv("ECPAY_PAYMENT_FINISH_URL"))),
+				ecpay.WithClientBackURL(fmt.Sprintf(os.Getenv("EC_URL"), c.Request.Header["Hostname"][0])),
+				ecpay.WithOrderResultURL(fmt.Sprintf(os.Getenv("ECPAY_CLIENT_RETURN_URL"), c.Request.Header["Hostname"][0], "%2Fcheckout%2Ffinish")),
+				ecpay.WithDebug,
+			)
+		} else {
+			client = ecpay.NewClient(
+				os.Getenv("ECPAY_MERCHANT_ID"),
+				os.Getenv("ECPAY_MERCHANT_HASH_KEY"),
+				os.Getenv("ECPAY_MERCHANT_HASH_IV"),
+				fmt.Sprintf("%s%s", os.Getenv("API_URL"), os.Getenv("ECPAY_PAYMENT_FINISH_URL")),
+				ecpay.WithClientBackURL(fmt.Sprintf(os.Getenv("EC_URL"), c.Request.Header["Hostname"][0])),
+				ecpay.WithOrderResultURL(fmt.Sprintf(os.Getenv("ECPAY_CLIENT_RETURN_URL"), c.Request.Header["Hostname"][0], "%2Fcheckout%2Ffinish")),
+				ecpay.WithDebug,
+			)
+		}
 		aio := client.CreateOrder(fmt.Sprintf("%s%d", os.Getenv("ECPAY_MERCHANT_TRADE_NO_PREFIX"), order.ID), time.Now(), int(order.Total), fmt.Sprintf("%s %s", platform.Title, order.Memo), itemName)
 
 		switch order.Payment {
@@ -251,7 +267,7 @@ func OrderCreate(c *gin.Context) {
 
 }
 
-func OrderUpdate(c *gin.Context) {
+/* func OrderUpdate(c *gin.Context) {
 	g := Gin{c}
 	var req *models.OrderUpdateReq
 	err := c.BindJSON(&req)
@@ -293,7 +309,7 @@ func OrderUpdate(c *gin.Context) {
 	DB.Select("status").Save(&order)
 
 	g.Response(http.StatusOK, e.Success, order)
-}
+} */
 
 func OrderValidation(PlatformID int, order *models.OrderCreateRequest) int {
 	priceChange := false

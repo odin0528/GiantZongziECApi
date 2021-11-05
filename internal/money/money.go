@@ -162,3 +162,15 @@ func MakeLogisticsCheckMac(params map[string]string) string {
 
 	return checkMac
 }
+
+func GeneratePrintShipmentCheckMac(ids []string) string {
+	ecpayValue := map[string]string{}
+	ecpayValue["MerchantID"] = os.Getenv("ECPAY_MERCHANT_ID")
+	ecpayValue["AllPayLogisticsID"] = strings.Join(ids, ",")
+	ecpayValue["MerchantTradeNo"] = ""
+	ecpayValue["IsPreView"] = "True"
+
+	checkMac := MakeLogisticsCheckMac(ecpayValue)
+
+	return checkMac
+}

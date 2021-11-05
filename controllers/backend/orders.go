@@ -132,6 +132,33 @@ func OrderMakeShipmentNo(c *gin.Context) {
 	g.Response(http.StatusOK, e.Success, nil)
 }
 
+func OrderShipmentPrint(c *gin.Context) {
+	g := Gin{c}
+	var query models.BatchOrderQuery
+	err := c.BindJSON(&query)
+	if err != nil {
+		g.Response(http.StatusBadRequest, e.InvalidParams, err)
+		return
+	}
+	PlatformID, _ := c.Get("platform_id")
+	query.PlatformID = PlatformID.(int)
+	query.Status = 22
+	orders, err := query.FetchAll()
+
+	if err != nil {
+		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
+		return
+	}
+
+	ids := []string{}
+
+	for _, order := range orders {
+		ids = append(ids, order.LogisticsID)
+	}
+
+	g.Response(http.StatusOK, e.Success, money.GeneratePrintShipmentCheckMac(ids))
+}
+
 func OrderUntreated(c *gin.Context) {
 	g := Gin{c}
 	var query models.OrderQuery

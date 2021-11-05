@@ -10,6 +10,7 @@ type OrderQuery struct {
 	MemberID      int    `json:"-"`
 	TransactionID string `json:"-"`
 	OrderUuid     string `json:"-"`
+	Status        int    `json:"-"`
 	Pagination
 }
 
@@ -61,12 +62,6 @@ type Orders struct {
 	TimeDefault
 }
 
-type OrderUpdateReq struct {
-	OrderUuid     string `json:"order_id"`
-	TransactionID string `json:"transaction_id"`
-	Status        int    `json:"status"`
-}
-
 func (OrderCreateRequest) TableName() string {
 	return "orders"
 }
@@ -85,6 +80,10 @@ func (query *OrderQuery) GetCondition() *gorm.DB {
 
 	if query.OrderUuid != "" {
 		sql.Where("order_uuid = ?", query.OrderUuid)
+	}
+
+	if query.Status != 0 {
+		sql.Where("status = ?", query.Status)
 	}
 
 	return sql

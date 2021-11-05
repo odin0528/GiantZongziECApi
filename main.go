@@ -47,27 +47,27 @@ func main() {
 		frontendApi.GET("/product/:id", frontend.ProductFetch)
 
 		frontendApi.POST("/order/create", frontend.OrderCreate)
-		frontendApi.POST("/order/update", frontend.OrderUpdate)
+		// frontendApi.POST("/order/update", frontend.OrderUpdate)
 		// frontendApi.POST("/order/ecpay", frontend.Ecpay)
 
 		frontendApi.GET("/member", frontend.MemberFetch)
 		frontendApi.POST("/member/login", frontend.MemberLogin)
 		frontendApi.POST("/member/register", frontend.MemberRegister)
 		frontendApi.POST("/member/oauth", frontend.MemberOAuth)
-	}
 
-	tokenRequired := router.Group("/api/frontend", auth.TokenRequred)
-	{
-		tokenRequired.POST("/member/orders", frontend.GetMemberOrders)
-		tokenRequired.POST("/member/delivery", frontend.GetMemberDelivery)
-		tokenRequired.POST("/member/delivery/modify", frontend.MemberDeliveryModify)
-		tokenRequired.POST("/member/delivery/delete", frontend.MemberDeliveryDelete)
-		// tokenRequired.POST("/member/logout", frontend.MemberLogout)
+		tokenRequired := frontendApi.Use(auth.TokenRequred)
+		{
+			tokenRequired.POST("/member/orders", frontend.GetMemberOrders)
+			tokenRequired.POST("/member/delivery", frontend.GetMemberDelivery)
+			tokenRequired.POST("/member/delivery/modify", frontend.MemberDeliveryModify)
+			tokenRequired.POST("/member/delivery/delete", frontend.MemberDeliveryDelete)
+			// tokenRequired.POST("/member/logout", frontend.MemberLogout)
 
-		tokenRequired.GET("/carts", frontend.CartsFetch)
-		tokenRequired.POST("/carts/add", frontend.CartsAddProduct)
-		tokenRequired.POST("/carts/update", frontend.CartsUpdate)
-		tokenRequired.POST("/carts/remove", frontend.CartsRemoveProduct)
+			tokenRequired.GET("/carts", frontend.CartsFetch)
+			tokenRequired.POST("/carts/add", frontend.CartsAddProduct)
+			tokenRequired.POST("/carts/update", frontend.CartsUpdate)
+			tokenRequired.POST("/carts/remove", frontend.CartsRemoveProduct)
+		}
 	}
 
 	backendApi := router.Group("/api/backend")
@@ -76,6 +76,8 @@ func main() {
 		backendApi.POST("/reset", backend.ResetPassword)
 		backendApi.POST("/ecpay/finish", backend.EcpayPaymentFinish)
 		backendApi.GET("/ecpay/test", backend.EcpayPaymentTest)
+
+		backendApi.POST("/linepay/finish", backend.LinePayFinish)
 		// backendApi.GET("/ecpay/logistics", backend.EcpayLogisticsCreate)
 
 		authRequired := backendApi.Use(auth.AuthRequred)
@@ -107,6 +109,7 @@ func main() {
 			authRequired.POST("/orders", backend.OrderList)
 			authRequired.POST("/order/next", backend.OrderNextStep)
 			authRequired.POST("/order/shipment", backend.OrderMakeShipmentNo)
+			authRequired.POST("/order/shipment/print", backend.OrderShipmentPrint)
 
 			authRequired.POST("/members/list", backend.MemberList)
 

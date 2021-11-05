@@ -13,9 +13,23 @@ type OrderListReq struct {
 }
 
 type OrderQuery struct {
-	ID         int `json:"id"`
-	PlatformID int `json:"-"`
-	Status     int `json:"status"`
+	ID            int    `json:"id"`
+	PlatformID    int    `json:"-"`
+	TransactionID string `json:"-"`
+	OrderUuid     string `json:"-"`
+	Status        int    `json:"status"`
+}
+
+type BatchOrderQuery struct {
+	ID         []int `json:"id"`
+	PlatformID int   `json:"-"`
+	Status     int   `json:"status"`
+}
+
+type OrderLinepayReq struct {
+	OrderUuid     string `json:"order_id"`
+	TransactionID string `json:"transaction_id"`
+	Status        int    `json:"status"`
 }
 
 type Orders struct {
@@ -60,6 +74,21 @@ func (query *OrderQuery) GetCondition() *gorm.DB {
 	return sql
 }
 
+func (query *BatchOrderQuery) GetCondition() *gorm.DB {
+	sql := DB.Model(Orders{})
+	if len(query.ID) > 0 {
+		sql.Where("id IN ?", query.ID)
+	}
+
+	if query.Status != 0 {
+		sql.Where("status = ?", query.Status)
+	}
+
+	sql.Where("platform_id = ?", query.PlatformID)
+
+	return sql
+}
+
 func (query *OrderQuery) Fetch() (order Orders, err error) {
 	sql := query.GetCondition()
 	err = sql.First(&order).Error
@@ -76,6 +105,18 @@ func (req *OrderListReq) FetchAll() (orders []Orders, pagination Pagination) {
 	sql.Count(&count)
 	sql.Offset((req.Page - 1) * req.Items).Limit(req.Items).Order("created_at DESC").Scan(&orders)
 	pagination = CreatePagination(req.Page, req.Items, count)
+	return
+}
+
+func (query *BatchOrderQuery) FetchAll() (orders []Orders, err error) {
+	sql := query.GetCondition()
+	err = sql.Scan(&orders).Error
+	return
+}
+
+func (query *OrderQuery) FetchLinePayOrder() (order Orders, err error) {
+	sql := DB.Model(Orders{}).Where("transaction_id = ? AND order_uuid = ? AND status = ?", query.TransactionID, query.OrderUuid, query.Status)
+	err = sql.First(&order).Error
 	return
 }
 
