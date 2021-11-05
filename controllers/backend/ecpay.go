@@ -66,6 +66,31 @@ func EcpayPaymentFinish(c *gin.Context) {
 	c.String(http.StatusOK, "1|OK")
 }
 
+func EcpayLogisticsNotify(c *gin.Context) {
+	body, err := c.GetRawData()
+	if err != nil {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+
+	c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+	err = c.Request.ParseForm()
+	if err != nil {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+
+	c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+
+	params := ecpay.ECPayValues{c.Request.PostForm}.ToMap()
+	c.Request.Form = nil
+	c.Request.PostForm = nil
+	godump.Dump(params)
+
+	info := QueryTradeInfo(params["MerchantTradeNo"])
+	godump.Dump(info)
+}
+
 func EcpayPaymentTest(c *gin.Context) {
 	c.String(http.StatusOK, "1|ok")
 }

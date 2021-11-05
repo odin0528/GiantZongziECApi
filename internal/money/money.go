@@ -19,10 +19,10 @@ import (
 )
 
 func CreateLogisticsOrder(order models.Orders) (info url.Values, err error) {
-	goodsName := []string{}
+	/* goodsName := []string{}
 	for _, product := range order.Products {
-		goodsName = append(goodsName, product.Title)
-	}
+		goodsName = append(goodsName, FilterGoodsName(product.Title))
+	} */
 
 	ecpayValue := map[string]string{}
 	ecpayValue["MerchantID"] = os.Getenv("ECPAY_MERCHANT_ID")
@@ -34,7 +34,13 @@ func CreateLogisticsOrder(order models.Orders) (info url.Values, err error) {
 	ecpayValue["SenderName"] = "李晧瑋"
 	ecpayValue["SenderCellPhone"] = "0958259061"
 	ecpayValue["ServerReplyURL"] = fmt.Sprintf("%s/api/backend/ecpay/logistics", os.Getenv("API_URL"))
-	ecpayValue["GoodsName"] = strings.Join(goodsName, "#")
+
+	goodsName := []rune(FilterGoodsName(order.Products[0].Title))
+	if len(goodsName) > 25 {
+		ecpayValue["GoodsName"] = string(goodsName[:25])
+	} else {
+		ecpayValue["GoodsName"] = string(goodsName)
+	}
 
 	if order.Payment == 2 && order.Method != 1 {
 		ecpayValue["IsCollection"] = "Y"
@@ -173,4 +179,31 @@ func GeneratePrintShipmentCheckMac(ids []string) string {
 	checkMac := MakeLogisticsCheckMac(ecpayValue)
 
 	return checkMac
+}
+
+func FilterGoodsName(s string) string {
+	s = strings.ReplaceAll(s, "^", "＾")
+	s = strings.ReplaceAll(s, "'", "＇")
+	s = strings.ReplaceAll(s, "`", "｀")
+	s = strings.ReplaceAll(s, "!", "！")
+	s = strings.ReplaceAll(s, "@", "＠")
+	s = strings.ReplaceAll(s, "#", "＃")
+	s = strings.ReplaceAll(s, "%", "％")
+	s = strings.ReplaceAll(s, "&", "＆")
+	s = strings.ReplaceAll(s, "*", "＊")
+	s = strings.ReplaceAll(s, "+", "＋")
+	s = strings.ReplaceAll(s, "\\", "／")
+	s = strings.ReplaceAll(s, "\"", "＂")
+	s = strings.ReplaceAll(s, "<", "＜")
+	s = strings.ReplaceAll(s, ">", "＞")
+	s = strings.ReplaceAll(s, "|", "｜")
+	s = strings.ReplaceAll(s, "_", "＿")
+	s = strings.ReplaceAll(s, "[", "［")
+	s = strings.ReplaceAll(s, "]", "］")
+	s = strings.ReplaceAll(s, "(", "（")
+	s = strings.ReplaceAll(s, ")", "）")
+	s = strings.ReplaceAll(s, " ", "　")
+	s = strings.ReplaceAll(s, "-", "－")
+
+	return s
 }

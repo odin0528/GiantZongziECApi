@@ -75,6 +75,7 @@ func main() {
 		backendApi.POST("/login", backend.Login)
 		backendApi.POST("/reset", backend.ResetPassword)
 		backendApi.POST("/ecpay/finish", backend.EcpayPaymentFinish)
+		backendApi.POST("/ecpay/logistics", backend.EcpayLogisticsNotify)
 		backendApi.GET("/ecpay/test", backend.EcpayPaymentTest)
 
 		backendApi.POST("/linepay/finish", backend.LinePayFinish)
