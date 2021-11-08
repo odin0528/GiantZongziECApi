@@ -41,7 +41,14 @@ func LinePayFinish(c *gin.Context) {
 	transactionID, err := strconv.ParseInt(req.TransactionID, 10, 64)
 
 	requestReq := &linepay.CheckPaymentStatusRequest{}
-	pay, _ := linepay.New(os.Getenv("LINE_PAY_ID"), os.Getenv("LINE_PAY_KEY"), linepay.WithSandbox())
+	var pay *linepay.Client
+
+	if os.Getenv("ENV") != "production" {
+		pay, _ = linepay.New(os.Getenv("LINE_PAY_ID"), os.Getenv("LINE_PAY_KEY"), linepay.WithSandbox())
+	} else {
+		pay, _ = linepay.New(os.Getenv("LINE_PAY_ID"), os.Getenv("LINE_PAY_KEY"))
+	}
+
 	res, _, _ := pay.CheckPaymentStatus(context.Background(), transactionID, requestReq)
 
 	if res.ReturnCode == "0110" {
