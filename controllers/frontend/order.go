@@ -343,9 +343,9 @@ func OrderValidation(PlatformID int, order *models.OrderCreateRequest) int {
 
 	switch order.Method {
 	case 1:
-		shipping = 120
+		shipping = 0
 	default:
-		shipping = 60
+		shipping = 0
 	}
 
 	if total != order.Price || shipping != order.Shipping {
