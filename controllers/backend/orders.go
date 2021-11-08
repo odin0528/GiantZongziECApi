@@ -2,7 +2,10 @@ package backend
 
 import (
 	"eCommerce/pkg/e"
+	"fmt"
 	"net/http"
+	"os"
+	"strings"
 
 	. "eCommerce/internal/database"
 	"eCommerce/internal/money"
@@ -151,12 +154,42 @@ func OrderShipmentPrint(c *gin.Context) {
 	}
 
 	ids := []string{}
+	paymentNo := []string{}
+	validationNo := []string{}
 
 	for _, order := range orders {
 		ids = append(ids, order.LogisticsID)
+		paymentNo = append(paymentNo, order.ShipmentNo[:len(order.ShipmentNo)-4])
+		validationNo = append(validationNo, order.ShipmentNo[len(order.ShipmentNo)-4:])
 	}
 
-	g.Response(http.StatusOK, e.Success, money.GeneratePrintShipmentCheckMac(ids))
+	params := map[string]string{}
+	var url string
+
+	switch orders[0].Method {
+	case 1:
+		params["MerchantTradeNo"] = ""
+		url = "https://logistics.ecpay.com.tw/helper/PrintTradeDocument"
+	case 2:
+		params["CVSPaymentNo"] = strings.Join(paymentNo, ",")
+		params["CVSValidationNo"] = strings.Join(validationNo, ",")
+		url = "https://logistics.ecpay.com.tw/Express/PrintUniMartC2COrderInfo"
+	}
+
+	params["AllPayLogisticsID"] = strings.Join(ids, ",")
+	params["MerchantID"] = os.Getenv("ECPAY_MERCHANT_ID")
+	params["isPreview"] = "True"
+
+	checkMac := money.MakeLogisticsCheckMac(params)
+	params["CheckMacValue"] = checkMac
+
+	formBody := ""
+	for k, v := range params {
+		formBody += fmt.Sprintf(`<input type="hidden" name="%s" value="%s" />`, k, v)
+	}
+
+	formString := `<form id="PostForm" name="PostForm" action="%s" method="POST" target="_blank">%s</form>`
+	g.Response(http.StatusOK, e.Success, fmt.Sprintf(formString, url, formBody))
 }
 
 func OrderUntreated(c *gin.Context) {

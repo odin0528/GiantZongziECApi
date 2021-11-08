@@ -163,6 +163,7 @@ func MakeQueryString(params map[string]string) string {
 
 func MakeLogisticsCheckMac(params map[string]string) string {
 	encodedParams := MakeQueryString(params)
+	println(encodedParams)
 	sum := md5.Sum([]byte(encodedParams))
 	checkMac := strings.ToUpper(fmt.Sprintf("%x", sum))
 
