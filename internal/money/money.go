@@ -80,7 +80,7 @@ func CreateLogisticsOrder(order models.Orders) (info url.Values, err error) {
 	checkMac := MakeLogisticsCheckMac(ecpayValue)
 
 	resp, err := http.Post(
-		"https://logistics-stage.ecpay.com.tw/Express/Create",
+		fmt.Sprintf("%s%s", os.Getenv("ECPAY_LOGISTICS_URL"), "/Express/Create"),
 		"application/x-www-form-urlencoded",
 		strings.NewReader(ecpay.NewECPayValuesFromMap(ecpayValue).Encode()+"&CheckMacValue="+checkMac),
 	)
@@ -121,7 +121,7 @@ func QueryLogisticsInfo(allPayLogisticsID string) (info url.Values, err error) {
 	checkMac := MakeLogisticsCheckMac(ecpayValue)
 
 	resp, err := http.Post(
-		"https://logistics-stage.ecpay.com.tw/Helper/QueryLogisticsTradeInfo/V2",
+		fmt.Sprintf("%s%s", os.Getenv("ECPAY_LOGISTICS_URL"), "/Helper/QueryLogisticsTradeInfo/V2"),
 		"application/x-www-form-urlencoded",
 		strings.NewReader(ecpay.NewECPayValuesFromMap(ecpayValue).Encode()+"&CheckMacValue="+checkMac),
 	)
