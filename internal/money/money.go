@@ -61,19 +61,19 @@ func CreateLogisticsOrder(order models.Orders) (info url.Values, err error) {
 		ecpayValue["Specification"] = "0004"
 	case 2:
 		ecpayValue["LogisticsType"] = "CVS"
-		ecpayValue["LogisticsSubType"] = "UNIMART"
+		ecpayValue["LogisticsSubType"] = "UNIMARTC2C"
 		ecpayValue["ReceiverStoreID"] = order.StoreID
 	case 3:
 		ecpayValue["LogisticsType"] = "CVS"
-		ecpayValue["LogisticsSubType"] = "FAMI"
+		ecpayValue["LogisticsSubType"] = "FAMIC2C"
 		ecpayValue["ReceiverStoreID"] = order.StoreID
 	case 4:
 		ecpayValue["LogisticsType"] = "CVS"
-		ecpayValue["LogisticsSubType"] = "HILIFE"
+		ecpayValue["LogisticsSubType"] = "HILIFEC2C"
 		ecpayValue["ReceiverStoreID"] = order.StoreID
 	case 5:
 		ecpayValue["LogisticsType"] = "CVS"
-		ecpayValue["LogisticsSubType"] = "OKMART"
+		ecpayValue["LogisticsSubType"] = "OKMARTC2C"
 		ecpayValue["ReceiverStoreID"] = order.StoreID
 	}
 

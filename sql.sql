@@ -26,3 +26,6 @@ ADD COLUMN `logistics_msg` varchar(255) NULL COMMENT '物流狀態說明' AFTER 
 
 ALTER TABLE `orders` 
 MODIFY COLUMN `logistics_status` tinyint(4) NULL DEFAULT NULL COMMENT '物流狀態' AFTER `shipment_no`;
+
+ALTER TABLE `orders` 
+ADD COLUMN `logistics_id` varchar(63) NULL COMMENT '物流單號' AFTER `store_phone`
