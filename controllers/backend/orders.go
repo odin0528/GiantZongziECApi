@@ -12,6 +12,7 @@ import (
 	models "eCommerce/models/backend"
 
 	"github.com/gin-gonic/gin"
+	"github.com/liudng/godump"
 )
 
 func OrderFetch(c *gin.Context) {
@@ -110,6 +111,8 @@ func OrderMakeShipmentNo(c *gin.Context) {
 
 	response, err := money.CreateLogisticsOrder(order)
 
+	godump.Dump(response)
+
 	if err != nil {
 		g.Response(http.StatusOK, e.StatusInternalServerError, err.Error())
 		return
@@ -153,12 +156,20 @@ func OrderShipmentPrint(c *gin.Context) {
 		return
 	}
 
+	info, _ := money.QueryLogisticsInfoV2(orders[0].LogisticsID)
+	godump.Dump(info)
+	return
+
 	ids := []string{}
+	tradeNo := []string{}
 	paymentNo := []string{}
 	validationNo := []string{}
+	shipmentNo := []string{}
 
 	for _, order := range orders {
 		ids = append(ids, order.LogisticsID)
+		tradeNo = append(tradeNo, fmt.Sprintf("%s%d", os.Getenv("ECPAY_MERCHANT_TRADE_NO_PREFIX"), order.ID))
+		shipmentNo = append(shipmentNo, order.ShipmentNo)
 		paymentNo = append(paymentNo, order.ShipmentNo[:len(order.ShipmentNo)-4])
 		validationNo = append(validationNo, order.ShipmentNo[len(order.ShipmentNo)-4:])
 	}
@@ -174,6 +185,17 @@ func OrderShipmentPrint(c *gin.Context) {
 		params["CVSPaymentNo"] = strings.Join(paymentNo, ",")
 		params["CVSValidationNo"] = strings.Join(validationNo, ",")
 		url = "https://logistics.ecpay.com.tw/Express/PrintUniMartC2COrderInfo"
+	case 3:
+		params["CVSPaymentNo"] = strings.Join(paymentNo, ",")
+		params["CVSValidationNo"] = strings.Join(validationNo, ",")
+		url = "https://logistics.ecpay.com.tw/helper/PrintTradeDocument"
+	case 4:
+		params["MerchantTradeNo"] = strings.Join(tradeNo, ",")
+		url = "https://logistics.ecpay.com.tw/helper/PrintTradeDocument"
+	case 5:
+		params["CVSPaymentNo"] = strings.Join(paymentNo, ",")
+		params["CVSValidationNo"] = strings.Join(validationNo, ",")
+		url = "https://logistics.ecpay.com.tw/Express/PrintOKMARTC2COrderInfo"
 	}
 
 	params["AllPayLogisticsID"] = strings.Join(ids, ",")

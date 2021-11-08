@@ -1,7 +1,12 @@
 package money
 
 import (
+	"bytes"
+	"crypto/aes"
+	"crypto/cipher"
 	"crypto/md5"
+	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -18,6 +23,33 @@ import (
 	"github.com/liudng/godump"
 )
 
+type QueryLogisticsInfoReq struct {
+	PlatformID string
+	MerchantID string
+	RqHeader   EcpayReqHeader
+	Data       string
+}
+
+type EcpayReqHeader struct {
+	Timestamp int64
+	Revision  string
+}
+
+type EcpayReqBody struct {
+	MerchantID      string
+	LogisticsID     string
+	MerchantTradeNo string
+}
+
+type QueryLogisticsInfoRes struct {
+	PlatformID string
+	MerchantID string
+	RqHeader   EcpayReqHeader
+	Data       string
+	TransCode  int
+	TransMsg   string
+}
+
 func CreateLogisticsOrder(order models.Orders) (info url.Values, err error) {
 	/* goodsName := []string{}
 	for _, product := range order.Products {
@@ -28,7 +60,7 @@ func CreateLogisticsOrder(order models.Orders) (info url.Values, err error) {
 	ecpayValue["MerchantID"] = os.Getenv("ECPAY_MERCHANT_ID")
 	ecpayValue["GoodsAmount"] = fmt.Sprintf("%d", int(order.Total))
 	ecpayValue["MerchantTradeDate"] = time.Now().Format("2006/01/02 15:04:05")
-	ecpayValue["MerchantTradeNo"] = fmt.Sprintf("%s%d%d", os.Getenv("ECPAY_MERCHANT_TRADE_NO_PREFIX"), order.ID, time.Now().Unix())
+	ecpayValue["MerchantTradeNo"] = fmt.Sprintf("%s%d", os.Getenv("ECPAY_MERCHANT_TRADE_NO_PREFIX"), order.ID)
 	ecpayValue["ReceiverCellPhone"] = order.Phone
 	ecpayValue["ReceiverName"] = order.Fullname
 	ecpayValue["SenderName"] = "李晧瑋"
@@ -145,6 +177,67 @@ func QueryLogisticsInfo(allPayLogisticsID string) (info url.Values, err error) {
 	return
 }
 
+func QueryLogisticsInfoV2(allPayLogisticsID string) (info url.Values, err error) {
+	ecpayValue := QueryLogisticsInfoReq{}
+	ecpayValue.PlatformID = ""
+	ecpayValue.MerchantID = os.Getenv("ECPAY_MERCHANT_ID")
+	ecpayValue.RqHeader.Timestamp = time.Now().Unix()
+	ecpayValue.RqHeader.Revision = "1.0.0"
+
+	ecpayBody := EcpayReqBody{}
+	ecpayBody.MerchantID = os.Getenv("ECPAY_MERCHANT_ID")
+	ecpayBody.LogisticsID = allPayLogisticsID
+
+	bodyData, _ := json.Marshal(ecpayBody)
+
+	key := []byte(os.Getenv("ECPAY_MERCHANT_HASH_KEY"))
+	iv := []byte(os.Getenv("ECPAY_MERCHANT_HASH_IV"))
+	plaintext := []byte(ecpay.FormUrlEncode(string(bodyData)))
+
+	plaintext = PKCS7Padding(plaintext)
+	ciphertext := make([]byte, len(plaintext))
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		panic(err)
+	}
+
+	mode := cipher.NewCBCEncrypter(block, iv)
+	mode.CryptBlocks(ciphertext, plaintext)
+
+	ecpayValue.Data = base64.StdEncoding.EncodeToString(ciphertext)
+	postData, _ := json.Marshal(ecpayValue)
+
+	resp, err := http.Post(
+		fmt.Sprintf("%s%s", os.Getenv("ECPAY_LOGISTICS_URL"), "/Express/v2/QueryLogisticsTradeInfo"),
+		"application/json",
+		bytes.NewBuffer(postData),
+	)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	bodyString := string(bodyBytes)
+	var res QueryLogisticsInfoRes
+	json.Unmarshal(bodyBytes, &res)
+
+	decode, _ := base64.StdEncoding.DecodeString(res.Data)
+	println(decode)
+	godump.Dump(res)
+
+	if bodyString[0:1] == "0" {
+		err = errors.New(fmt.Sprintf("建立物流訂單失敗 回傳訊息為：%s", bodyString[2:]))
+		return
+	}
+
+	bodyString = strings.Replace(bodyString, "1|", "", 1)
+	info, _ = url.ParseQuery(bodyString)
+	err = nil
+
+	return
+}
+
 func MakeQueryString(params map[string]string) string {
 	encodedParams := fmt.Sprintf(
 		"HashKey=%s&%s&HashIV=%s",
@@ -207,4 +300,10 @@ func FilterGoodsName(s string) string {
 	s = strings.ReplaceAll(s, "-", "－")
 
 	return s
+}
+
+func PKCS7Padding(ciphertext []byte) []byte {
+	padding := aes.BlockSize - len(ciphertext)%aes.BlockSize
+	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
+	return append(ciphertext, padtext...)
 }
