@@ -178,8 +178,7 @@ func OrderShipmentPrint(c *gin.Context) {
 		params["CVSValidationNo"] = strings.Join(validationNo, ",")
 		url = "https://logistics.ecpay.com.tw/Express/PrintUniMartC2COrderInfo"
 	case 3:
-		params["CVSPaymentNo"] = strings.Join(paymentNo, ",")
-		params["CVSValidationNo"] = strings.Join(validationNo, ",")
+		params["CVSPaymentNo"] = strings.Join(shipmentNo, ",")
 		url = "https://logistics.ecpay.com.tw/helper/PrintTradeDocument"
 	case 4:
 		params["MerchantTradeNo"] = strings.Join(tradeNo, ",")
