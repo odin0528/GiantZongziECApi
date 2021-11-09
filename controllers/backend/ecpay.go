@@ -93,11 +93,8 @@ func EcpayLogisticsNotify(c *gin.Context) {
 
 	if params["MerchantID"] == os.Getenv("ECPAY_MERCHANT_ID") {
 		if tradeNo, ok := params["MerchantTradeNo"]; ok {
-			println(tradeNo)
 			tradeNo = strings.ReplaceAll(tradeNo, os.Getenv("ECPAY_MERCHANT_TRADE_NO_PREFIX"), "")
-			println(tradeNo)
 			id, _ := strconv.ParseInt(tradeNo, 10, 0)
-			println(id)
 
 			query := models.OrderQuery{
 				ID: int(id),
