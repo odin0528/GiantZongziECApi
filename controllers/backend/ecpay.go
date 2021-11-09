@@ -108,6 +108,8 @@ func EcpayLogisticsNotify(c *gin.Context) {
 			ChangeLogisticsStatus(&order, params)
 			godump.Dump(order)
 
+			err = DB.Select("logistics_msg", "logistics_status", "shipment_no", "logistics_id").Updates(&order).Error
+
 		} else {
 			c.String(http.StatusBadRequest, "0|Error")
 		}
@@ -164,6 +166,7 @@ func FormUrlEncode(s string) string {
 }
 
 func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
+	order.LogisticsID = params["AllPayLogisticsID"]
 	order.LogisticsMsg = params["RtnMsg"]
 	switch order.Method {
 	case 1:
