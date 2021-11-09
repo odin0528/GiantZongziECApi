@@ -103,6 +103,7 @@ func EcpayLogisticsNotify(c *gin.Context) {
 		}
 
 		ChangeLogisticsStatus(&order, params)
+		godump.Dump(order)
 
 	} else {
 		c.String(http.StatusBadRequest, "0|Error")
