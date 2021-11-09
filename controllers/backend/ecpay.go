@@ -47,9 +47,23 @@ func EcpayPaymentFinish(c *gin.Context) {
 
 	senderMac := params["CheckMacValue"]
 	delete(params, "CheckMacValue")
-	client := ecpay.NewStageClient(
-		ecpay.WithReturnURL(fmt.Sprintf("%s%s", os.Getenv("API_URL"), os.Getenv("ECPAY_PAYMENT_FINISH_URL"))),
-	)
+
+	var client *ecpay.Client
+	if os.Getenv("ENV") != "production" {
+		client = ecpay.NewStageClient(
+			ecpay.WithReturnURL(fmt.Sprintf("%s%s", os.Getenv("API_URL"), os.Getenv("ECPAY_PAYMENT_FINISH_URL"))),
+			ecpay.WithDebug,
+		)
+	} else {
+		client = ecpay.NewClient(
+			os.Getenv("ECPAY_MERCHANT_ID"),
+			os.Getenv("ECPAY_MERCHANT_HASH_KEY"),
+			os.Getenv("ECPAY_MERCHANT_HASH_IV"),
+			fmt.Sprintf("%s%s", os.Getenv("API_URL"), os.Getenv("ECPAY_PAYMENT_FINISH_URL")),
+			ecpay.WithDebug,
+		)
+	}
+
 	mac := client.GenerateCheckMacValue(params)
 	if mac != senderMac {
 		c.String(http.StatusBadRequest, "0|Error")
