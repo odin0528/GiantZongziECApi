@@ -252,7 +252,7 @@ func OrderCreate(c *gin.Context) {
 		case 3:
 			aio.SetCreditPayment()
 		case 1:
-			aio.SetAllPayment()
+			aio.SetWebAtmPayment()
 		case 5:
 			aio.SetAtmPayment()
 		case 6:

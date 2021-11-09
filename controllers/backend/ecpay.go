@@ -43,6 +43,8 @@ func EcpayPaymentFinish(c *gin.Context) {
 	c.Request.Form = nil
 	c.Request.PostForm = nil
 
+	log.Println(params)
+
 	senderMac := params["CheckMacValue"]
 	delete(params, "CheckMacValue")
 	client := ecpay.NewStageClient(
@@ -90,6 +92,7 @@ func EcpayLogisticsNotify(c *gin.Context) {
 	c.Request.PostForm = nil
 
 	godump.Dump(params)
+	log.Println(params)
 
 	if params["MerchantID"] == os.Getenv("ECPAY_MERCHANT_ID") {
 		if tradeNo, ok := params["MerchantTradeNo"]; ok {
