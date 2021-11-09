@@ -12,7 +12,6 @@ import (
 	models "eCommerce/models/backend"
 
 	"github.com/gin-gonic/gin"
-	"github.com/liudng/godump"
 )
 
 func OrderFetch(c *gin.Context) {
@@ -147,10 +146,6 @@ func OrderShipmentPrint(c *gin.Context) {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
-
-	info, _ := money.QueryLogisticsInfoV2(orders[0].LogisticsID)
-	godump.Dump(info)
-	return
 
 	ids := []string{}
 	tradeNo := []string{}
