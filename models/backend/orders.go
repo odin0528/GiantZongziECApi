@@ -17,6 +17,7 @@ type OrderQuery struct {
 	PlatformID    int    `json:"-"`
 	TransactionID string `json:"-"`
 	OrderUuid     string `json:"-"`
+	LogisticsID   string `json:"-"`
 	Status        int    `json:"status"`
 }
 
@@ -31,6 +32,18 @@ type OrderLinepayReq struct {
 	TransactionID string `json:"transaction_id"`
 	Status        int    `json:"status"`
 }
+
+/*
+LogisticsStatus：
+1: 託運單號產生中
+2: 託運單號已產生
+3: 商品配送中
+4: 商品已到店，待取貨
+5: 買家已取貨
+6: 買家未取貨，退貨中
+7: 已退回寄貨地
+8: 賣家已取貨
+*/
 
 type Orders struct {
 	ID              int             `json:"id"`
@@ -116,6 +129,12 @@ func (query *BatchOrderQuery) FetchAll() (orders []Orders, err error) {
 
 func (query *OrderQuery) FetchLinePayOrder() (order Orders, err error) {
 	sql := DB.Model(Orders{}).Where("transaction_id = ? AND order_uuid = ? AND status = ?", query.TransactionID, query.OrderUuid, query.Status)
+	err = sql.First(&order).Error
+	return
+}
+
+func (query *OrderQuery) FetchByLogisticsID() (order Orders, err error) {
+	sql := DB.Model(Orders{}).Where("logistics_id = ? AND status IN (22, 23, 24)", query.LogisticsID)
 	err = sql.First(&order).Error
 	return
 }

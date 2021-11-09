@@ -29,3 +29,7 @@ MODIFY COLUMN `logistics_status` tinyint(4) NULL DEFAULT NULL COMMENT '物流狀
 
 ALTER TABLE `orders` 
 ADD COLUMN `logistics_id` varchar(63) NULL COMMENT '物流單號' AFTER `store_phone`
+MODIFY COLUMN `logistics_id` varchar(63) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '物流單號' AFTER `store_phone`,
+MODIFY COLUMN `shipment_no` varchar(63) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '託運單號' AFTER `logistics_id`,
+MODIFY COLUMN `logistics_status` tinyint(4) NULL DEFAULT 0 COMMENT '物流狀態' AFTER `shipment_no`
+MODIFY COLUMN `logistics_msg` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '物流狀態說明' AFTER `logistics_status`

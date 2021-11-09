@@ -3,10 +3,10 @@ package backend
 import (
 	"bytes"
 	"crypto/sha256"
+	"eCommerce/pkg/e"
 	"encoding/hex"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -19,6 +19,7 @@ import (
 	"github.com/Laysi/go-ecpay-sdk"
 	"github.com/gin-gonic/gin"
 	"github.com/liudng/godump"
+	log "github.com/sirupsen/logrus"
 )
 
 func EcpayPaymentFinish(c *gin.Context) {
@@ -67,6 +68,7 @@ func EcpayPaymentFinish(c *gin.Context) {
 }
 
 func EcpayLogisticsNotify(c *gin.Context) {
+	g := Gin{c}
 	body, err := c.GetRawData()
 	if err != nil {
 		c.Status(http.StatusBadRequest)
@@ -85,10 +87,26 @@ func EcpayLogisticsNotify(c *gin.Context) {
 	params := ecpay.ECPayValues{c.Request.PostForm}.ToMap()
 	c.Request.Form = nil
 	c.Request.PostForm = nil
-	godump.Dump(params)
 
-	info := QueryTradeInfo(params["MerchantTradeNo"])
-	godump.Dump(info)
+	log.Println(params)
+
+	if logisticsID, ok := params["AllPayLogisticsID"]; ok {
+		query := models.OrderQuery{
+			LogisticsID: logisticsID,
+		}
+
+		order, err := query.FetchByLogisticsID()
+
+		if err != nil {
+			g.Response(http.StatusBadRequest, e.StatusNotFound, err)
+			return
+		}
+
+		ChangeLogisticsStatus(&order, params)
+
+	} else {
+		c.String(http.StatusBadRequest, "0|Error")
+	}
 }
 
 func EcpayPaymentTest(c *gin.Context) {
@@ -138,4 +156,114 @@ func FormUrlEncode(s string) string {
 	s = strings.ReplaceAll(s, "%28", "(")
 	s = strings.ReplaceAll(s, "%29", ")")
 	return s
+}
+
+func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
+	order.LogisticsMsg = params["RtnMsg"]
+	switch order.Method {
+	case 1:
+		order.ShipmentNo = params["BookingNote"]
+		switch params["RtnCode"] {
+		case "300":
+			fallthrough
+		case "310":
+			order.LogisticsStatus = 2
+		case "3006":
+			order.LogisticsStatus = 3
+		case "3003":
+			order.LogisticsStatus = 5
+		case "5004":
+			order.LogisticsStatus = 6
+		case "5008":
+			order.LogisticsStatus = 8
+		default:
+			order.LogisticsStatus = 99
+		}
+	case 2:
+		order.ShipmentNo = params["CVSPaymentNo"] + params["CVSValidationNo"]
+		switch params["RtnCode"] {
+		case "300":
+			fallthrough
+		case "310":
+			order.LogisticsStatus = 2
+		case "2068":
+			order.LogisticsStatus = 3
+		case "2073":
+			order.LogisticsStatus = 4
+		case "2067":
+			order.LogisticsStatus = 5
+		case "2074":
+			order.LogisticsStatus = 6
+		case "2069":
+			order.LogisticsStatus = 7
+		case "2077":
+			order.LogisticsStatus = 8
+		default:
+			order.LogisticsStatus = 99
+		}
+	case 3:
+		order.ShipmentNo = params["CVSPaymentNo"]
+		switch params["RtnCode"] {
+		case "300":
+			fallthrough
+		case "310":
+			order.LogisticsStatus = 2
+		case "3032":
+			order.LogisticsStatus = 3
+		case "3018":
+			order.LogisticsStatus = 4
+		case "3022":
+			order.LogisticsStatus = 5
+		case "3020":
+			order.LogisticsStatus = 6
+		case "3019":
+			order.LogisticsStatus = 7
+		case "3023":
+			order.LogisticsStatus = 8
+		default:
+			order.LogisticsStatus = 99
+		}
+	case 4:
+		order.ShipmentNo = params["CVSPaymentNo"]
+		switch params["RtnCode"] {
+		case "300":
+			fallthrough
+		case "310":
+			order.LogisticsStatus = 2
+		case "2068":
+			order.LogisticsStatus = 3
+		case "2073":
+			order.LogisticsStatus = 4
+		case "2067":
+			order.LogisticsStatus = 5
+		case "2074":
+			order.LogisticsStatus = 6
+		case "2069":
+			order.LogisticsStatus = 7
+		case "2070":
+			order.LogisticsStatus = 8
+		default:
+			order.LogisticsStatus = 99
+		}
+	case 5:
+		order.ShipmentNo = params["CVSPaymentNo"]
+		switch params["RtnCode"] {
+		case "300":
+			order.LogisticsStatus = 2
+		case "2030":
+			order.LogisticsStatus = 3
+		case "2073":
+			order.LogisticsStatus = 4
+		case "3022":
+			order.LogisticsStatus = 5
+		case "2074":
+			order.LogisticsStatus = 6
+		case "2072":
+			order.LogisticsStatus = 7
+		case "3023":
+			order.LogisticsStatus = 8
+		default:
+			order.LogisticsStatus = 99
+		}
+	}
 }

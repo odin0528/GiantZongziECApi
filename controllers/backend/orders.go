@@ -110,25 +110,15 @@ func OrderMakeShipmentNo(c *gin.Context) {
 	order.GetProducts()
 
 	response, err := money.CreateLogisticsOrder(order)
-
-	godump.Dump(response)
-
 	if err != nil {
 		g.Response(http.StatusOK, e.StatusInternalServerError, err.Error())
 		return
 	}
 
-	order.Status = 22
 	order.LogisticsID = response.Get("AllPayLogisticsID")
 	order.LogisticsStatus = 1
-	order.LogisticsMsg = "託運單號建立完成"
-	if order.Method == 1 {
-		order.ShipmentNo = response.Get("BookingNote")
-	} else {
-		order.ShipmentNo = response.Get("ShipmentNo")
-	}
-
-	err = DB.Select("status", "logistics_id", "shipment_no", "logistics_status", "logistics_msg").Updates(&order).Error
+	order.LogisticsMsg = response.Get("RtnMsg")
+	err = DB.Select("status", "logistics_id", "logistics_status", "logistics_msg").Updates(&order).Error
 
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
