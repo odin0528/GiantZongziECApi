@@ -169,12 +169,15 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 		case "310":
 			order.LogisticsStatus = 2
 		case "3006":
+			order.Status = 31
 			order.LogisticsStatus = 3
 		case "3003":
+			order.Status = 91
 			order.LogisticsStatus = 5
 		case "5004":
 			order.LogisticsStatus = 6
 		case "5008":
+			order.Status = 92
 			order.LogisticsStatus = 8
 		default:
 			order.LogisticsStatus = 99
@@ -187,16 +190,19 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 		case "310":
 			order.LogisticsStatus = 2
 		case "2068":
+			order.Status = 31
 			order.LogisticsStatus = 3
 		case "2073":
 			order.LogisticsStatus = 4
 		case "2067":
+			order.Status = 91
 			order.LogisticsStatus = 5
 		case "2074":
 			order.LogisticsStatus = 6
 		case "2069":
 			order.LogisticsStatus = 7
 		case "2077":
+			order.Status = 92
 			order.LogisticsStatus = 8
 		default:
 			order.LogisticsStatus = 99
@@ -209,16 +215,19 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 		case "310":
 			order.LogisticsStatus = 2
 		case "3032":
+			order.Status = 31
 			order.LogisticsStatus = 3
 		case "3018":
 			order.LogisticsStatus = 4
 		case "3022":
+			order.Status = 91
 			order.LogisticsStatus = 5
 		case "3020":
 			order.LogisticsStatus = 6
 		case "3019":
 			order.LogisticsStatus = 7
 		case "3023":
+			order.Status = 92
 			order.LogisticsStatus = 8
 		default:
 			order.LogisticsStatus = 99
@@ -231,16 +240,19 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 		case "310":
 			order.LogisticsStatus = 2
 		case "2068":
+			order.Status = 31
 			order.LogisticsStatus = 3
 		case "2073":
 			order.LogisticsStatus = 4
 		case "2067":
+			order.Status = 91
 			order.LogisticsStatus = 5
 		case "2074":
 			order.LogisticsStatus = 6
 		case "2069":
 			order.LogisticsStatus = 7
 		case "2070":
+			order.Status = 92
 			order.LogisticsStatus = 8
 		default:
 			order.LogisticsStatus = 99
@@ -251,16 +263,19 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 		case "300":
 			order.LogisticsStatus = 2
 		case "2030":
+			order.Status = 31
 			order.LogisticsStatus = 3
 		case "2073":
 			order.LogisticsStatus = 4
 		case "3022":
+			order.Status = 91
 			order.LogisticsStatus = 5
 		case "2074":
 			order.LogisticsStatus = 6
 		case "2072":
 			order.LogisticsStatus = 7
 		case "3023":
+			order.Status = 92
 			order.LogisticsStatus = 8
 		default:
 			order.LogisticsStatus = 99

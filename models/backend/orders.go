@@ -45,6 +45,16 @@ LogisticsStatus：
 8: 賣家已取貨
 */
 
+/*
+Status：
+11: 待付款
+21: 待出貨
+31: 配送中
+41: 退貨中 (買家未取件)
+91: 訂單完成
+92: 退貨完成 (買家未取件)
+*/
+
 type Orders struct {
 	ID              int             `json:"id"`
 	PlatformID      int             `json:"-"`
