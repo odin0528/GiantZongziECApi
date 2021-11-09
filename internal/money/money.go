@@ -60,7 +60,7 @@ func CreateLogisticsOrder(order models.Orders) error {
 	ecpayValue["MerchantID"] = os.Getenv("ECPAY_MERCHANT_ID")
 	ecpayValue["GoodsAmount"] = fmt.Sprintf("%d", int(order.Total))
 	ecpayValue["MerchantTradeDate"] = time.Now().Format("2006/01/02 15:04:05")
-	ecpayValue["MerchantTradeNo"] = fmt.Sprintf("%s%d", os.Getenv("ECPAY_MERCHANT_TRADE_NO_PREFIX"), order.ID)
+	ecpayValue["MerchantTradeNo"] = fmt.Sprintf("%s%d%d", os.Getenv("ECPAY_MERCHANT_TRADE_NO_PREFIX"), order.ID, time.Now().Unix())
 	ecpayValue["ReceiverCellPhone"] = order.Phone
 	ecpayValue["ReceiverName"] = order.Fullname
 	ecpayValue["SenderName"] = "李晧瑋"
@@ -235,7 +235,7 @@ func MakeQueryString(params map[string]string) string {
 		os.Getenv("ECPAY_MERCHANT_HASH_IV"),
 	)
 
-	println(encodedParams)
+	// println(encodedParams)
 
 	encodedParams = ecpay.FormUrlEncode(encodedParams)
 	encodedParams = strings.ToLower(encodedParams)
@@ -245,7 +245,7 @@ func MakeQueryString(params map[string]string) string {
 
 func MakeLogisticsCheckMac(params map[string]string) string {
 	encodedParams := MakeQueryString(params)
-	println(encodedParams)
+	// println(encodedParams)
 	sum := md5.Sum([]byte(encodedParams))
 	checkMac := strings.ToUpper(fmt.Sprintf("%x", sum))
 
