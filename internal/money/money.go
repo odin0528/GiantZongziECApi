@@ -50,7 +50,7 @@ type QueryLogisticsInfoRes struct {
 	TransMsg   string
 }
 
-func CreateLogisticsOrder(order models.Orders) (info url.Values, err error) {
+func CreateLogisticsOrder(order models.Orders) error {
 	/* goodsName := []string{}
 	for _, product := range order.Products {
 		goodsName = append(goodsName, FilterGoodsName(product.Title))
@@ -119,28 +119,17 @@ func CreateLogisticsOrder(order models.Orders) (info url.Values, err error) {
 
 	if err != nil {
 		log.Fatal(err)
+		return err
 	}
 
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	bodyString := strings.Split(string(bodyBytes), "|")
 
 	if bodyString[0] != "1" {
-		err = errors.New(fmt.Sprintf("建立物流訂單失敗 回傳訊息為：%s", bodyString[1]))
-		return
+		return errors.New(fmt.Sprintf("建立物流訂單失敗 回傳訊息為：%s", bodyString[1]))
 	}
 
-	response, _ := url.ParseQuery(bodyString[1])
-	godump.Dump(response)
-	info, err = QueryLogisticsInfo(response.Get("AllPayLogisticsID"))
-
-	godump.Dump(info)
-
-	if err != nil {
-		err = errors.New(fmt.Sprintf("訂單查詢失敗 回傳代碼為：%s", response.Get("RtnCode")))
-		return
-	}
-
-	return
+	return nil
 }
 
 func QueryLogisticsInfo(allPayLogisticsID string) (info url.Values, err error) {

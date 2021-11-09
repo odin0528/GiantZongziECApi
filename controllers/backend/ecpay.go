@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -88,25 +89,28 @@ func EcpayLogisticsNotify(c *gin.Context) {
 	c.Request.Form = nil
 	c.Request.PostForm = nil
 
-	log.Println(params)
+	if params["MerchantID"] == os.Getenv("ECPAY_MERCHANT_ID") {
+		if tradeNo, ok := params["MerchantTradeNo"]; ok {
+			tradeNo = strings.ReplaceAll(tradeNo, os.Getenv("ECPAY_LOGISTICS_NO_PREFIX"), "")
+			id, _ := strconv.ParseInt(tradeNo, 10, 0)
 
-	if logisticsID, ok := params["AllPayLogisticsID"]; ok {
-		query := models.OrderQuery{
-			LogisticsID: logisticsID,
+			query := models.OrderQuery{
+				ID: int(id),
+			}
+
+			order, err := query.FetchForLogistics()
+
+			if err != nil {
+				g.Response(http.StatusBadRequest, e.StatusNotFound, err)
+				return
+			}
+
+			ChangeLogisticsStatus(&order, params)
+			godump.Dump(order)
+
+		} else {
+			c.String(http.StatusBadRequest, "0|Error")
 		}
-
-		order, err := query.FetchByLogisticsID()
-
-		if err != nil {
-			g.Response(http.StatusBadRequest, e.StatusNotFound, err)
-			return
-		}
-
-		ChangeLogisticsStatus(&order, params)
-		godump.Dump(order)
-
-	} else {
-		c.String(http.StatusBadRequest, "0|Error")
 	}
 }
 

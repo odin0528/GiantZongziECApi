@@ -143,8 +143,8 @@ func (query *OrderQuery) FetchLinePayOrder() (order Orders, err error) {
 	return
 }
 
-func (query *OrderQuery) FetchByLogisticsID() (order Orders, err error) {
-	sql := DB.Model(Orders{}).Where("logistics_id = ? AND status IN (21, 31, 41)", query.LogisticsID)
+func (query *OrderQuery) FetchForLogistics() (order Orders, err error) {
+	sql := DB.Model(Orders{}).Where("id = ? AND status IN (22, 31, 41)", query.LogisticsID)
 	err = sql.First(&order).Error
 	return
 }

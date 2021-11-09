@@ -108,17 +108,15 @@ func OrderMakeShipmentNo(c *gin.Context) {
 	}
 
 	order.GetProducts()
+	order.Status = 22
+	err = DB.Select("status").Updates(&order).Error
 
-	response, err := money.CreateLogisticsOrder(order)
 	if err != nil {
-		g.Response(http.StatusOK, e.StatusInternalServerError, err.Error())
+		g.Response(http.StatusBadRequest, e.InvalidParams, err)
 		return
 	}
 
-	order.LogisticsID = response.Get("AllPayLogisticsID")
-	order.LogisticsStatus = 1
-	order.LogisticsMsg = response.Get("RtnMsg")
-	err = DB.Select("status", "logistics_id", "logistics_status", "logistics_msg").Updates(&order).Error
+	err = money.CreateLogisticsOrder(order)
 
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
