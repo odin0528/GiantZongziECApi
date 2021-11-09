@@ -137,11 +137,11 @@ func OrderCreate(c *gin.Context) {
 		}
 	}
 
-	/* carts := models.Carts{
+	carts := models.Carts{
 		MemberID:   MemberID,
 		PlatformID: PlatformID,
 	}
-	carts.Clean() */
+	carts.Clean()
 
 	if order.Payment == 4 {
 
@@ -252,7 +252,7 @@ func OrderCreate(c *gin.Context) {
 		case 3:
 			aio.SetCreditPayment()
 		case 1:
-			aio.SetWebAtmPayment()
+			aio.SetAllPayment()
 		case 5:
 			aio.SetAtmPayment()
 		case 6:
