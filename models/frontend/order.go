@@ -21,6 +21,9 @@ type OrderCreateRequest struct {
 	Email        string                   `json:"email" gorm:"-"`
 	Fullname     string                   `json:"fullname"`
 	Phone        string                   `json:"phone"`
+	County       string                   `json:"county"`
+	District     string                   `json:"district"`
+	ZipCode      string                   `json:"zip_code"`
 	Address      string                   `json:"address"`
 	Memo         string                   `json:"memo"`
 	Method       int                      `json:"method"`
