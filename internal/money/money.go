@@ -86,8 +86,8 @@ func CreateLogisticsOrder(order models.Orders) error {
 		ecpayValue["LogisticsSubType"] = "TCAT"
 		ecpayValue["SenderZipCode"] = "235"
 		ecpayValue["SenderAddress"] = "新北市中和區中正路753號7樓"
-		ecpayValue["ReceiverZipCode"] = "104"
-		ecpayValue["ReceiverAddress"] = order.Address
+		ecpayValue["ReceiverZipCode"] = order.ZipCode
+		ecpayValue["ReceiverAddress"] = order.County + order.District + order.Address
 		ecpayValue["Temperature"] = "0001"
 		ecpayValue["Distance"] = "00"
 		ecpayValue["Specification"] = "0004"
