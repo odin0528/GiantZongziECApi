@@ -13,7 +13,7 @@ type Pagination struct {
 	Items int `json:"items"`
 }
 
-const Items = 10
+const Items = 20
 
 func CreatePagination(page int, items int, total int64) (pagination Pagination) {
 	pagination.Page = page

@@ -23,6 +23,6 @@ func (Platform) TableName() string {
 }
 
 func (platform *Platform) Fetch() {
-	DB.Debug().First(&platform)
+	DB.First(&platform)
 	return
 }

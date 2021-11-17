@@ -30,7 +30,7 @@ type MenuQuery struct {
 }
 
 func (query *MenuQuery) GetCondition() *gorm.DB {
-	sql := DB.Debug().Model(Menus{})
+	sql := DB.Model(Menus{})
 
 	if query.ID != 0 {
 		sql.Where("id = ?", query.ID)

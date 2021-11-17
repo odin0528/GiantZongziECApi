@@ -19,25 +19,17 @@ func CategoryList(c *gin.Context) {
 	}
 	PlatformID, _ := c.Get("platform_id")
 	query.PlatformID = PlatformID.(int)
-	categories := query.FetchAll()
 
 	var breadcrumbs []models.Category
 	query.GetBreadcrumbs(&breadcrumbs)
 
-	g.Response(http.StatusOK, e.Success, map[string]interface{}{"categories": categories, "breadcrumbs": breadcrumbs})
-}
-
-func CategoryChildList(c *gin.Context) {
-	g := Gin{c}
-	var query models.CategoryQuery
-	err := c.ShouldBindUri(&query)
-	if err != nil {
-		g.Response(http.StatusBadRequest, e.InvalidParams, err)
-		return
+	if len(breadcrumbs) > 0 {
+		query.ID = breadcrumbs[len(breadcrumbs)-1].ParentID
+	} else {
+		query.ID = -1
 	}
-	PlatformID, _ := c.Get("platform_id")
-	query.PlatformID = PlatformID.(int)
+
 	categories := query.FetchAll()
 
-	g.Response(http.StatusOK, e.Success, categories)
+	g.Response(http.StatusOK, e.Success, map[string]interface{}{"categories": categories, "breadcrumbs": breadcrumbs})
 }

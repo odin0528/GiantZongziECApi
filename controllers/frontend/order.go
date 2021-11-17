@@ -56,7 +56,7 @@ func OrderCreate(c *gin.Context) {
 							StyleID:    style.StyleID,
 							Price:      style.Price,
 						}
-						DB.Debug().Model(&carts).Where("platform_id = ? and member_id = ? and product_id = ? and style_id = ? and deleted_at = 0",
+						DB.Model(&carts).Where("platform_id = ? and member_id = ? and product_id = ? and style_id = ? and deleted_at = 0",
 							PlatformID, MemberID, product.ProductID, style.StyleID).
 							Update("price", carts.Price)
 					}
@@ -218,7 +218,7 @@ func OrderCreate(c *gin.Context) {
 		requestResp, _, _ := pay.Request(context.Background(), requestReq)
 
 		if requestResp.ReturnCode == "0000" {
-			DB.Debug().Model(models.Orders{}).Where("id = ?", order.ID).
+			DB.Model(models.Orders{}).Where("id = ?", order.ID).
 				Updates(map[string]interface{}{"order_uuid": orderUuid, "transaction_id": requestResp.Info.TransactionID})
 		}
 

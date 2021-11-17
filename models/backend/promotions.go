@@ -29,7 +29,7 @@ type Promotions struct {
 
 func (req *PromotionListReq) FetchAll() (promotions []Promotions, pagination Pagination) {
 	var count int64
-	sql := DB.Debug().Model(&Promotions{}).Where("platform_id = ?", req.PlatformID)
+	sql := DB.Model(&Promotions{}).Where("platform_id = ?", req.PlatformID)
 	sql.Count(&count)
 	sql.Offset((req.Page - 1) * req.Items).Limit(req.Items).Scan(&promotions)
 	pagination = CreatePagination(req.Page, req.Items, count)
