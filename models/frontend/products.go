@@ -43,7 +43,7 @@ type Products struct {
 
 // 查詢功能
 func (query *ProductQuery) Query() *gorm.DB {
-	sql := DB.Table("products").Where("deleted_at = 0 AND is_public = 1")
+	sql := DB.Debug().Table("products").Where("deleted_at = 0 AND is_public = 1")
 	if query.ID != 0 {
 		sql.Where("products.id = ?", query.ID)
 	}
@@ -79,6 +79,8 @@ func (query *ProductQuery) Query() *gorm.DB {
 			sql.Order("product_style_table.price ASC")
 		} else if query.Sort == "price-desc" {
 			sql.Order("product_style_table.price DESC")
+		} else {
+			sql.Order("products.created_at DESC")
 		}
 
 		sql.Group("products.id")
