@@ -127,7 +127,7 @@ func EcpayLogisticsNotify(c *gin.Context) {
 			ChangeLogisticsStatus(&order, params)
 			godump.Dump(order)
 
-			err = DB.Select("logistics_msg", "logistics_status", "shipment_no", "logistics_id").Updates(&order).Error
+			err = DB.Select("logistics_msg", "logistics_status", "shipment_no", "logistics_id", "status").Updates(&order).Error
 			c.String(http.StatusOK, "1|OK")
 		} else {
 			c.String(http.StatusBadRequest, "0|Error")
