@@ -78,7 +78,9 @@ func EcpayPaymentFinish(c *gin.Context) {
 	godump.Dump(info)
 
 	if info.Get("TradeStatus") == "1" {
-		DB.Debug().Model(&models.Orders{}).Where("id = ? and status = 11", strings.Replace(info.Get("MerchantTradeNo"), os.Getenv("ECPAY_MERCHANT_TRADE_NO_PREFIX"), "", 1)).Update("status", 21)
+		DB.Debug().Model(&models.Orders{}).
+			Where("id = ? and status = 11", strings.Replace(info.Get("MerchantTradeNo"), os.Getenv("ECPAY_MERCHANT_TRADE_NO_PREFIX"), "", 1)).
+			Updates(map[string]interface{}{"payment_charge_fee": info.Get("PaymentTypeChargeFee"), "status": 21})
 	}
 
 	c.String(http.StatusOK, "1|OK")
@@ -291,6 +293,8 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 		switch params["RtnCode"] {
 		case "300":
 			order.LogisticsStatus = 2
+		case "2030":
+			fallthrough
 		case "3032":
 			order.Status = 31
 			order.LogisticsStatus = 3

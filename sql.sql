@@ -43,3 +43,8 @@ ALTER TABLE `member_delivery`
 ADD COLUMN `county` varchar(255) NULL COMMENT '宅配地址(縣)' AFTER `fullname`,
 ADD COLUMN `district` varchar(255) NULL COMMENT '宅配地址(地區)' AFTER `county`,
 ADD COLUMN `zip_code` varchar(15) NULL COMMENT '宅配郵遞區號' AFTER `district`;
+
+ALTER TABLE `orders` 
+ADD COLUMN `payment_charge_fee` double(10, 2) NULL COMMENT '金流交易手續費' AFTER `qty`,
+ADD COLUMN `logistics_charge_fee` double(10, 2) NULL COMMENT '實際物流運費' AFTER `payment_charge_fee`,
+MODIFY COLUMN `payment` tinyint(255) NULL DEFAULT NULL COMMENT '付費方式(2:貨到付款 3:信用卡 4:line pay 5:atm 6:超商代碼 7:超商條碼 )' AFTER `memo`
