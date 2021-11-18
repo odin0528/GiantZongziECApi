@@ -30,7 +30,7 @@ func (query *PlatformQuery) Fetch() (platform Platform) {
 }
 
 func (platform *Platform) GetMenu() (menus []Menus) {
-	DB.Model(&Menus{}).Debug().Where("platform_id = ? and is_enabled = 1", platform.ID).Order("sort ASC").Scan(&menus)
+	DB.Model(&Menus{}).Where("platform_id = ? and is_enabled = 1", platform.ID).Order("sort ASC").Scan(&menus)
 	return
 }
 
@@ -40,6 +40,6 @@ func (platform *Platform) GetPromotions() (promotions []Promotions) {
 }
 
 func (platform *Platform) GetPayments() (payment PlatformPayment) {
-	DB.Debug().Model(&PlatformPayment{}).Where("platform_id = ?", platform.ID).Scan(&payment)
+	DB.Model(&PlatformPayment{}).Where("platform_id = ?", platform.ID).Scan(&payment)
 	return
 }

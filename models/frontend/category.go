@@ -2,12 +2,14 @@ package frontend
 
 import (
 	. "eCommerce/internal/database"
+	"fmt"
 
 	"gorm.io/gorm"
+	"gorm.io/plugin/soft_delete"
 )
 
 type CategoryQuery struct {
-	ID         int `json:"id"`
+	ID         int
 	PlatformID int
 	ParentID   int `uri:"parent_id"`
 	Sort       int
@@ -21,7 +23,7 @@ type Category struct {
 	Layer      int    `json:"layer"`
 	Title      string `json:"title"`
 	Sort       int    `json:"sort"`
-	DeletedAt  int    `json:"-"`
+	DeletedAt  soft_delete.DeletedAt
 	TimeDefault
 }
 
@@ -56,14 +58,9 @@ func (query *CategoryQuery) Fetch() (category Category) {
 }
 
 func (query *CategoryQuery) FetchAll() (categories []Category) {
-	sql := query.Query()
-	sql.Order("sort asc").Scan(&categories)
-	return
-}
-
-func (query *CategoryQuery) Count() (count int64) {
-	sql := query.Query()
-	sql.Count(&count)
+	DB.Debug().Model(&Category{}).
+		Where("(parent_id = ? OR parent_id = ?) AND platform_id = ?", query.ID, query.ParentID, query.PlatformID).
+		Order(fmt.Sprintf("id = %d DESC, parent_id = %d, sort asc", query.ParentID, query.ID)).Scan(&categories)
 	return
 }
 

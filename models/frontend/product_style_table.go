@@ -29,7 +29,7 @@ func (ProductStyleTable) TableName() string {
 
 // 基本CURD功能
 func (query *ProductStyleQuery) Fetch() (productStyleTable ProductStyleTable) {
-	DB.Debug().Model(&ProductStyleTable{}).Where("platform_id = ? and product_id = ? and id = ?", query.PlatformID, query.ProductID, query.StyleID).
+	DB.Model(&ProductStyleTable{}).Where("platform_id = ? and product_id = ? and id = ?", query.PlatformID, query.ProductID, query.StyleID).
 		First(&productStyleTable)
 	return
 }

@@ -28,7 +28,7 @@ type Promotions struct {
 }
 
 func GetPromotionByID(ID int) (promotions []Promotions) {
-	DB.Debug().Model(&Promotions{}).
+	DB.Model(&Promotions{}).
 		Where("platform_id = ? AND is_enabled = 1 AND start_timestamp <= UNIX_TIMESTAMP() AND end_timestamp > UNIX_TIMESTAMP()", ID).
 		Scan(&promotions)
 	return

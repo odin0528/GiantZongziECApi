@@ -291,7 +291,7 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 		switch params["RtnCode"] {
 		case "300":
 			order.LogisticsStatus = 2
-		case "2030":
+		case "3032":
 			order.Status = 31
 			order.LogisticsStatus = 3
 		case "2073":

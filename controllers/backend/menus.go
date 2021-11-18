@@ -38,9 +38,9 @@ func MenuModify(c *gin.Context) {
 
 	if req.ID == 0 {
 		req.PlatformID = platformID.(int)
-		DB.Debug().Create(&req)
+		DB.Create(&req)
 	} else {
-		err = DB.Debug().Select("title", "link", "link_type", "is_enabled").Where("id = ? and platform_id = ?", req.ID, platformID.(int)).Updates(&req).Error
+		err = DB.Select("title", "link", "link_type", "is_enabled").Where("id = ? and platform_id = ?", req.ID, platformID.(int)).Updates(&req).Error
 	}
 
 	g.Response(http.StatusOK, e.Success, req.ID)
@@ -79,8 +79,8 @@ func MenuMove(c *gin.Context) {
 	menu2.Sort = req.Sort
 	menu1.Sort = req.Sort + req.Direction
 
-	DB.Debug().Save(&menu1)
-	DB.Debug().Save(&menu2)
+	DB.Save(&menu1)
+	DB.Save(&menu2)
 
 	g.Response(http.StatusOK, e.Success, nil)
 }
