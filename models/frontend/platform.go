@@ -43,3 +43,8 @@ func (platform *Platform) GetPayments() (payment PlatformPayment) {
 	DB.Model(&PlatformPayment{}).Where("platform_id = ?", platform.ID).Scan(&payment)
 	return
 }
+
+func (platform *Platform) GetLogistics() (logistics PlatformLogistics) {
+	DB.Model(&PlatformLogistics{}).Where("platform_id = ?", platform.ID).Scan(&logistics)
+	return
+}

@@ -15,12 +15,14 @@ func PlatformFetch(c *gin.Context) {
 	Platform := platform.(models.Platform)
 	menu := Platform.GetMenu()
 	promotions := Platform.GetPromotions()
+	logistics := Platform.GetLogistics()
 	payment := Platform.GetPayments()
 	g.Response(http.StatusOK, e.Success, map[string]interface{}{
 		"info":       platform,
 		"menu":       menu,
 		"promotions": promotions,
 		"payment":    payment,
+		"logistics":  logistics,
 	})
 }
 
