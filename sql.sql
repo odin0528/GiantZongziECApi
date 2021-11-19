@@ -66,7 +66,7 @@ CREATE TABLE `platform_logistics`  (
   PRIMARY KEY (`platform_id`)
 );
 
-
+DROP TRIGGER `insert_pages_rel`;
 CREATE DEFINER = `root`@`%` TRIGGER `insert_pages_rel` AFTER INSERT ON `platform` FOR EACH ROW BEGIN
 	INSERT INTO pages (platform_id, url, title, is_enabled, created_at, updated_at, deleted_at, released_at) VALUES(NEW.id, 'index', '首頁', 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0);
 	INSERT INTO pages (platform_id, url, title, is_enabled, created_at, updated_at, deleted_at, released_at) VALUES(NEW.id, 'categories', '全部商品', 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, 0);
@@ -82,3 +82,7 @@ DROP COLUMN `delivery_family`,
 DROP COLUMN `delivery_hilife`,
 DROP COLUMN `delivery_ok`,
 DROP COLUMN `webatm_enabled`;
+
+insert into platform_logistics (platform_id, uni_enabled, uni_charge_fee) (
+	SELECT id, 1, 60 FROM platform
+);
