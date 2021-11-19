@@ -59,7 +59,7 @@ func (products *Products) Validate(platformID int) bool {
 
 // 查詢功能
 func (query *ProductQuery) Query() *gorm.DB {
-	sql := DB.Debug().Model(&Products{})
+	sql := DB.Model(&Products{})
 	if query.ID != 0 {
 		sql.Where("id = ?", query.ID)
 	}
