@@ -344,11 +344,21 @@ func OrderValidation(PlatformID int, order *models.OrderCreateRequest) int {
 
 	order.Qty = count
 
+	platform := &models.Platform{
+		ID: PlatformID,
+	}
+	logistics := platform.GetLogistics()
 	switch order.Method {
 	case 1:
-		shipping = 0
-	default:
-		shipping = 0
+		shipping = logistics.HomeChargeFee
+	case 2:
+		shipping = logistics.UniChargeFee
+	case 3:
+		shipping = logistics.FamilyChargeFee
+	case 4:
+		shipping = logistics.HilifeChargeFee
+	case 5:
+		shipping = logistics.OkChargeFee
 	}
 
 	if total != order.Price || shipping != order.Shipping {
