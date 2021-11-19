@@ -204,6 +204,7 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 			order.Status = 91
 			order.LogisticsStatus = 5
 		case "5004":
+			order.Status = 41
 			order.LogisticsStatus = 6
 		case "5008":
 			order.Status = 92
@@ -270,6 +271,8 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 			fallthrough
 		case "2001":
 			order.LogisticsStatus = 2
+		case "3032":
+			fallthrough
 		case "2068":
 			order.Status = 31
 			order.LogisticsStatus = 3

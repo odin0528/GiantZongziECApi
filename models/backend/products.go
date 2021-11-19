@@ -9,12 +9,9 @@ import (
 )
 
 type ProductQuery struct {
-	ID         int `json:"id" uri:"id"`
-	PlatformID int `json:"-"`
-}
-
-type ProductListReq struct {
-	PlatformID int `json:"-"`
+	ID         int    `json:"id" uri:"id"`
+	PlatformID int    `json:"-"`
+	Title      string `json:"title"`
 	Pagination
 }
 
@@ -62,9 +59,13 @@ func (products *Products) Validate(platformID int) bool {
 
 // 查詢功能
 func (query *ProductQuery) Query() *gorm.DB {
-	sql := DB.Table("products").Where("deleted_at = 0")
+	sql := DB.Debug().Model(&Products{})
 	if query.ID != 0 {
 		sql.Where("id = ?", query.ID)
+	}
+
+	if query.Title != "" {
+		sql.Where("title like ?", "%"+query.Title+"%")
 	}
 
 	if query.PlatformID != 0 {
@@ -80,18 +81,12 @@ func (query *ProductQuery) Fetch() (product Products) {
 	return
 }
 
-func (query *ProductQuery) FetchAll() (products []Products) {
-	sql := query.Query()
-	sql.Scan(&products)
-	return
-}
-
-func (req *ProductListReq) FetchAll() (products []Products, pagination Pagination) {
+func (query *ProductQuery) FetchAll() (products []Products, pagination Pagination) {
 	var count int64
-	sql := DB.Model(&Products{}).Where("platform_id = ?", req.PlatformID)
+	sql := query.Query()
 	sql.Count(&count)
-	sql.Offset((req.Page - 1) * req.Items).Limit(req.Items).Scan(&products)
-	pagination = CreatePagination(req.Page, req.Items, count)
+	sql.Offset((query.Page - 1) * query.Items).Limit(query.Items).Scan(&products)
+	pagination = CreatePagination(query.Page, query.Items, count)
 	return
 }
 

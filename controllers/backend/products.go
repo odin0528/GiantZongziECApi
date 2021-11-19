@@ -35,7 +35,7 @@ func ProductFetch(c *gin.Context) {
 
 func ProductList(c *gin.Context) {
 	g := Gin{c}
-	var req models.ProductListReq
+	var req models.ProductQuery
 	err := c.BindJSON(&req)
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
