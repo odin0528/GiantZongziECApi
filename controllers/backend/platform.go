@@ -69,3 +69,26 @@ func PlatformPaymentUpdate(c *gin.Context) {
 
 	g.Response(http.StatusOK, e.Success, nil)
 }
+
+func PlatformLogisticsFetch(c *gin.Context) {
+	g := Gin{c}
+	PlatformID, _ := c.Get("platform_id")
+	logistics := &models.PlatformLogistics{
+		PlatformID: PlatformID.(int),
+	}
+
+	logistics.Fetch()
+
+	g.Response(http.StatusOK, e.Success, logistics)
+}
+
+func PlatformLogisticsUpdate(c *gin.Context) {
+	g := Gin{c}
+	var logistics *models.PlatformLogistics
+	PlatformID, _ := c.Get("platform_id")
+	c.BindJSON(&logistics)
+
+	DB.Debug().Where("platform_id = ?", PlatformID.(int)).Updates(&logistics)
+
+	g.Response(http.StatusOK, e.Success, nil)
+}

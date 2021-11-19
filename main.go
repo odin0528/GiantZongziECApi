@@ -119,8 +119,10 @@ func main() {
 
 			authRequired.GET("/platform", backend.PlatformFetch)
 			authRequired.GET("/platform/payment", backend.PlatformPaymentFetch)
+			authRequired.GET("/platform/logistics", backend.PlatformLogisticsFetch)
 			authRequired.POST("/platform", backend.PlatformUpdate)
 			authRequired.POST("/platform/payment", backend.PlatformPaymentUpdate)
+			authRequired.POST("/platform/logistics", backend.PlatformLogisticsUpdate)
 
 			authRequired.GET("/menus", backend.MenuList)
 			authRequired.POST("/menus", backend.MenuModify)

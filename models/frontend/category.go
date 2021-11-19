@@ -58,7 +58,7 @@ func (query *CategoryQuery) Fetch() (category Category) {
 }
 
 func (query *CategoryQuery) FetchAll() (categories []Category) {
-	DB.Debug().Model(&Category{}).
+	DB.Model(&Category{}).
 		Where("(parent_id = ? OR parent_id = ?) AND platform_id = ?", query.ID, query.ParentID, query.PlatformID).
 		Order(fmt.Sprintf("id = %d DESC, parent_id = %d, sort asc", query.ParentID, query.ID)).Scan(&categories)
 	return
