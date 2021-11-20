@@ -67,6 +67,7 @@ func main() {
 			tokenRequired.POST("/carts/add", frontend.CartsAddProduct)
 			tokenRequired.POST("/carts/update", frontend.CartsUpdate)
 			tokenRequired.POST("/carts/remove", frontend.CartsRemoveProduct)
+			tokenRequired.POST("/carts/reset", frontend.CartsResetProduct)
 		}
 	}
 
