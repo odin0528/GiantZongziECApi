@@ -127,7 +127,6 @@ func EcpayLogisticsNotify(c *gin.Context) {
 			}
 
 			ChangeLogisticsStatus(&order, params)
-			godump.Dump(order)
 
 			err = DB.Select("logistics_msg", "logistics_status", "shipment_no", "logistics_id", "status").Updates(&order).Error
 			c.String(http.StatusOK, "1|OK")
@@ -244,6 +243,8 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 			fallthrough
 		case "310":
 			order.LogisticsStatus = 2
+		case "3024":
+			fallthrough
 		case "3032":
 			order.Status = 31
 			order.LogisticsStatus = 3
@@ -271,12 +272,14 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 			fallthrough
 		case "2001":
 			order.LogisticsStatus = 2
+		case "2041": //物流中心理貨中
+			fallthrough
 		case "3032":
 			fallthrough
 		case "2068":
 			order.Status = 31
 			order.LogisticsStatus = 3
-		case "2073":
+		case "2063":
 			order.LogisticsStatus = 4
 		case "2067":
 			order.Status = 91
