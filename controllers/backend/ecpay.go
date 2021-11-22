@@ -199,13 +199,13 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 		case "3006":
 			order.Status = 31
 			order.LogisticsStatus = 3
-		case "3003":
+		case "3003": //配完
 			order.Status = 91
 			order.LogisticsStatus = 5
-		case "5004":
+		case "5004": //一般單退回
 			order.Status = 41
 			order.LogisticsStatus = 6
-		case "5008":
+		case "5008": //退貨配完
 			order.Status = 92
 			order.LogisticsStatus = 8
 		default:
@@ -218,10 +218,10 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 			fallthrough
 		case "310":
 			order.LogisticsStatus = 2
-		case "2068":
+		case "2068": //交貨便收件(A門市收到件寄件商品)
 			order.Status = 31
 			order.LogisticsStatus = 3
-		case "2073":
+		case "2073": //商品配達買家取貨門市
 			order.LogisticsStatus = 4
 		case "2067":
 			order.Status = 91
@@ -243,12 +243,12 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 			fallthrough
 		case "310":
 			order.LogisticsStatus = 2
-		case "3024":
+		case "3024": //貨件已至物流中心
 			fallthrough
-		case "3032":
+		case "3032": //賣家已到門市寄件
 			order.Status = 31
 			order.LogisticsStatus = 3
-		case "3018":
+		case "3018": //到店尚未取貨，簡訊通知取件
 			order.LogisticsStatus = 4
 		case "3022":
 			order.Status = 91
@@ -274,12 +274,12 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 			order.LogisticsStatus = 2
 		case "2041": //物流中心理貨中
 			fallthrough
-		case "3032":
+		case "3032": //賣家已到門市寄件
 			fallthrough
 		case "2068":
 			order.Status = 31
 			order.LogisticsStatus = 3
-		case "2063":
+		case "2063": //門市配達
 			order.LogisticsStatus = 4
 		case "2067":
 			order.Status = 91
@@ -299,12 +299,12 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 		switch params["RtnCode"] {
 		case "300":
 			order.LogisticsStatus = 2
-		case "2030":
+		case "2030": // 物流中心驗收成功
 			fallthrough
 		case "3032":
 			order.Status = 31
 			order.LogisticsStatus = 3
-		case "2073":
+		case "2073": //商品配達買家取貨門市
 			order.LogisticsStatus = 4
 		case "3022":
 			order.Status = 91
