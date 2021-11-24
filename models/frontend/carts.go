@@ -14,6 +14,7 @@ type Carts struct {
 	StyleID    int     `json:"style_id"`
 	Qty        int     `json:"qty"`
 	Price      float32 `json:"price"`
+	Discount   float32 `json:"discount"` //折扣後的價格
 	Total      float32 `json:"total"`
 	Title      string  `json:"title"`
 	StyleTitle string  `json:"style_title"`

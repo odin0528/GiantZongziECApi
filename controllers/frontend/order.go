@@ -7,6 +7,7 @@ import (
 	"eCommerce/pkg/e"
 	"encoding/base64"
 	"fmt"
+	"math"
 	"net/http"
 	"os"
 	"time"
@@ -44,6 +45,7 @@ func OrderCreate(c *gin.Context) {
 	}
 
 	errCode := OrderValidation(PlatformID, &order)
+	println(errCode)
 	if errCode != 200 {
 		if errCode == e.ProductPriceChange {
 			if MemberID != 0 {
@@ -62,8 +64,8 @@ func OrderCreate(c *gin.Context) {
 					}
 				}
 			}
-			g.Response(http.StatusOK, errCode, order.Products)
 		}
+		g.Response(http.StatusOK, errCode, order.Products)
 		return
 	}
 
@@ -317,7 +319,7 @@ func OrderCreate(c *gin.Context) {
 func OrderValidation(PlatformID int, order *models.OrderCreateRequest) int {
 	priceChange := false
 	count := 0
-	var total, shipping, percent, discount float32 = 0, 0, 100, 0
+	var total, shipping, checkoutPercent, checkoutDiscount, productDiscount float32 = 0, 0, 100, 0, 0
 	for productIndex, product := range order.Products {
 		for styleIndex, style := range product.Styles {
 			query := &models.ProductStyleQuery{
@@ -367,28 +369,63 @@ func OrderValidation(PlatformID int, order *models.OrderCreateRequest) int {
 
 	// 取得優惠活動，並算完折扣
 	promotions := models.GetPromotionByID(PlatformID)
+
+	// 先算產品折扣
+	for _, promotion := range promotions {
+		switch promotion.Type {
+		case "special_price":
+			checkProductDiscount := CheckSpecialPrice(promotion, order.Products)
+			if checkProductDiscount == -1 {
+				return e.PromotionChange
+			} else {
+				productDiscount += checkProductDiscount
+			}
+		}
+	}
+
+	// 後算購物車折扣
 	for _, promotion := range promotions {
 		switch promotion.Type {
 		case "sitewide_discount":
 			if promotion.Mode == "total_qty" && promotion.Qty <= count {
 				if promotion.Method == "percent" {
-					percent *= promotion.Percent / 100
+					checkoutPercent *= promotion.Percent / 100
 				} else if promotion.Method == "discount" {
-					discount += promotion.Discount
+					checkoutDiscount += promotion.Discount
 				}
-			} else if promotion.Mode == "total_price" && promotion.Money <= total {
+			} else if promotion.Mode == "total_price" && promotion.Money <= total-productDiscount {
 				if promotion.Method == "percent" {
-					percent *= promotion.Percent / 100
+					checkoutPercent *= promotion.Percent / 100
 				} else if promotion.Method == "discount" {
-					discount += promotion.Discount
+					checkoutDiscount += promotion.Discount
 				}
 			}
 		}
 	}
 
-	if total-(total*(percent/100)-discount) != order.Discount {
+	fmt.Println(checkoutPercent)
+	fmt.Println(checkoutDiscount)
+	fmt.Println(productDiscount)
+
+	if total-float32(math.Round(float64((total-productDiscount)*(checkoutPercent/100)-checkoutDiscount))) != order.Discount {
 		return e.PromotionChange
 	}
 
 	return e.Success
+}
+
+func CheckSpecialPrice(promotion models.Promotions, products []models.OrderProductsCreateReq) float32 {
+	var discount float32
+	discount = 0
+	for _, product := range products {
+		for _, style := range product.Styles {
+			discountedPrice := float32(math.Round(float64(style.Price * promotion.Percent / 100)))
+			if style.DiscountedPrice != discountedPrice || style.Discount != style.Price-discountedPrice {
+				return -1
+			}
+			discount += style.Discount * float32(style.Qty)
+		}
+	}
+
+	return discount
 }

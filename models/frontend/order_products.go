@@ -26,13 +26,16 @@ type OrderProductsCreateReq struct {
 }
 
 type OrderProductStyleCreateReq struct {
-	StyleID    int     `json:"id"`
-	Title      string  `json:"title"`
-	StyleTitle string  `json:"style_title"`
-	Photo      string  `json:"photo"`
-	Sku        string  `json:"sku"`
-	Qty        int     `json:"buyCount"`
-	Price      float32 `json:"price"`
+	StyleID         int     `json:"id"`
+	Title           string  `json:"title"`
+	StyleTitle      string  `json:"style_title"`
+	Photo           string  `json:"photo"`
+	Sku             string  `json:"sku"`
+	Qty             int     `json:"buyCount"`
+	Price           float32 `json:"price"`
+	IsDiscount      bool    `json:"isDiscount"`
+	Discount        float32 `json:"discount"`
+	DiscountedPrice float32 `json:"discountedPrice"`
 }
 
 // 基本CURD功能
