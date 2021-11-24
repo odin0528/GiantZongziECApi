@@ -7,19 +7,12 @@ import (
 )
 
 type Carts struct {
-	ID         int     `json:"-"`
-	PlatformID int     `json:"-"`
-	MemberID   int     `json:"-"`
-	ProductID  int     `json:"product_id"`
-	StyleID    int     `json:"style_id"`
-	Qty        int     `json:"qty"`
-	Price      float32 `json:"price"`
-	Discount   float32 `json:"discount"` //折扣後的價格
-	Total      float32 `json:"total"`
-	Title      string  `json:"title"`
-	StyleTitle string  `json:"style_title"`
-	Photo      string  `json:"photo"`
-	Sku        string  `json:"sku"`
+	ID         int `json:"-"`
+	PlatformID int `json:"-"`
+	MemberID   int `json:"-"`
+	ProductID  int `json:"product_id"`
+	StyleID    int `json:"style_id"`
+	Qty        int `json:"qty"`
 	DeletedAt  soft_delete.DeletedAt
 	TimeDefault
 }

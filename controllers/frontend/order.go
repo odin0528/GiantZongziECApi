@@ -45,26 +45,7 @@ func OrderCreate(c *gin.Context) {
 	}
 
 	errCode := OrderValidation(PlatformID, &order)
-	println(errCode)
 	if errCode != 200 {
-		if errCode == e.ProductPriceChange {
-			if MemberID != 0 {
-				for _, product := range order.Products {
-					for _, style := range product.Styles {
-						carts := models.Carts{
-							MemberID:   MemberID,
-							PlatformID: PlatformID,
-							ProductID:  product.ProductID,
-							StyleID:    style.StyleID,
-							Price:      style.Price,
-						}
-						DB.Model(&carts).Where("platform_id = ? and member_id = ? and product_id = ? and style_id = ? and deleted_at = 0",
-							PlatformID, MemberID, product.ProductID, style.StyleID).
-							Update("price", carts.Price)
-					}
-				}
-			}
-		}
 		g.Response(http.StatusOK, errCode, order.Products)
 		return
 	}
@@ -126,16 +107,19 @@ func OrderCreate(c *gin.Context) {
 		for _, style := range product.Styles {
 			itemName = append(itemName, fmt.Sprintf("%s %s", product.Title, style.StyleTitle))
 			orderProduct := models.OrderProducts{
-				OrderID:    order.ID,
-				ProductID:  product.ProductID,
-				StyleID:    style.StyleID,
-				Qty:        style.Qty,
-				Price:      style.Price,
-				Total:      float32(style.Qty) * style.Price,
-				Title:      product.Title,
-				StyleTitle: style.StyleTitle,
-				Photo:      style.Photo,
-				Sku:        style.Sku,
+				OrderID:         order.ID,
+				ProductID:       product.ProductID,
+				StyleID:         style.StyleID,
+				Qty:             style.Qty,
+				Price:           style.Price,
+				IsDiscount:      style.IsDiscount,
+				Discount:        style.Discount,
+				DiscountedPrice: style.DiscountedPrice,
+				Total:           float32(style.Qty) * style.DiscountedPrice,
+				Title:           product.Title,
+				StyleTitle:      style.StyleTitle,
+				Photo:           style.Photo,
+				Sku:             style.Sku,
 			}
 
 			orderProduct.Create()
