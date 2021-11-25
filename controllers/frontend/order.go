@@ -147,7 +147,7 @@ func OrderCreate(c *gin.Context) {
 		}
 
 		requestReq := &linepay.RequestRequest{
-			Amount:   int(order.Price + order.Shipping),
+			Amount:   int(order.Total),
 			Currency: "TWD",
 			OrderID:  orderUuid,
 			Packages: []*linepay.RequestPackage{},
@@ -162,14 +162,14 @@ func OrderCreate(c *gin.Context) {
 				requestReq.Packages = append(requestReq.Packages,
 					&linepay.RequestPackage{
 						ID:     fmt.Sprintf("%d", order.ID),
-						Amount: style.Qty * int(style.Price),
+						Amount: style.Qty * int(style.DiscountedPrice),
 						Name:   Platform.Title,
 						Products: []*linepay.RequestPackageProduct{
 							&linepay.RequestPackageProduct{
 								ID:       fmt.Sprintf("%d-%d", product.ProductID, style.StyleID),
 								Name:     fmt.Sprintf("%s %s", product.Title, style.StyleTitle),
 								Quantity: style.Qty,
-								Price:    int(style.Price),
+								Price:    int(style.DiscountedPrice),
 								ImageURL: style.Photo,
 							},
 						},
@@ -185,7 +185,7 @@ func OrderCreate(c *gin.Context) {
 			Price:    int(order.Shipping),
 		}) */
 
-		requestReq.Packages = append(requestReq.Packages,
+		/* requestReq.Packages = append(requestReq.Packages,
 			&linepay.RequestPackage{
 				ID:     fmt.Sprintf("%d", order.ID),
 				Amount: int(order.Shipping),
@@ -199,7 +199,7 @@ func OrderCreate(c *gin.Context) {
 					},
 				},
 			},
-		)
+		) */
 
 		requestResp, _, _ := pay.Request(context.Background(), requestReq)
 
