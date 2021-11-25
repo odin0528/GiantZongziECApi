@@ -65,7 +65,7 @@ func (query *ProductQuery) Query() *gorm.DB {
 		sql.Where("products.platform_id = ?", query.PlatformID)
 	}
 
-	if query.Min > 0 || query.Max > 0 || (query.Sort != "new_arrival" && query.Sort != "") {
+	if query.Min > 0 || query.Max > 0 || query.Sort == "price-asc" || query.Sort == "price-desc" {
 		sql.Joins("inner join product_style_table on products.id = product_style_table.product_id")
 		if query.Min > 0 {
 			sql.Where("product_style_table.price >= ?", query.Min)
@@ -79,8 +79,6 @@ func (query *ProductQuery) Query() *gorm.DB {
 			sql.Order("product_style_table.price ASC")
 		} else if query.Sort == "price-desc" {
 			sql.Order("product_style_table.price DESC")
-		} else {
-			sql.Order("products.created_at DESC")
 		}
 
 		sql.Group("products.id")
@@ -99,7 +97,7 @@ func (query *ProductQuery) FetchAll() (products []Products, pagination Paginatio
 	var count int64
 	sql := query.Query()
 	sql.Count(&count)
-	sql.Select("products.*").Offset((query.Page - 1) * Items).Limit(Items).Scan(&products)
+	sql.Select("products.*").Order("products.created_at DESC").Offset((query.Page - 1) * Items).Limit(Items).Scan(&products)
 	pagination = CreatePagination(query.Page, Items, count)
 	return
 }

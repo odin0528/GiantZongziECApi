@@ -94,6 +94,7 @@ func ProductModify(c *gin.Context) {
 			if strings.Index(style.Img, ",") > 0 {
 				filename := fmt.Sprintf("/upload/%08d/products/%08d/%d", platformID.(int), req.ID, time.Now().UnixNano())
 				style.Img = uploader.Thumbnail(filename, style.Img, 720)
+				req.Style[index].Img = style.Img
 			}
 			style.Create()
 		}
@@ -110,7 +111,7 @@ func ProductModify(c *gin.Context) {
 				item.ProductID = req.ID
 				item.PlatformID = platformID.(int)
 				item.Group = index
-				if req.Style[index].Img != "" {
+				if len(req.Style) > 0 && req.Style[index].Img != "" {
 					item.Photo = req.Style[index].Img
 				} else {
 					item.Photo = firstPhoto
