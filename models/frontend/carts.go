@@ -16,6 +16,16 @@ type Carts struct {
 	DeletedAt  soft_delete.DeletedAt
 	TimeDefault
 }
+type MemberCarts struct {
+	ProductID     int    `json:"product_id"`
+	StyleID       int    `json:"style_id"`
+	Qty           int    `json:"qty"`
+	Title         string `json:"title"`
+	StyleTitle    string `json:"style_title"`
+	SubStyleTitle string `json:"sub_style_title"`
+	Photo         string `json:"photo"`
+	Price         int    `json:"price"`
+}
 
 type CartsQuery struct {
 	PlatformID int `json:"-"`
@@ -26,10 +36,12 @@ func (Carts) TableName() string {
 	return "carts"
 }
 
-func (query *CartsQuery) FetchAll() (carts []Carts, err error) {
-	err = DB.Model(&Carts{}).
-		Where("member_id = ? and platform_id = ?", query.MemberID, query.PlatformID).
-		Order("created_at DESC").
+func (query *CartsQuery) FetchAll() (carts []MemberCarts, err error) {
+	err = DB.Debug().Table("carts").
+		Select("carts.product_id, carts.style_id, carts.qty, product_style_table.title, product_style_table.style_title, product_style_table.sub_style_title, product_style_table.price, product_style_table.photo").
+		Joins("inner join product_style_table on product_style_table.id = carts.style_id").
+		Where("member_id = ? and carts.platform_id = ? AND carts.deleted_at = 0", query.MemberID, query.PlatformID).
+		Order("carts.created_at ASC").
 		Scan(&carts).Error
 
 	return

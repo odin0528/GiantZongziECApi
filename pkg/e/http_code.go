@@ -23,6 +23,7 @@ const (
 	// order frontend
 	ProductPriceChange = 91100
 	PromotionChange    = 91101
+	ShippingChange     = 91102
 	OrderNotExist      = 91102
 	OrderIsFinish      = 91103
 )

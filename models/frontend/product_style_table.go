@@ -11,15 +11,17 @@ type ProductStyleQuery struct {
 }
 
 type ProductStyleTable struct {
-	ID         int     `json:"id" gorm:"<-:create"`
-	PlatformID int     `json:"-" gorm:"<-:create"`
-	ProductID  int     `json:"-" gorm:"<-:create"`
-	Group      int     `json:"-"`
-	Title      string  `json:"title"`
-	SubTitle   string  `json:"subTitle"`
-	Sku        string  `json:"sku"`
-	Price      float32 `json:"price"`
-	Qty        int     `json:"qty"`
+	ID            int     `json:"id" gorm:"<-:create"`
+	PlatformID    int     `json:"-" gorm:"<-:create"`
+	ProductID     int     `json:"-" gorm:"<-:create"`
+	Group         int     `json:"-"`
+	Title         string  `json:"title"`
+	StyleTitle    string  `json:"style_title"`
+	SubStyleTitle string  `json:"sub_style_title"`
+	Photo         string  `json:"photo"`
+	Sku           string  `json:"sku"`
+	Price         float32 `json:"price"`
+	Qty           int     `json:"qty"`
 	TimeDefault
 }
 

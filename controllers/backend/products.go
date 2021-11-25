@@ -68,6 +68,7 @@ func ProductModify(c *gin.Context) {
 		req.Create()
 
 		sort := 1
+		firstPhoto := ""
 		for _, photo := range req.Photos {
 			//有找到base64的編碼關鍵字
 			if strings.Index(photo.Img, ",") > 0 {
@@ -80,6 +81,9 @@ func ProductModify(c *gin.Context) {
 				}
 				productPhotos.Create()
 				sort++
+				if firstPhoto == "" {
+					firstPhoto = productPhotos.Img
+				}
 			}
 		}
 
@@ -106,6 +110,11 @@ func ProductModify(c *gin.Context) {
 				item.ProductID = req.ID
 				item.PlatformID = platformID.(int)
 				item.Group = index
+				if req.Style[index].Img != "" {
+					item.Photo = req.Style[index].Img
+				} else {
+					item.Photo = firstPhoto
+				}
 				item.Create()
 			}
 		}
@@ -121,6 +130,7 @@ func ProductModify(c *gin.Context) {
 		req.Update()
 
 		sort := 1
+		firstPhoto := ""
 		for _, photo := range req.Photos {
 			// 如果沒有id 新增照片
 			if photo.ID == 0 {
@@ -134,6 +144,9 @@ func ProductModify(c *gin.Context) {
 					}
 					productPhotos.Create()
 					sort++
+					if firstPhoto == "" {
+						firstPhoto = productPhotos.Img
+					}
 				}
 			} else {
 				// 如果是空值，就當它刪除了
@@ -161,6 +174,9 @@ func ProductModify(c *gin.Context) {
 
 					productPhotos.Update()
 					sort++
+					if firstPhoto == "" {
+						firstPhoto = productPhotos.Img
+					}
 				}
 			}
 		}
@@ -171,6 +187,7 @@ func ProductModify(c *gin.Context) {
 			if strings.Index(style.Img, ",") > 0 {
 				filename := fmt.Sprintf("/upload/%08d/products/%08d/%d", platformID.(int), req.ID, time.Now().UnixNano())
 				style.Img = uploader.Thumbnail(filename, style.Img, 720)
+				req.Style[index].Img = style.Img
 			}
 			if style.ID == 0 {
 				style.ProductID = req.ID
@@ -214,6 +231,13 @@ func ProductModify(c *gin.Context) {
 				item.ProductID = req.ID
 				item.PlatformID = platformID.(int)
 				item.Group = index
+
+				if req.Style[index].Img != "" {
+					item.Photo = req.Style[index].Img
+				} else {
+					item.Photo = firstPhoto
+				}
+
 				if item.ID == 0 {
 					item.Create()
 				} else {

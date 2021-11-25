@@ -85,7 +85,7 @@ func (query *ProductQuery) FetchAll() (products []Products, pagination Paginatio
 	var count int64
 	sql := query.Query()
 	sql.Count(&count)
-	sql.Offset((query.Page - 1) * query.Items).Limit(query.Items).Scan(&products)
+	sql.Offset((query.Page - 1) * query.Items).Limit(query.Items).Order("created_at DESC").Scan(&products)
 	pagination = CreatePagination(query.Page, query.Items, count)
 	return
 }

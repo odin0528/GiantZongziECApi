@@ -303,7 +303,8 @@ func OrderCreate(c *gin.Context) {
 func OrderValidation(PlatformID int, order *models.OrderCreateRequest) int {
 	priceChange := false
 	count := 0
-	var total, shipping, checkoutPercent, checkoutDiscount, productDiscount float32 = 0, 0, 100, 0, 0
+	var total, shipping, checkoutPercent, checkoutDiscount, productDiscount, shippingDiscount float32 = 0, 0, 100, 0, 0, 0
+	isFreeShipping := false
 	for productIndex, product := range order.Products {
 		for styleIndex, style := range product.Styles {
 			query := &models.ProductStyleQuery{
@@ -324,11 +325,9 @@ func OrderValidation(PlatformID int, order *models.OrderCreateRequest) int {
 		}
 	}
 
-	if priceChange {
+	if priceChange || total != order.Price {
 		return e.ProductPriceChange
 	}
-
-	order.Qty = count
 
 	platform := &models.Platform{
 		ID: PlatformID,
@@ -347,9 +346,11 @@ func OrderValidation(PlatformID int, order *models.OrderCreateRequest) int {
 		shipping = logistics.OkChargeFee
 	}
 
-	if total != order.Price || shipping != order.Shipping {
-		return e.ProductPriceChange
+	if shipping != order.Shipping {
+		return e.ShippingChange
 	}
+
+	order.Qty = count
 
 	// 取得優惠活動，並算完折扣
 	promotions := models.GetPromotionByID(PlatformID)
@@ -384,14 +385,25 @@ func OrderValidation(PlatformID int, order *models.OrderCreateRequest) int {
 					checkoutDiscount += promotion.Discount
 				}
 			}
+		case "free_shipping":
+			if promotion.Mode == "total_qty" && promotion.Qty <= count {
+				isFreeShipping = true
+			} else if promotion.Mode == "total_price" && promotion.Money <= total-productDiscount {
+				isFreeShipping = true
+			}
 		}
 	}
 
+	if isFreeShipping {
+		shippingDiscount = shipping
+	}
+
+	fmt.Println(isFreeShipping)
 	fmt.Println(checkoutPercent)
 	fmt.Println(checkoutDiscount)
 	fmt.Println(productDiscount)
 
-	if total-float32(math.Round(float64((total-productDiscount)*(checkoutPercent/100)-checkoutDiscount))) != order.Discount {
+	if total-float32(math.Round(float64((total-productDiscount)*(checkoutPercent/100)-checkoutDiscount)))+shippingDiscount != order.Discount {
 		return e.PromotionChange
 	}
 
