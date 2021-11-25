@@ -110,6 +110,7 @@ func ProductModify(c *gin.Context) {
 			for _, item := range list {
 				item.ProductID = req.ID
 				item.PlatformID = platformID.(int)
+				item.Title = req.Title
 				item.Group = index
 				if len(req.Style) > 0 && req.Style[index].Img != "" {
 					item.Photo = req.Style[index].Img
@@ -231,6 +232,7 @@ func ProductModify(c *gin.Context) {
 			for _, item := range list {
 				item.ProductID = req.ID
 				item.PlatformID = platformID.(int)
+				item.Title = req.Title
 				item.Group = index
 
 				if req.Style[index].Img != "" {
