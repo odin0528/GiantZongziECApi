@@ -403,11 +403,6 @@ func OrderValidation(PlatformID int, order *models.OrderCreateRequest) int {
 		shippingDiscount = shipping
 	}
 
-	fmt.Println(isFreeShipping)
-	fmt.Println(checkoutPercent)
-	fmt.Println(checkoutDiscount)
-	fmt.Println(productDiscount)
-
 	if total-float32(math.Round(float64((total-productDiscount)*(checkoutPercent/100)-checkoutDiscount)))+shippingDiscount != order.Discount {
 		return e.PromotionChange
 	}
