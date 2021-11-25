@@ -65,6 +65,12 @@ type Orders struct {
 	TimeDefault
 }
 
+type OrderUpdateReq struct {
+	TransactionID string `json:"transaction_id"`
+	OrderUuid     string `json:"order_id"`
+	Status        int    `json:"status"`
+}
+
 func (OrderCreateRequest) TableName() string {
 	return "orders"
 }

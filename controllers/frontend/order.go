@@ -126,12 +126,6 @@ func OrderCreate(c *gin.Context) {
 		}
 	}
 
-	carts := models.Carts{
-		MemberID:   MemberID,
-		PlatformID: PlatformID,
-	}
-	carts.Clean()
-
 	if order.Payment == 4 {
 
 		platform, _ := c.Get("platform")
@@ -212,6 +206,11 @@ func OrderCreate(c *gin.Context) {
 		return
 	} else if order.Payment == 2 {
 		// 貨到付款就等後台出託運單
+		carts := models.Carts{
+			MemberID:   MemberID,
+			PlatformID: PlatformID,
+		}
+		carts.Clean()
 		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token})
 	} else {
 		var client *ecpay.Client
@@ -251,12 +250,18 @@ func OrderCreate(c *gin.Context) {
 		}
 		html, _ := aio.GenerateRequestHtml()
 
+		carts := models.Carts{
+			MemberID:   MemberID,
+			PlatformID: PlatformID,
+		}
+		carts.Clean()
+
 		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "ecpay": html})
 	}
 
 }
 
-/* func OrderUpdate(c *gin.Context) {
+func OrderUpdate(c *gin.Context) {
 	g := Gin{c}
 	var req *models.OrderUpdateReq
 	err := c.BindJSON(&req)
@@ -298,7 +303,7 @@ func OrderCreate(c *gin.Context) {
 	DB.Select("status").Save(&order)
 
 	g.Response(http.StatusOK, e.Success, order)
-} */
+}
 
 func OrderValidation(PlatformID int, order *models.OrderCreateRequest) int {
 	priceChange := false
