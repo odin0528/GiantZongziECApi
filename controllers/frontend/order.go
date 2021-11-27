@@ -203,10 +203,10 @@ func OrderCreate(c *gin.Context) {
 				Updates(map[string]interface{}{"order_uuid": orderUuid, "transaction_id": requestResp.Info.TransactionID})
 		}
 
-		godump.Dump(requestResp.Info.PaymentURL)
-		fmt.Println(requestResp.Info.PaymentURL)
+		godump.Dump(requestResp)
+		fmt.Println(requestResp)
 
-		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "payment": requestResp.Info.PaymentURL})
+		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "payment": requestResp.Info.PaymentURL, "request": requestReq})
 		return
 	} else if order.Payment == 2 {
 		// 貨到付款就等後台出託運單
