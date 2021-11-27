@@ -12,8 +12,7 @@ import (
 func GetProductsByCategoryID(c *gin.Context) {
 	g := Gin{c}
 	var req models.ProductQuery
-	err := c.ShouldBindUri(&req)
-	err = c.BindJSON(&req)
+	err := c.BindJSON(&req)
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
 		return
@@ -24,7 +23,6 @@ func GetProductsByCategoryID(c *gin.Context) {
 
 	for index := range products {
 		products[index].GetPhotos()
-		products[index].GetPriceRange()
 	}
 
 	g.PaginationResponse(http.StatusOK, e.Success, products, pagination)
@@ -49,7 +47,6 @@ func ProductFetch(c *gin.Context) {
 
 	for index := range related {
 		related[index].GetPhotos()
-		related[index].GetPriceRange()
 	}
 
 	g.Response(http.StatusOK, e.Success, map[string]interface{}{"products": products, "related": related})

@@ -8,9 +8,10 @@ import (
 
 type ProductQuery struct {
 	ID         int    `json:"id" uri:"id"`
-	CategoryID int    `json:"category_id" uri:"category_id"`
-	Layer      int    `json:"layer" uri:"layer"`
+	CategoryID int    `json:"category_id"`
+	Layer      int    `json:"layer"`
 	PlatformID int    `json:"-"`
+	Title      string `json:"title"`
 	Min        int    `json:"min"`
 	Max        int    `json:"max"`
 	Sort       string `json:"sort"`
@@ -34,8 +35,8 @@ type Products struct {
 	StyleTable      [][]ProductStyleTable `json:"style_table" gorm:"-"`
 	StyleEnabled    bool                  `json:"style_enabled"`
 	SubStyleEnabled bool                  `json:"sub_style_enabled"`
-	MinPrice        int                   `json:"min"`
-	MaxPrice        int                   `json:"max"`
+	Min             int                   `json:"min"`
+	Max             int                   `json:"max"`
 	IsPublic        bool                  `json:"is_public"`
 	DeletedAt       int                   `json:"-"`
 	TimeDefault
@@ -46,6 +47,10 @@ func (query *ProductQuery) Query() *gorm.DB {
 	sql := DB.Table("products").Where("deleted_at = 0 AND is_public = 1")
 	if query.ID != 0 {
 		sql.Where("products.id = ?", query.ID)
+	}
+
+	if query.Title != "" {
+		sql.Where("products.title like ?", "%"+query.Title+"%")
 	}
 
 	if query.CategoryID > 0 && query.Layer > 0 {
@@ -158,6 +163,6 @@ func (product *Products) GetRelated() (products []Products) {
 	return query.FetchRelated()
 }
 
-func (product *Products) GetPriceRange() {
+/* func (product *Products) GetPriceRange() {
 	DB.Table("product_style_table").Select([]string{"max(price) as max_price", "min(price) as min_price"}).Where("product_id = ?", product.ID).Scan(&product)
-}
+} */

@@ -22,3 +22,14 @@ update product_style_table set style_title = title;
 update product_style_table set title = (select title from products where id = product_style_table.product_id);
 UPDATE product_style_table set photo = (select img from product_style where product_style.id = (select id from product_style where product_id = product_style_table.product_id and product_style.title = product_style_table.style_title))
 UPDATE product_style_table set photo = (select img from product_photos where product_photos.product_id = product_style_table.product_id and sort = 1) where photo = '' or photo is null;
+
+
+ALTER TABLE `ec`.`products` 
+ADD COLUMN `min` double(10, 2) NULL COMMENT '所有規格中最低的價格' AFTER `sub_style_enabled`,
+ADD COLUMN `max` double(10, 2) NULL COMMENT '所有規格中最高的價格' AFTER `min`,
+ADD COLUMN `photo` varchar(255) NULL COMMENT '首圖' AFTER `max`;
+
+UPDATE products SET 
+min = (SELECT price FROM product_style_table WHERE product_style_table.product_id = products.id ORDER BY price ASC LIMIT 1),
+max = (SELECT price FROM product_style_table WHERE product_style_table.product_id = products.id ORDER BY price DESC LIMIT 1);
+
