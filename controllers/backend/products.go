@@ -235,7 +235,7 @@ func ProductModify(c *gin.Context) {
 				item.Title = req.Title
 				item.Group = index
 
-				if req.Style[index].Img != "" {
+				if len(req.Style) > 0 && req.Style[index].Img != "" {
 					item.Photo = req.Style[index].Img
 				} else {
 					item.Photo = firstPhoto
