@@ -16,6 +16,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/gotokatsuya/line-pay-sdk-go/linepay"
+	"github.com/liudng/godump"
 	"golang.org/x/crypto/scrypt"
 
 	. "eCommerce/internal/database"
@@ -202,7 +203,10 @@ func OrderCreate(c *gin.Context) {
 				Updates(map[string]interface{}{"order_uuid": orderUuid, "transaction_id": requestResp.Info.TransactionID})
 		}
 
-		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "payment": requestResp.Info.PaymentURL, "request": requestReq})
+		godump.Dump(requestResp.Info.PaymentURL)
+		fmt.Println(requestResp.Info.PaymentURL)
+
+		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "payment": requestResp.Info.PaymentURL})
 		return
 	} else if order.Payment == 2 {
 		// 貨到付款就等後台出託運單
