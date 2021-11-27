@@ -180,21 +180,23 @@ func OrderCreate(c *gin.Context) {
 			Price:    int(order.Shipping),
 		}) */
 
-		/* requestReq.Packages = append(requestReq.Packages,
-			&linepay.RequestPackage{
-				ID:     fmt.Sprintf("%d", order.ID),
-				Amount: int(order.Shipping),
-				Name:   Platform.Title,
-				Products: []*linepay.RequestPackageProduct{
-					&linepay.RequestPackageProduct{
-						ID:       fmt.Sprintf("%d-%s", order.ID, "shipping"),
-						Name:     "運費",
-						Quantity: 1,
-						Price:    int(order.Shipping),
+		if !order.IsFreeShipping {
+			requestReq.Packages = append(requestReq.Packages,
+				&linepay.RequestPackage{
+					ID:     fmt.Sprintf("%d", order.ID),
+					Amount: int(order.Shipping),
+					Name:   Platform.Title,
+					Products: []*linepay.RequestPackageProduct{
+						&linepay.RequestPackageProduct{
+							ID:       fmt.Sprintf("%d-%s", order.ID, "shipping"),
+							Name:     "運費",
+							Quantity: 1,
+							Price:    int(order.Shipping),
+						},
 					},
 				},
-			},
-		) */
+			)
+		}
 
 		requestResp, _, _ := pay.Request(context.Background(), requestReq)
 
@@ -406,6 +408,7 @@ func OrderValidation(PlatformID int, order *models.OrderCreateRequest) int {
 	if isFreeShipping {
 		shippingDiscount = shipping
 	}
+	order.IsFreeShipping = isFreeShipping
 
 	if total-float32(math.Round(float64((total-productDiscount)*(checkoutPercent/100)-checkoutDiscount)))+shippingDiscount != order.Discount {
 		return e.PromotionChange

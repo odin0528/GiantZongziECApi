@@ -15,31 +15,32 @@ type OrderQuery struct {
 }
 
 type OrderCreateRequest struct {
-	ID           int                      `json:"-"`
-	PlatformID   int                      `json:"-"`
-	MemberID     int                      `json:"-"`
-	Email        string                   `json:"email" gorm:"-"`
-	Fullname     string                   `json:"fullname"`
-	Phone        string                   `json:"phone"`
-	County       string                   `json:"county"`
-	District     string                   `json:"district"`
-	ZipCode      string                   `json:"zip_code"`
-	Address      string                   `json:"address"`
-	Memo         string                   `json:"memo"`
-	Method       int                      `json:"method"`
-	Total        float32                  `json:"-"`
-	Price        float32                  `json:"price"`
-	Shipping     float32                  `json:"shipping"`
-	Discount     float32                  `json:"discount"`
-	Qty          int                      `json:"-"`
-	Payment      int                      `json:"payment"`
-	StoreID      string                   `json:"store_id"`
-	StoreName    string                   `json:"store_name"`
-	StoreAddress string                   `json:"store_address"`
-	StorePhone   string                   `json:"store_phone"`
-	Status       int                      `json:"-"`
-	SaveDelivery bool                     `json:"save_delivery" gorm:"-"`
-	Products     []OrderProductsCreateReq `json:"products" gorm:"-"`
+	ID             int                      `json:"-"`
+	PlatformID     int                      `json:"-"`
+	MemberID       int                      `json:"-"`
+	Email          string                   `json:"email" gorm:"-"`
+	Fullname       string                   `json:"fullname"`
+	Phone          string                   `json:"phone"`
+	County         string                   `json:"county"`
+	District       string                   `json:"district"`
+	ZipCode        string                   `json:"zip_code"`
+	Address        string                   `json:"address"`
+	Memo           string                   `json:"memo"`
+	Method         int                      `json:"method"`
+	Total          float32                  `json:"-"`
+	Price          float32                  `json:"price"`
+	Discount       float32                  `json:"discount"`
+	Shipping       float32                  `json:"shipping"`
+	IsFreeShipping bool                     `json:"-"`
+	Qty            int                      `json:"-"`
+	Payment        int                      `json:"payment"`
+	StoreID        string                   `json:"store_id"`
+	StoreName      string                   `json:"store_name"`
+	StoreAddress   string                   `json:"store_address"`
+	StorePhone     string                   `json:"store_phone"`
+	Status         int                      `json:"-"`
+	SaveDelivery   bool                     `json:"save_delivery" gorm:"-"`
+	Products       []OrderProductsCreateReq `json:"products" gorm:"-"`
 	TimeDefault
 }
 
