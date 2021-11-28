@@ -3,9 +3,11 @@ package frontend
 import (
 	models "eCommerce/models/frontend"
 	"eCommerce/pkg/e"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/liudng/godump"
 
 	. "eCommerce/internal/database"
 )
@@ -20,6 +22,30 @@ func CartsFetch(c *gin.Context) {
 	query.PlatformID = PlatformID.(int)
 	query.MemberID = MemberID.(int)
 
+	carts, err := query.FetchAll()
+
+	if err != nil {
+		g.Response(http.StatusBadRequest, e.StatusInternalServerError, err)
+		return
+	}
+
+	g.Response(http.StatusOK, e.Success, carts)
+}
+
+func GuestCartsFetch(c *gin.Context) {
+	g := Gin{c}
+	query := &models.GuestCartsQuery{}
+	err := c.BindJSON(&query)
+	godump.Dump(query)
+	fmt.Println(err)
+	if err != nil {
+		println(err.Error())
+		g.Response(http.StatusBadRequest, e.InvalidParams, err)
+		return
+	}
+
+	PlatformID, _ := c.Get("platform_id")
+	query.PlatformID = PlatformID.(int)
 	carts, err := query.FetchAll()
 
 	if err != nil {

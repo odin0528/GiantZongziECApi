@@ -32,6 +32,11 @@ type CartsQuery struct {
 	MemberID   int `json:"-"`
 }
 
+type GuestCartsQuery struct {
+	StyleID    []int `json:"ids"`
+	PlatformID int   `json:"-"`
+}
+
 func (Carts) TableName() string {
 	return "carts"
 }
@@ -42,6 +47,15 @@ func (query *CartsQuery) FetchAll() (carts []MemberCarts, err error) {
 		Joins("inner join product_style_table on product_style_table.id = carts.style_id").
 		Where("member_id = ? and carts.platform_id = ? AND carts.deleted_at = 0", query.MemberID, query.PlatformID).
 		Order("carts.created_at ASC").
+		Scan(&carts).Error
+
+	return
+}
+
+func (query *GuestCartsQuery) FetchAll() (carts []MemberCarts, err error) {
+	err = DB.Debug().Table("product_style_table").
+		Select("id as style_id, product_id, title, style_title, sub_style_title, price, photo").
+		Where("id IN ? AND platform_id = ?", query.StyleID, query.PlatformID).
 		Scan(&carts).Error
 
 	return
