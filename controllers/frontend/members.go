@@ -22,6 +22,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"golang.org/x/crypto/scrypt"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
 
 func GetMemberOrders(c *gin.Context) {
@@ -195,6 +197,51 @@ func MemberOAuth(c *gin.Context) {
 		json.Unmarshal(rbody, &userData)
 
 		defer resp.Body.Close()
+
+		query := models.MemberQuery{
+			OAuthUserID:   userData["sub"].(string),
+			OAuthPlatform: req.Platform,
+			PlatformID:    PlatformID.(int),
+		}
+
+		member = query.Fetch()
+
+		if member.ID == 0 {
+			if _, ok := userData["email"]; ok {
+				member.Email = userData["email"].(string)
+			}
+			member.Nickname = userData["name"].(string)
+			member.OAuthPlatform = req.Platform
+			member.OAuthUserID = userData["sub"].(string)
+			member.PlatformID = PlatformID.(int)
+			member.Avatar = userData["picture"].(string)
+			DB.Create(&member)
+		}
+	} else if req.Platform == "google" {
+		var userData map[string]interface{}
+		config := &oauth2.Config{
+			ClientID:     "308489180394-9sekckggrfq8plq337193hiiul1ds8jt.apps.googleusercontent.com",
+			ClientSecret: "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",
+			RedirectURL:  "https://example.com:3000/oauth/google",
+			Scopes: []string{
+				"https://www.googleapis.com/auth/userinfo.email",
+				"https://www.googleapis.com/auth/userinfo.profile",
+				"openid",
+			},
+			Endpoint: google.Endpoint,
+		}
+		token, err := config.Exchange(oauth2.NoContext, req.Token)
+		if err != nil {
+			fmt.Println(err)
+			c.HTML(http.StatusBadRequest, "error.tmpl", gin.H{"message": "Login failed. Please try again."})
+			return
+		}
+
+		client := config.Client(oauth2.NoContext, token)
+		res, _ := client.Get("https://www.googleapis.com/oauth2/v3/userinfo")
+		rawData, _ := ioutil.ReadAll(res.Body)
+		defer res.Body.Close()
+		json.Unmarshal(rawData, &userData)
 
 		query := models.MemberQuery{
 			OAuthUserID:   userData["sub"].(string),
