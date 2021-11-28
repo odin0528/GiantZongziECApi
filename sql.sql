@@ -24,7 +24,7 @@ UPDATE product_style_table set photo = (select img from product_style where prod
 UPDATE product_style_table set photo = (select img from product_photos where product_photos.product_id = product_style_table.product_id and sort = 1) where photo = '' or photo is null;
 
 
-ALTER TABLE `ec`.`products` 
+ALTER TABLE `products` 
 ADD COLUMN `min` double(10, 2) NULL COMMENT '所有規格中最低的價格' AFTER `sub_style_enabled`,
 ADD COLUMN `max` double(10, 2) NULL COMMENT '所有規格中最高的價格' AFTER `min`,
 ADD COLUMN `photo` varchar(255) NULL COMMENT '首圖' AFTER `max`;

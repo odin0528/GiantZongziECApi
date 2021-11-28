@@ -32,6 +32,8 @@ type Products struct {
 	StyleTable      [][]ProductStyleTable `json:"style_table" gorm:"-"`
 	StyleEnabled    bool                  `json:"style_enabled"`
 	SubStyleEnabled bool                  `json:"sub_style_enabled"`
+	Min             float32               `json:"min"`
+	Max             float32               `json:"max"`
 	IsPublic        bool                  `json:"is_public"`
 	DeletedAt       soft_delete.DeletedAt `json:"-"`
 	TimeDefault

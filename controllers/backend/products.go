@@ -106,6 +106,9 @@ func ProductModify(c *gin.Context) {
 			style.Create()
 		}
 
+		req.Min = req.StyleTable[0][0].Price
+		req.Max = req.StyleTable[0][0].Price
+
 		for index, list := range req.StyleTable {
 			for _, item := range list {
 				item.ProductID = req.ID
@@ -118,8 +121,17 @@ func ProductModify(c *gin.Context) {
 					item.Photo = firstPhoto
 				}
 				item.Create()
+
+				if req.Min > item.Price {
+					req.Min = item.Price
+				}
+				if req.Max < item.Price {
+					req.Max = item.Price
+				}
 			}
 		}
+
+		req.Update()
 	} else {
 		// 編輯產品
 		var query models.ProductQuery
@@ -129,7 +141,6 @@ func ProductModify(c *gin.Context) {
 			g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 			return
 		}
-		req.Update()
 
 		sort := 1
 		firstPhoto := ""
@@ -228,6 +239,8 @@ func ProductModify(c *gin.Context) {
 		productSubStyle.DeleteNotExistStyle(deleteIds)
 
 		deleteIds = []int{}
+		req.Min = req.StyleTable[0][0].Price
+		req.Max = req.StyleTable[0][0].Price
 		for index, list := range req.StyleTable {
 			for _, item := range list {
 				item.ProductID = req.ID
@@ -247,8 +260,16 @@ func ProductModify(c *gin.Context) {
 					item.Update()
 				}
 				deleteIds = append(deleteIds, item.ID)
+				if req.Min > item.Price {
+					req.Min = item.Price
+				}
+				if req.Max < item.Price {
+					req.Max = item.Price
+				}
 			}
 		}
+
+		req.Update()
 
 		if len(deleteIds) > 0 {
 			styleTable := &models.ProductStyleTable{
