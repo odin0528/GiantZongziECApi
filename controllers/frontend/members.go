@@ -222,7 +222,7 @@ func MemberOAuth(c *gin.Context) {
 		config := &oauth2.Config{
 			ClientID:     "308489180394-9sekckggrfq8plq337193hiiul1ds8jt.apps.googleusercontent.com",
 			ClientSecret: "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",
-			RedirectURL:  "https://example.com:3000/oauth/google",
+			RedirectURL:  fmt.Sprintf("https://%s/oauth/google", c.Request.Header["Hostname"][0]),
 			Scopes: []string{
 				"https://www.googleapis.com/auth/userinfo.email",
 				"https://www.googleapis.com/auth/userinfo.profile",
