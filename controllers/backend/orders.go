@@ -113,9 +113,6 @@ func OrderMakeShipmentNo(c *gin.Context) {
 		return
 	}
 
-	order.Status = 22
-	err = DB.Select("status").Updates(&order).Error
-
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
 		return
