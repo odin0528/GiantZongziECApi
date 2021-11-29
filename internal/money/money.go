@@ -90,7 +90,7 @@ func CreateLogisticsOrder(order models.Orders) error {
 		ecpayValue["ReceiverAddress"] = order.County + order.District + order.Address
 		ecpayValue["Temperature"] = "0001"
 		ecpayValue["Distance"] = "00"
-		ecpayValue["Specification"] = "0004"
+		ecpayValue["Specification"] = "0001"
 	case 2:
 		ecpayValue["LogisticsType"] = "CVS"
 		ecpayValue["LogisticsSubType"] = "UNIMARTC2C"
