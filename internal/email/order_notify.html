@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>訂單通知信件 - 巨粽數位購物平台</title>
+    <meta data-n-head="ssr" name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <style type="type/css">
+      body{
+        font-family: "Montserrat", Helvetica, Arial, serif;
+        max-width: 500px;
+        margin: 0 auto;
+      }
+      @media (max-width: 767.98px){
+        body{
+          width: 100%;
+          padding: 0.5rem;
+          box-sizing: border-box;
+        }
+      }
+      hr{
+        border: 0;
+        border-top: 1px solid #ebe9f1;
+      }
+      .text-primary{
+        color: #9d4edd;
+      }
+      .card-title{
+        font-size: 1.15rem;
+      }
+      .item-img img{
+        width: 150px;
+      }
+      .item-price{
+        color: red;
+      }
+      .checkout-items-style{
+        display: flex;
+      }
+      .card{
+        position: relative;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        min-width: 0;
+        word-wrap: break-word;
+        background-color: #fff;
+        background-clip: border-box;
+        border-radius: 0.428rem;
+        box-shadow: 0 4px 24px 0 rgb(34 41 47 / 10%);
+        margin-bottom: 1rem;
+      }
+
+      .card-body {
+        -webkit-box-flex: 1;
+        -ms-flex: 1 1 auto;
+        flex: 1 1 auto;
+        min-height: 1px;
+        padding: 1rem;
+      }
+    </style>
+  </head>
+  <body style="max-width: 500px; margin: 0 auto; font-family: Montserrat, Helvetica, Arial, serif;">
+    <div>
+    <span>
+      您有一筆新的訂單，訂單內容如下，請趕快確認並安排時間出貨唷，點擊這裡到您的後台確認訂單
+    </span>
+    <hr />
+    <h3>訂單明細</h3>
+    <div class="checkout-items">
+      {{range .Products}}
+      <div class="card">
+        <div class="card-body">
+          <div class="card-title text-primary">
+            <strong>{{.Title}}</strong>
+          </div>
+          <hr class="my-0" />
+          {{range $index, $element := .Styles}}
+          <div class="checkout-items-style">
+            <div class="item-img">
+              <img src="{{$element.Photo}}" />
+            </div>
+            <div class="item-information">
+              <div class="item-title">{{$element.StyleTitle}}</div>
+              <span>
+                單價:
+                <span class="item-price">${{$element.DiscountedPrice}}</span>
+              </span>
+              <div class="item-quantity">
+                <span class="quantity-title">數量:{{$element.Qty}}</span>
+              </div>
+            </div>
+          </div>
+          <hr />
+          {{end}}
+        </div>
+      </div>
+      {{end}}
+    </div>
+  </div>
+  </body>
+</html>

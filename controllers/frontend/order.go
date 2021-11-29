@@ -3,6 +3,7 @@ package frontend
 import (
 	"context"
 	"eCommerce/internal/auth"
+	"eCommerce/internal/email"
 	models "eCommerce/models/frontend"
 	"eCommerce/pkg/e"
 	"encoding/base64"
@@ -16,7 +17,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/gotokatsuya/line-pay-sdk-go/linepay"
-	"github.com/liudng/godump"
 	"golang.org/x/crypto/scrypt"
 
 	. "eCommerce/internal/database"
@@ -205,9 +205,6 @@ func OrderCreate(c *gin.Context) {
 				Updates(map[string]interface{}{"order_uuid": orderUuid, "transaction_id": requestResp.Info.TransactionID})
 		}
 
-		godump.Dump(requestResp)
-		fmt.Println(requestResp)
-
 		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "payment": requestResp.Info.PaymentURL, "request": requestReq})
 		return
 	} else if order.Payment == 2 {
@@ -217,6 +214,9 @@ func OrderCreate(c *gin.Context) {
 			PlatformID: PlatformID,
 		}
 		carts.Clean()
+
+		email.SendOrderNotify(order)
+
 		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token})
 	} else {
 		var client *ecpay.Client

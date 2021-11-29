@@ -14,6 +14,7 @@ require (
 	github.com/gotokatsuya/line-pay-sdk-go v0.0.0-20210228090042-09d1c28c0f42
 	github.com/huandu/facebook/v2 v2.5.3
 	github.com/joho/godotenv v1.3.0
+	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible // indirect
 	github.com/liudng/godump v0.0.0-20150708094948-5c7e73aafb21
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/sirupsen/logrus v1.8.1
