@@ -62,6 +62,16 @@ func LinePayFinish(c *gin.Context) {
 		if confirmRes.ReturnCode == "0000" {
 			order.Status = 21
 			DB.Select("status").Save(&order)
+
+			// 第三方付款成功後，清掉會員的購物車
+			if order.MemberID != 0 {
+				carts := models.Carts{
+					MemberID:   order.MemberID,
+					PlatformID: order.PlatformID,
+				}
+				carts.Clean()
+			}
+
 			g.Response(http.StatusOK, e.Success, nil)
 		} else {
 			g.Response(http.StatusOK, e.StatusInternalServerError, fmt.Sprintf("Line PAY付款確認失敗，錯誤代碼：%s，錯誤訊息：%s", confirmRes.ReturnCode, confirmRes.ReturnMessage))

@@ -288,23 +288,6 @@ func OrderUpdate(c *gin.Context) {
 		return
 	}
 
-	if order.Status != 11 {
-		g.Response(http.StatusOK, e.OrderIsFinish, err)
-		return
-	}
-
-	switch req.Status {
-	case 21:
-		// 第三方付款成功後，清掉會員的購物車
-		if order.MemberID != 0 {
-			carts := models.Carts{
-				MemberID:   order.MemberID,
-				PlatformID: order.PlatformID,
-			}
-			carts.Clean()
-		}
-	}
-
 	order.Status = req.Status
 	DB.Select("status").Save(&order)
 
