@@ -3,7 +3,7 @@ package frontend
 import (
 	"context"
 	"eCommerce/internal/auth"
-	"eCommerce/internal/email"
+	"eCommerce/internal/line"
 	models "eCommerce/models/frontend"
 	"eCommerce/pkg/e"
 	"encoding/base64"
@@ -215,7 +215,8 @@ func OrderCreate(c *gin.Context) {
 		}
 		carts.Clean()
 
-		email.SendOrderNotify(order)
+		// email.SendOrderNotify(order)
+		line.SendOrderNotify(order)
 
 		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token})
 	} else {
