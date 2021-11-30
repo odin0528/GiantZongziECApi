@@ -131,7 +131,8 @@ func OrderShipmentPrint(c *gin.Context) {
 	}
 	PlatformID, _ := c.Get("platform_id")
 	query.PlatformID = PlatformID.(int)
-	query.Status = 22
+	query.Status = 21
+	query.LogisticsStatus = 21
 	orders, err := query.FetchAll()
 
 	if err != nil {

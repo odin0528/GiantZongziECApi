@@ -22,9 +22,10 @@ type OrderQuery struct {
 }
 
 type BatchOrderQuery struct {
-	ID         []int `json:"id"`
-	PlatformID int   `json:"-"`
-	Status     int   `json:"status"`
+	ID              []int `json:"id"`
+	PlatformID      int   `json:"-"`
+	Status          int   `json:"status"`
+	LogisticsStatus int   `json:"logistics_status"`
 }
 
 type OrderLinepayReq struct {
