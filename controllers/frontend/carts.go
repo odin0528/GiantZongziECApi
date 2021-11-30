@@ -3,11 +3,9 @@ package frontend
 import (
 	models "eCommerce/models/frontend"
 	"eCommerce/pkg/e"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/liudng/godump"
 
 	. "eCommerce/internal/database"
 )
@@ -36,8 +34,6 @@ func GuestCartsFetch(c *gin.Context) {
 	g := Gin{c}
 	query := &models.GuestCartsQuery{}
 	err := c.BindJSON(&query)
-	godump.Dump(query)
-	fmt.Println(err)
 	if err != nil {
 		println(err.Error())
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)

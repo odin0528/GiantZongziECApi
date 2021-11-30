@@ -42,7 +42,7 @@ func (Carts) TableName() string {
 }
 
 func (query *CartsQuery) FetchAll() (carts []MemberCarts, err error) {
-	err = DB.Debug().Table("carts").
+	err = DB.Table("carts").
 		Select("carts.product_id, carts.style_id, carts.qty, product_style_table.title, product_style_table.style_title, product_style_table.sub_style_title, product_style_table.price, product_style_table.photo").
 		Joins("inner join product_style_table on product_style_table.id = carts.style_id").
 		Where("member_id = ? and carts.platform_id = ? AND carts.deleted_at = 0", query.MemberID, query.PlatformID).
@@ -53,7 +53,7 @@ func (query *CartsQuery) FetchAll() (carts []MemberCarts, err error) {
 }
 
 func (query *GuestCartsQuery) FetchAll() (carts []MemberCarts, err error) {
-	err = DB.Debug().Table("product_style_table").
+	err = DB.Table("product_style_table").
 		Select("id as style_id, product_id, title, style_title, sub_style_title, price, photo").
 		Where("id IN ? AND platform_id = ?", query.StyleID, query.PlatformID).
 		Scan(&carts).Error
