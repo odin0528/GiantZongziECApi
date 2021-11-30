@@ -4,6 +4,7 @@ import (
 	"context"
 	"eCommerce/pkg/e"
 	"fmt"
+	"math"
 	"net/http"
 	"os"
 	"strconv"
@@ -11,6 +12,7 @@ import (
 	models "eCommerce/models/backend"
 
 	. "eCommerce/internal/database"
+	"eCommerce/internal/line"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gotokatsuya/line-pay-sdk-go/linepay"
@@ -61,7 +63,12 @@ func LinePayFinish(c *gin.Context) {
 
 		if confirmRes.ReturnCode == "0000" {
 			order.Status = 21
+			order.PaymentTypeChargeFee = math.Floor(order.Total * 0.0315)
 			DB.Select("status").Save(&order)
+
+			order.GetProducts()
+
+			line.SendOrderNotifyByOrder(order)
 
 			// 第三方付款成功後，清掉會員的購物車
 			if order.MemberID != 0 {

@@ -216,7 +216,7 @@ func OrderCreate(c *gin.Context) {
 		carts.Clean()
 
 		// email.SendOrderNotify(order)
-		line.SendOrderNotify(order)
+		line.SendOrderNotifyByOrderCreateRequest(order)
 
 		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token})
 	} else {

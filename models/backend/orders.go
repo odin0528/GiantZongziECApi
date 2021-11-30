@@ -57,31 +57,32 @@ Status：
 */
 
 type Orders struct {
-	ID              int             `json:"id"`
-	PlatformID      int             `json:"-"`
-	MemberID        int             `json:"-"`
-	Fullname        string          `json:"fullname"`
-	Phone           string          `json:"phone"`
-	County          string          `json:"county"`
-	District        string          `json:"district"`
-	ZipCode         string          `json:"zip_code"`
-	Address         string          `json:"address"`
-	Memo            string          `json:"memo"`
-	Method          int             `json:"method"`
-	Total           float32         `json:"total"`
-	Price           float32         `json:"price"`
-	Shipping        float32         `json:"shipping"`
-	Payment         int             `json:"payment"`
-	StoreID         string          `json:"store_id"`
-	StoreName       string          `json:"store_name"`
-	StoreAddress    string          `json:"store_address"`
-	StorePhone      string          `json:"store_phone"`
-	Status          int             `json:"status"`
-	LogisticsID     string          `json:"logistics_id"`
-	ShipmentNo      string          `json:"shipment_no"`
-	LogisticsStatus int             `json:"logistics_status"`
-	LogisticsMsg    string          `json:"logistics_msg"`
-	Products        []OrderProducts `json:"products" gorm:"-"`
+	ID                   int             `json:"id"`
+	PlatformID           int             `json:"-"`
+	MemberID             int             `json:"-"`
+	Fullname             string          `json:"fullname"`
+	Phone                string          `json:"phone"`
+	County               string          `json:"county"`
+	District             string          `json:"district"`
+	ZipCode              string          `json:"zip_code"`
+	Address              string          `json:"address"`
+	Memo                 string          `json:"memo"`
+	Method               int             `json:"method"`
+	Total                float64         `json:"total"`
+	Price                float64         `json:"price"`
+	Shipping             float64         `json:"shipping"`
+	Payment              int             `json:"payment"`
+	PaymentTypeChargeFee float64         `json:"-"`
+	StoreID              string          `json:"store_id"`
+	StoreName            string          `json:"store_name"`
+	StoreAddress         string          `json:"store_address"`
+	StorePhone           string          `json:"store_phone"`
+	Status               int             `json:"status"`
+	LogisticsID          string          `json:"logistics_id"`
+	ShipmentNo           string          `json:"shipment_no"`
+	LogisticsStatus      int             `json:"logistics_status"`
+	LogisticsMsg         string          `json:"logistics_msg"`
+	Products             []OrderProducts `json:"products" gorm:"-"`
 	TimeDefault
 }
 

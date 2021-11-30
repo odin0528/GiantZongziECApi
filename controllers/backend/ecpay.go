@@ -15,6 +15,7 @@ import (
 	"time"
 
 	. "eCommerce/internal/database"
+	"eCommerce/internal/line"
 	models "eCommerce/models/backend"
 
 	"github.com/Laysi/go-ecpay-sdk"
@@ -78,9 +79,27 @@ func EcpayPaymentFinish(c *gin.Context) {
 	godump.Dump(info)
 
 	if info.Get("TradeStatus") == "1" {
-		DB.Debug().Model(&models.Orders{}).
-			Where("id = ? and status = 11", strings.Replace(info.Get("MerchantTradeNo"), os.Getenv("ECPAY_MERCHANT_TRADE_NO_PREFIX"), "", 1)).
-			Updates(map[string]interface{}{"payment_charge_fee": info.Get("PaymentTypeChargeFee"), "status": 21})
+
+		ID, _ := strconv.ParseInt(strings.Replace(info.Get("MerchantTradeNo"), os.Getenv("ECPAY_MERCHANT_TRADE_NO_PREFIX"), "", 1), 10, 0)
+		PaymentTypeChargeFee, _ := strconv.ParseFloat(info.Get("PaymentTypeChargeFee"), 32)
+
+		query := models.OrderQuery{
+			ID:     int(ID),
+			Status: 11,
+		}
+		order, err := query.Fetch()
+		if err != nil {
+			c.String(http.StatusBadRequest, "0|Error")
+			c.Abort()
+			return
+		}
+		order.Status = 21
+		order.PaymentTypeChargeFee = PaymentTypeChargeFee
+		DB.Select("status, payment_type_charge_fee").Save(order)
+
+		order.GetProducts()
+
+		line.SendOrderNotifyByOrder(order)
 	}
 
 	c.String(http.StatusOK, "1|OK")
