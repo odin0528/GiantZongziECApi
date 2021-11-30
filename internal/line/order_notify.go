@@ -146,7 +146,7 @@ func GenerateOrderNotifyFirstBubble(total int, createdAt int, memo string) *line
 							Type:  linebot.FlexComponentTypeText,
 							Text:  p.Sprintf("$%d", int(total)),
 							Color: "#FF0000",
-							Size:  linebot.FlexTextSizeTypeLg,
+							Size:  linebot.FlexTextSizeTypeSm,
 							Flex:  linebot.IntPtr(2),
 						},
 					},
@@ -168,7 +168,7 @@ func GenerateOrderNotifyFirstBubble(total int, createdAt int, memo string) *line
 							Type:  linebot.FlexComponentTypeText,
 							Text:  memo,
 							Color: "#666666",
-							Size:  linebot.FlexTextSizeTypeLg,
+							Size:  linebot.FlexTextSizeTypeSm,
 							Flex:  linebot.IntPtr(2),
 						},
 					},
@@ -228,6 +228,7 @@ func GenerateOrderNotifyOrderItemBubble(title string, styleTitle string, photo s
 				&linebot.BoxComponent{
 					Type:   linebot.FlexComponentTypeBox,
 					Layout: linebot.FlexBoxLayoutTypeHorizontal,
+					Margin: "sm",
 					Contents: []linebot.FlexComponent{
 						&linebot.TextComponent{
 							Type:  linebot.FlexComponentTypeText,
@@ -249,6 +250,7 @@ func GenerateOrderNotifyOrderItemBubble(title string, styleTitle string, photo s
 				&linebot.BoxComponent{
 					Type:   linebot.FlexComponentTypeBox,
 					Layout: linebot.FlexBoxLayoutTypeHorizontal,
+					Margin: "sm",
 					Contents: []linebot.FlexComponent{
 						&linebot.TextComponent{
 							Type:  linebot.FlexComponentTypeText,
@@ -270,6 +272,7 @@ func GenerateOrderNotifyOrderItemBubble(title string, styleTitle string, photo s
 				&linebot.BoxComponent{
 					Type:   linebot.FlexComponentTypeBox,
 					Layout: linebot.FlexBoxLayoutTypeHorizontal,
+					Margin: "sm",
 					Contents: []linebot.FlexComponent{
 						&linebot.TextComponent{
 							Type:  linebot.FlexComponentTypeText,
@@ -283,7 +286,7 @@ func GenerateOrderNotifyOrderItemBubble(title string, styleTitle string, photo s
 							Text:   p.Sprintf("$%d", qty*int(price)),
 							Wrap:   true,
 							Color:  "#ff0000",
-							Size:   linebot.FlexTextSizeTypeMd,
+							Size:   linebot.FlexTextSizeTypeSm,
 							Flex:   linebot.IntPtr(5),
 							Weight: "bold",
 						},
