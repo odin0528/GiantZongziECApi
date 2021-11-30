@@ -64,7 +64,7 @@ func LinePayFinish(c *gin.Context) {
 		if confirmRes.ReturnCode == "0000" {
 			order.Status = 21
 			order.PaymentChargeFee = math.Floor(order.Total * 0.0315)
-			DB.Debug().Select("status, payment_charge_fee").Updates(&order)
+			DB.Select("status", "payment_charge_fee").Updates(&order)
 
 			order.GetProducts()
 

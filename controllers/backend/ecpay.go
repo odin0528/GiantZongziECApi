@@ -95,7 +95,7 @@ func EcpayPaymentFinish(c *gin.Context) {
 
 		order.Status = 21
 		order.PaymentChargeFee = PaymentTypeChargeFee
-		DB.Select("status, payment_charge_fee").Updates(&order)
+		DB.Select("status", "payment_charge_fee").Updates(&order)
 
 		order.GetProducts()
 
