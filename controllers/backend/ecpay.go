@@ -84,18 +84,18 @@ func EcpayPaymentFinish(c *gin.Context) {
 		PaymentTypeChargeFee, _ := strconv.ParseFloat(info.Get("PaymentTypeChargeFee"), 32)
 
 		query := models.OrderQuery{
-			ID:     int(ID),
-			Status: 11,
+			ID: int(ID),
 		}
-		order, err := query.Fetch()
-		if err != nil {
+		order, err := query.FetchForLogistics()
+		if err != nil || order.Status != 11 {
 			c.String(http.StatusBadRequest, "0|Error")
 			c.Abort()
 			return
 		}
+
 		order.Status = 21
-		order.PaymentTypeChargeFee = PaymentTypeChargeFee
-		DB.Select("status, payment_type_charge_fee").Save(order)
+		order.PaymentChargeFee = PaymentTypeChargeFee
+		DB.Select("status, payment_charge_fee").Save(order)
 
 		order.GetProducts()
 
