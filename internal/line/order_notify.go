@@ -49,7 +49,7 @@ func SendOrderNotifyByOrderCreateRequest(order models.OrderCreateRequest) {
 	}
 
 	containerJson, _ := json.Marshal(carouselContainer)
-	fmt.Println(string(containerJson))
+	log.Println(string(containerJson))
 	container, _ := linebot.UnmarshalFlexMessageJSON(containerJson)
 	SendOrderNotify(container)
 }
@@ -68,7 +68,7 @@ func SendOrderNotifyByOrder(order backend.Orders) {
 	}
 
 	containerJson, _ := json.Marshal(carouselContainer)
-	fmt.Println(string(containerJson))
+	log.Println(string(containerJson))
 	container, _ := linebot.UnmarshalFlexMessageJSON(containerJson)
 	SendOrderNotify(container)
 }
