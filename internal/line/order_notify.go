@@ -168,7 +168,7 @@ func GenerateOrderNotifyFirstBubble(total int, createdAt int, memo string) *line
 						},
 						&linebot.TextComponent{
 							Type:  linebot.FlexComponentTypeText,
-							Text:  memo,
+							Text:  memo + " ",
 							Color: "#666666",
 							Size:  linebot.FlexTextSizeTypeSm,
 							Flex:  linebot.IntPtr(2),
@@ -219,7 +219,7 @@ func GenerateOrderNotifyOrderItemBubble(title string, styleTitle string, photo s
 						},
 						&linebot.TextComponent{
 							Type:  linebot.FlexComponentTypeText,
-							Text:  styleTitle,
+							Text:  styleTitle + " ",
 							Wrap:  true,
 							Color: "#666666",
 							Size:  linebot.FlexTextSizeTypeSm,
