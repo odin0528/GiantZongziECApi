@@ -8,6 +8,8 @@ import (
 	"os"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/line/line-bot-sdk-go/v7/linebot"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
@@ -26,7 +28,7 @@ func SendOrderNotify(container linebot.FlexContainer) {
 	_, err = bot.Multicast([]string{"U14fff345bfc700aa44170a860d851c23", "Ub79e88993077ecc98abc2a53711a5c9f"}, message).Do()
 	// _, err = bot.Multicast([]string{"U14fff345bfc700aa44170a860d851c23"}, message).Do()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		// Do something when some bad happened
 	}
 }
@@ -47,7 +49,7 @@ func SendOrderNotifyByOrderCreateRequest(order models.OrderCreateRequest) {
 	}
 
 	containerJson, _ := json.Marshal(carouselContainer)
-	// fmt.Println(string(containerJson))
+	fmt.Println(string(containerJson))
 	container, _ := linebot.UnmarshalFlexMessageJSON(containerJson)
 	SendOrderNotify(container)
 }
@@ -66,7 +68,7 @@ func SendOrderNotifyByOrder(order backend.Orders) {
 	}
 
 	containerJson, _ := json.Marshal(carouselContainer)
-	// fmt.Println(string(containerJson))
+	fmt.Println(string(containerJson))
 	container, _ := linebot.UnmarshalFlexMessageJSON(containerJson)
 	SendOrderNotify(container)
 }
