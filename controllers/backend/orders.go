@@ -45,8 +45,10 @@ func OrderList(c *gin.Context) {
 	req.PlatformID = PlatformID.(int)
 	orders, pagination := req.FetchAll()
 
-	for index := range orders {
-		orders[index].GetProducts()
+	if req.WithoutProducts != true {
+		for index := range orders {
+			orders[index].GetProducts()
+		}
 	}
 
 	g.PaginationResponse(http.StatusOK, e.Success, orders, pagination)
