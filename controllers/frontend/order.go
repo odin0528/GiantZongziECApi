@@ -107,6 +107,7 @@ func OrderCreate(c *gin.Context) {
 	for _, product := range order.Products {
 		for _, style := range product.Styles {
 			itemName = append(itemName, fmt.Sprintf("%s %s", product.Title, style.StyleTitle))
+			style.Title = product.Title
 			orderProduct := models.OrderProducts{
 				OrderID:         order.ID,
 				ProductID:       product.ProductID,

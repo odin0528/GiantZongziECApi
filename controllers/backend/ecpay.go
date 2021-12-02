@@ -218,6 +218,9 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 		case "3006":
 			order.Status = 31
 			order.LogisticsStatus = 3
+		case "3001": //轉運中
+			order.Status = 31
+			order.LogisticsStatus = 3
 		case "3003": //配完
 			order.Status = 91
 			order.LogisticsStatus = 5
@@ -246,8 +249,13 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 			order.Status = 91
 			order.LogisticsStatus = 5
 		case "2074":
+			order.Status = 41
 			order.LogisticsStatus = 6
+		case "2072":
+			order.Status = 41
+			order.LogisticsStatus = 7
 		case "2069":
+			order.Status = 41
 			order.LogisticsStatus = 7
 		case "2077":
 			order.Status = 92
@@ -268,13 +276,19 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 			order.Status = 31
 			order.LogisticsStatus = 3
 		case "3018": //到店尚未取貨，簡訊通知取件
+			order.Status = 31
 			order.LogisticsStatus = 4
 		case "3022":
 			order.Status = 91
 			order.LogisticsStatus = 5
+		case "3025":
+			order.Status = 41
+			order.LogisticsStatus = 6
 		case "3020":
+			order.Status = 41
 			order.LogisticsStatus = 6
 		case "3019":
+			order.Status = 41
 			order.LogisticsStatus = 7
 		case "3023":
 			order.Status = 92
