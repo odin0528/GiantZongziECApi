@@ -9,20 +9,22 @@ import (
 
 /*
 LogisticsStatus：
-1: 託運單號產生中
-2: 託運單號已產生
-3: 商品配送中
-4: 商品已到店，待取貨
-5: 買家已取貨
+1: 尚未產生寄件編號
+2: 已產生寄件編號
+3: 已出貨
+4: 物流配送中
+5: 商品已到店，待取貨
 6: 買家未取貨，退貨中
 7: 已退回寄貨地
 8: 賣家已取貨
+9: 買家已取貨
 
 Status：
 11: 待付款
 21: 待出貨
+22: 揀貨中
 31: 配送中
-41: 退貨中 (買家未取件)
+71: 退貨中 (買家未取件)
 91: 訂單完成
 92: 退貨完成 (買家未取件)
 */
@@ -132,7 +134,7 @@ func (query *OrderListReq) GetCondition() *gorm.DB {
 		sql.Where("id IN ?", query.IDs)
 	}
 
-	if query.LogisticsStatus != -1 {
+	if query.LogisticsStatus != 0 {
 		sql.Where("logistics_status = ?", query.LogisticsStatus)
 	}
 

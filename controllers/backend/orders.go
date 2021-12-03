@@ -101,8 +101,7 @@ func OrderMakeShipmentNo(c *gin.Context) {
 	PlatformID, _ := c.Get("platform_id")
 	query.PlatformID = PlatformID.(int)
 	// 一定要已付款 而且還沒產生寄件編號的
-	query.Status = 21
-	query.LogisticsStatus = 0
+	query.Status = 22
 	orders, _ := query.FetchAll()
 
 	if err != nil {

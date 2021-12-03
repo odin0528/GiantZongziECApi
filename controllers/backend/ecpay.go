@@ -217,15 +217,15 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 			order.LogisticsStatus = 2
 		case "3006":
 			order.Status = 31
-			order.LogisticsStatus = 3
+			order.LogisticsStatus = 4
 		case "3001": //轉運中
 			order.Status = 31
-			order.LogisticsStatus = 3
+			order.LogisticsStatus = 4
 		case "3003": //配完
 			order.Status = 91
-			order.LogisticsStatus = 5
+			order.LogisticsStatus = 9
 		case "5004": //一般單退回
-			order.Status = 41
+			order.Status = 71
 			order.LogisticsStatus = 6
 		case "5008": //退貨配完
 			order.Status = 92
@@ -242,20 +242,20 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 			order.LogisticsStatus = 2
 		case "2068": //交貨便收件(A門市收到件寄件商品)
 			order.Status = 31
-			order.LogisticsStatus = 3
-		case "2073": //商品配達買家取貨門市
 			order.LogisticsStatus = 4
+		case "2073": //商品配達買家取貨門市
+			order.LogisticsStatus = 5
 		case "2067":
 			order.Status = 91
-			order.LogisticsStatus = 5
+			order.LogisticsStatus = 9
 		case "2074":
-			order.Status = 41
+			order.Status = 71
 			order.LogisticsStatus = 6
 		case "2072":
-			order.Status = 41
+			order.Status = 71
 			order.LogisticsStatus = 7
 		case "2069":
-			order.Status = 41
+			order.Status = 71
 			order.LogisticsStatus = 7
 		case "2077":
 			order.Status = 92
@@ -274,21 +274,21 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 			fallthrough
 		case "3032": //賣家已到門市寄件
 			order.Status = 31
-			order.LogisticsStatus = 3
+			order.LogisticsStatus = 4
 		case "3018": //到店尚未取貨，簡訊通知取件
 			order.Status = 31
-			order.LogisticsStatus = 4
+			order.LogisticsStatus = 5
 		case "3022":
 			order.Status = 91
-			order.LogisticsStatus = 5
+			order.LogisticsStatus = 9
 		case "3025":
-			order.Status = 41
+			order.Status = 71
 			order.LogisticsStatus = 6
 		case "3020":
-			order.Status = 41
+			order.Status = 71
 			order.LogisticsStatus = 6
 		case "3019":
-			order.Status = 41
+			order.Status = 71
 			order.LogisticsStatus = 7
 		case "3023":
 			order.Status = 92
@@ -311,12 +311,12 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 			fallthrough
 		case "2068":
 			order.Status = 31
-			order.LogisticsStatus = 3
-		case "2063": //門市配達
 			order.LogisticsStatus = 4
+		case "2063": //門市配達
+			order.LogisticsStatus = 5
 		case "2067":
 			order.Status = 91
-			order.LogisticsStatus = 5
+			order.LogisticsStatus = 9
 		case "2074":
 			order.LogisticsStatus = 6
 		case "2069":
@@ -331,17 +331,17 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 		order.ShipmentNo = params["CVSPaymentNo"]
 		switch params["RtnCode"] {
 		case "300":
-			order.LogisticsStatus = 2
+			order.LogisticsStatus = 1
 		case "2030": // 物流中心驗收成功
 			fallthrough
 		case "3032":
 			order.Status = 31
-			order.LogisticsStatus = 3
-		case "2073": //商品配達買家取貨門市
 			order.LogisticsStatus = 4
+		case "2073": //商品配達買家取貨門市
+			order.LogisticsStatus = 5
 		case "3022":
 			order.Status = 91
-			order.LogisticsStatus = 5
+			order.LogisticsStatus = 9
 		case "2074":
 			order.LogisticsStatus = 6
 		case "2072":

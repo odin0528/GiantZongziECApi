@@ -35,3 +35,8 @@ max = (SELECT price FROM product_style_table WHERE product_style_table.product_i
 
 ALTER TABLE `product_style_table` 
 CHANGE COLUMN `group` `group_no` tinyint(255) NULL DEFAULT NULL AFTER `product_id`;
+
+ALTER TABLE `ec`.`orders` 
+ADD COLUMN `paid_at` int(11) NULL COMMENT '付款時間' AFTER `status`,
+ADD COLUMN `delivered_at` int(11) NULL COMMENT '到貨時間' AFTER `paid_at`,
+MODIFY COLUMN `created_at` int(11) NULL DEFAULT NULL AFTER `status`;
