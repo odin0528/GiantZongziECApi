@@ -9,24 +9,31 @@ import (
 
 /*
 LogisticsStatus：
-1: 尚未產生寄件編號
-2: 已產生寄件編號
-3: 已出貨
-4: 物流配送中
-5: 商品已到店，待取貨
-6: 買家未取貨，退貨中
-7: 已退回寄貨地
-8: 賣家已取貨
-9: 買家已取貨
+1xx:正流程
+2xx:逆流程
+100: 賣家已出貨
+110: 物流配送中
+120: 商品已到店，待取貨
+130: 買家已取貨
+
+200: 買家未取貨，退貨中
+210: 物流退貨中
+220: 已退回寄貨地
+230: 賣家已取貨
 
 Status：
 11: 待付款
 21: 待出貨
 22: 揀貨中
-31: 配送中
-71: 退貨中 (買家未取件)
+23: 已出貨
+51: 配送中
+61: 退貨中
+
 91: 訂單完成
 92: 退貨完成 (買家未取件)
+
+98: 訂單取消 (超過7天未付款)
+99: 訂單取消 (消費者取消付款)
 */
 
 type Orders struct {
@@ -84,7 +91,7 @@ type OrderQuery struct {
 }
 
 type BatchOrderQuery struct {
-	ID              []int `json:"id"`
+	IDs             []int `json:"ids"`
 	PlatformID      int   `json:"-"`
 	Status          int   `json:"status"`
 	LogisticsStatus int   `json:"logistics_status"`
@@ -114,8 +121,8 @@ func (query *OrderQuery) GetCondition() *gorm.DB {
 
 func (query *BatchOrderQuery) GetCondition() *gorm.DB {
 	sql := DB.Model(Orders{})
-	if len(query.ID) > 0 {
-		sql.Where("id IN ?", query.ID)
+	if len(query.IDs) > 0 {
+		sql.Where("id IN ?", query.IDs)
 	}
 
 	if query.Status != 0 {

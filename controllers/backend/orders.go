@@ -56,31 +56,25 @@ func OrderList(c *gin.Context) {
 
 func OrderNextStep(c *gin.Context) {
 	g := Gin{c}
-	var query models.OrderQuery
+	var query models.BatchOrderQuery
 	err := c.BindJSON(&query)
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
 		return
 	}
 	PlatformID, _ := c.Get("platform_id")
-	query.PlatformID = PlatformID.(int)
-	order, err := query.Fetch()
 
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
 
-	switch order.Status {
-	case 11:
-		order.Status = 21
-	case 21:
-		order.Status = 31
-	case 31:
-		order.Status = 99
-	}
-
-	err = DB.Select("status").Updates(&order).Error
+	err = DB.Model(models.Orders{}).Where(`
+		id in ? AND 
+		status = 21 AND 
+		logistics_status = 0 AND 
+		platform_id = ?
+	`, query.IDs, PlatformID.(int)).Update("logistics_status", 1).Error
 
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
@@ -101,7 +95,8 @@ func OrderMakeShipmentNo(c *gin.Context) {
 	PlatformID, _ := c.Get("platform_id")
 	query.PlatformID = PlatformID.(int)
 	// 一定要已付款 而且還沒產生寄件編號的
-	query.Status = 22
+	query.Status = 21
+	query.LogisticsStatus = 1
 	orders, _ := query.FetchAll()
 
 	if err != nil {
