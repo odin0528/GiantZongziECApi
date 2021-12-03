@@ -3,7 +3,6 @@ package backend
 import (
 	. "eCommerce/internal/database"
 	"fmt"
-	"strings"
 
 	"gorm.io/gorm"
 )
@@ -43,6 +42,9 @@ type Orders struct {
 	Total            float64         `json:"total"`
 	Price            float64         `json:"price"`
 	Shipping         float64         `json:"shipping"`
+	Discount         float64         `json:"discount"`
+	Qty              int             `json:"qty"`
+	IsFreeShipping   bool            `json:"is_free_shipping"`
 	Payment          int             `json:"payment"`
 	PaymentChargeFee float64         `json:"-"`
 	StoreID          string          `json:"store_id"`
@@ -59,7 +61,7 @@ type Orders struct {
 }
 
 type OrderListReq struct {
-	IDs             string `json:"ids"`
+	IDs             []int  `json:"ids"`
 	PlatformID      int    `json:"-"`
 	Status          int    `json:"status"`
 	LogisticsStatus int    `json:"logistics_status"`
@@ -126,8 +128,8 @@ func (query *BatchOrderQuery) GetCondition() *gorm.DB {
 func (query *OrderListReq) GetCondition() *gorm.DB {
 	sql := DB.Debug().Model(Orders{})
 
-	if query.IDs != "" {
-		sql.Where("id IN ?", strings.Split(query.IDs, ","))
+	if len(query.IDs) > 0 {
+		sql.Where("id IN ?", query.IDs)
 	}
 
 	if query.LogisticsStatus != -1 {

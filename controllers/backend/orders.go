@@ -92,7 +92,7 @@ func OrderNextStep(c *gin.Context) {
 
 func OrderMakeShipmentNo(c *gin.Context) {
 	g := Gin{c}
-	var query models.OrderQuery
+	var query models.OrderListReq
 	err := c.BindJSON(&query)
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
@@ -100,24 +100,24 @@ func OrderMakeShipmentNo(c *gin.Context) {
 	}
 	PlatformID, _ := c.Get("platform_id")
 	query.PlatformID = PlatformID.(int)
+	// 一定要已付款 而且還沒產生寄件編號的
 	query.Status = 21
-	order, err := query.Fetch()
+	query.LogisticsStatus = 0
+	orders, _ := query.FetchAll()
 
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
 		return
 	}
 
-	order.GetProducts()
-	err = money.CreateLogisticsOrder(order)
-	if err != nil {
-		g.Response(http.StatusOK, e.StatusInternalServerError, err.Error())
-		return
-	}
+	for _, order := range orders {
+		order.GetProducts()
+		err = money.CreateLogisticsOrder(order)
 
-	if err != nil {
-		g.Response(http.StatusBadRequest, e.InvalidParams, err)
-		return
+		if err != nil {
+			g.Response(http.StatusBadRequest, e.InvalidParams, err)
+			return
+		}
 	}
 
 	g.Response(http.StatusOK, e.Success, nil)

@@ -125,6 +125,8 @@ func CreateLogisticsOrder(order models.Orders) error {
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	bodyString := strings.Split(string(bodyBytes), "|")
 
+	fmt.Println(bodyString)
+
 	if bodyString[0] != "1" {
 		return errors.New(fmt.Sprintf("建立物流訂單失敗 回傳訊息為：%s", bodyString[1]))
 	}
