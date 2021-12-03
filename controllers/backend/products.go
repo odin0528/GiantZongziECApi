@@ -114,7 +114,7 @@ func ProductModify(c *gin.Context) {
 				item.ProductID = req.ID
 				item.PlatformID = platformID.(int)
 				item.Title = req.Title
-				item.Group = index
+				item.GroupNo = index
 				if len(req.Style) > 0 && req.Style[index].Img != "" {
 					item.Photo = req.Style[index].Img
 				} else {
@@ -246,7 +246,7 @@ func ProductModify(c *gin.Context) {
 				item.ProductID = req.ID
 				item.PlatformID = platformID.(int)
 				item.Title = req.Title
-				item.Group = index
+				item.GroupNo = index
 
 				if len(req.Style) > 0 && req.Style[index].Img != "" {
 					item.Photo = req.Style[index].Img

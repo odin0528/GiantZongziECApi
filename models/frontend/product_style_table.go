@@ -14,7 +14,7 @@ type ProductStyleTable struct {
 	ID            int     `json:"id" gorm:"<-:create"`
 	PlatformID    int     `json:"-" gorm:"<-:create"`
 	ProductID     int     `json:"-" gorm:"<-:create"`
-	Group         int     `json:"-"`
+	GroupNo       int     `json:"-"`
 	Title         string  `json:"title"`
 	StyleTitle    string  `json:"style_title"`
 	SubStyleTitle string  `json:"sub_style_title"`
