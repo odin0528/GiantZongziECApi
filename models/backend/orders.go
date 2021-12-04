@@ -16,8 +16,8 @@ LogisticsStatus：
 120: 商品已到店，待取貨
 199: 買家已取貨
 
-200: 買家未取貨，退貨中
-210: 已退回寄貨地，待取件
+210: 買家未取貨，退貨中
+220: 已退回寄貨地，待取件
 299: 賣家已取貨
 
 Status：
@@ -72,6 +72,7 @@ type Orders struct {
 type OrderListReq struct {
 	IDs             []int  `json:"ids"`
 	PlatformID      int    `json:"-"`
+	PickerID        int    `json:"-"`
 	Status          []int  `json:"status"`
 	LogisticsStatus int    `json:"logistics_status"`
 	Method          int    `json:"method"`
@@ -151,6 +152,10 @@ func (query *OrderListReq) GetCondition() *gorm.DB {
 
 	if query.Method != 0 {
 		sql.Where("method = ?", query.Method)
+	}
+
+	if query.PickerID != 0 {
+		sql.Where("picker_id = ?", query.PickerID)
 	}
 
 	sql.Where("platform_id = ?", query.PlatformID)

@@ -111,9 +111,12 @@ func main() {
 
 			authRequired.GET("/orders/untreated", backend.OrderUntreated)
 			authRequired.POST("/orders", backend.OrderList)
-			authRequired.POST("/order/next", backend.OrderNextStep)
-			authRequired.POST("/order/shipment", backend.OrderMakeShipmentNo)
-			authRequired.POST("/order/shipment/print", backend.OrderShipmentPrint)
+			authRequired.POST("/order/pickup", backend.OrderStartPickup)
+
+			authRequired.POST("/shipment", backend.ShipmentList)
+			authRequired.POST("/shipment/make", backend.ShipmentMakeNo)
+			authRequired.POST("/shipment/print", backend.ShipmentPrint)
+			authRequired.POST("/shipment/send", backend.ShipmentSend)
 
 			authRequired.POST("/members/list", backend.MemberList)
 

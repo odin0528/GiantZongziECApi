@@ -67,6 +67,13 @@ func CreateLogisticsOrder(order models.Orders) error {
 	ecpayValue["SenderCellPhone"] = "0958259061"
 	ecpayValue["ServerReplyURL"] = fmt.Sprintf("%s/api/backend/ecpay/logistics", os.Getenv("API_URL"))
 
+	memo := []rune(order.Memo)
+	if len(memo) > 60 {
+		ecpayValue["Remark"] = string(memo[:60])
+	} else {
+		ecpayValue["Remark"] = string(memo)
+	}
+
 	goodsName := []rune(FilterGoodsName(order.Products[0].Title))
 	if len(goodsName) > 25 {
 		ecpayValue["GoodsName"] = string(goodsName[:25])

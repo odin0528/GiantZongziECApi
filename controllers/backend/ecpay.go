@@ -226,7 +226,7 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 			order.LogisticsStatus = 199
 		case "5004": //一般單退回
 			order.Status = 61
-			order.LogisticsStatus = 200
+			order.LogisticsStatus = 210
 		case "5008": //退貨配完
 			order.Status = 92
 			order.LogisticsStatus = 299
@@ -250,13 +250,13 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 			order.LogisticsStatus = 199
 		case "2074":
 			order.Status = 61
-			order.LogisticsStatus = 200
+			order.LogisticsStatus = 210
 		case "2072":
 			order.Status = 61
-			order.LogisticsStatus = 210
+			order.LogisticsStatus = 220
 		case "2069":
 			order.Status = 61
-			order.LogisticsStatus = 210
+			order.LogisticsStatus = 220
 		case "2077":
 			order.Status = 92
 			order.LogisticsStatus = 299
@@ -283,13 +283,13 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 			order.LogisticsStatus = 199
 		case "3025":
 			order.Status = 61
-			order.LogisticsStatus = 200
+			order.LogisticsStatus = 210
 		case "3020":
 			order.Status = 61
-			order.LogisticsStatus = 200
+			order.LogisticsStatus = 210
 		case "3019":
 			order.Status = 61
-			order.LogisticsStatus = 210
+			order.LogisticsStatus = 220
 		case "3023":
 			order.Status = 92
 			order.LogisticsStatus = 299
@@ -303,7 +303,7 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 			fallthrough
 		case "310":
 			fallthrough
-		case "2001":
+		case "2101":
 			order.Status = 23
 		case "2041": //物流中心理貨中
 			fallthrough
@@ -320,10 +320,10 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 			order.LogisticsStatus = 199
 		case "2074":
 			order.Status = 61
-			order.LogisticsStatus = 200
+			order.LogisticsStatus = 210
 		case "2069":
 			order.Status = 61
-			order.LogisticsStatus = 210
+			order.LogisticsStatus = 220
 		case "2070":
 			order.Status = 92
 			order.LogisticsStatus = 299
@@ -348,10 +348,10 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 			order.LogisticsStatus = 199
 		case "2074":
 			order.Status = 61
-			order.LogisticsStatus = 200
+			order.LogisticsStatus = 210
 		case "2072":
 			order.Status = 61
-			order.LogisticsStatus = 210
+			order.LogisticsStatus = 220
 		case "3023":
 			order.Status = 92
 			order.LogisticsStatus = 299
