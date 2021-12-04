@@ -14,18 +14,18 @@ LogisticsStatus：
 100: 賣家已出貨
 110: 物流配送中
 120: 商品已到店，待取貨
-130: 買家已取貨
+199: 買家已取貨
 
 200: 買家未取貨，退貨中
-210: 物流退貨中
-220: 已退回寄貨地
-230: 賣家已取貨
+210: 已退回寄貨地，待取件
+299: 賣家已取貨
 
 Status：
 11: 待付款
 21: 待出貨
 22: 揀貨中
-23: 已出貨
+23: 已產生託運單號
+24: 賣家出貨
 51: 配送中
 61: 退貨中
 
@@ -72,7 +72,7 @@ type Orders struct {
 type OrderListReq struct {
 	IDs             []int  `json:"ids"`
 	PlatformID      int    `json:"-"`
-	Status          int    `json:"status"`
+	Status          []int  `json:"status"`
 	LogisticsStatus int    `json:"logistics_status"`
 	Method          int    `json:"method"`
 	WithoutProducts bool   `json:"without_products"`
@@ -145,8 +145,8 @@ func (query *OrderListReq) GetCondition() *gorm.DB {
 		sql.Where("logistics_status = ?", query.LogisticsStatus)
 	}
 
-	if query.Status != 0 {
-		sql.Where("status = ?", query.Status)
+	if len(query.Status) > 0 {
+		sql.Where("status IN ?", query.Status)
 	}
 
 	if query.Method != 0 {

@@ -63,6 +63,7 @@ func OrderNextStep(c *gin.Context) {
 		return
 	}
 	PlatformID, _ := c.Get("platform_id")
+	AdminID, _ := c.Get("admin_id")
 
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
@@ -72,9 +73,8 @@ func OrderNextStep(c *gin.Context) {
 	err = DB.Model(models.Orders{}).Where(`
 		id in ? AND 
 		status = 21 AND 
-		logistics_status = 0 AND 
 		platform_id = ?
-	`, query.IDs, PlatformID.(int)).Update("logistics_status", 1).Error
+	`, query.IDs, PlatformID.(int)).Updates(map[string]interface{}{"status": 22, "picker_id": AdminID.(int)}).Error
 
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
@@ -95,8 +95,7 @@ func OrderMakeShipmentNo(c *gin.Context) {
 	PlatformID, _ := c.Get("platform_id")
 	query.PlatformID = PlatformID.(int)
 	// 一定要已付款 而且還沒產生寄件編號的
-	query.Status = 21
-	query.LogisticsStatus = 1
+	query.Status = []int{22}
 	orders, _ := query.FetchAll()
 
 	if err != nil {
@@ -112,6 +111,17 @@ func OrderMakeShipmentNo(c *gin.Context) {
 			g.Response(http.StatusBadRequest, e.InvalidParams, err)
 			return
 		}
+	}
+
+	err = DB.Model(models.Orders{}).Where(`
+		id in ? AND 
+		status = 22 AND 
+		platform_id = ?
+	`, query.IDs, PlatformID.(int)).Update("status", 23).Error
+
+	if err != nil {
+		g.Response(http.StatusBadRequest, e.StatusNotFound, err)
+		return
 	}
 
 	g.Response(http.StatusOK, e.Success, nil)

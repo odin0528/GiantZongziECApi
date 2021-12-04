@@ -214,24 +214,24 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 		case "300":
 			fallthrough
 		case "310":
-			order.LogisticsStatus = 2
+			order.Status = 23
 		case "3006":
-			order.Status = 31
-			order.LogisticsStatus = 4
+			order.Status = 51
+			order.LogisticsStatus = 110
 		case "3001": //轉運中
-			order.Status = 31
-			order.LogisticsStatus = 4
+			order.Status = 51
+			order.LogisticsStatus = 110
 		case "3003": //配完
 			order.Status = 91
-			order.LogisticsStatus = 9
+			order.LogisticsStatus = 199
 		case "5004": //一般單退回
-			order.Status = 71
-			order.LogisticsStatus = 6
+			order.Status = 61
+			order.LogisticsStatus = 200
 		case "5008": //退貨配完
 			order.Status = 92
-			order.LogisticsStatus = 8
+			order.LogisticsStatus = 299
 		default:
-			order.LogisticsStatus = 99
+			order.LogisticsStatus = 999
 		}
 	case 2:
 		order.ShipmentNo = params["CVSPaymentNo"] + params["CVSValidationNo"]
@@ -239,29 +239,29 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 		case "300":
 			fallthrough
 		case "310":
-			order.LogisticsStatus = 2
+			order.Status = 23
 		case "2068": //交貨便收件(A門市收到件寄件商品)
-			order.Status = 31
-			order.LogisticsStatus = 4
+			order.Status = 51
+			order.LogisticsStatus = 110
 		case "2073": //商品配達買家取貨門市
-			order.LogisticsStatus = 5
+			order.LogisticsStatus = 120
 		case "2067":
 			order.Status = 91
-			order.LogisticsStatus = 9
+			order.LogisticsStatus = 199
 		case "2074":
-			order.Status = 71
-			order.LogisticsStatus = 6
+			order.Status = 61
+			order.LogisticsStatus = 200
 		case "2072":
-			order.Status = 71
-			order.LogisticsStatus = 7
+			order.Status = 61
+			order.LogisticsStatus = 210
 		case "2069":
-			order.Status = 71
-			order.LogisticsStatus = 7
+			order.Status = 61
+			order.LogisticsStatus = 210
 		case "2077":
 			order.Status = 92
-			order.LogisticsStatus = 8
+			order.LogisticsStatus = 299
 		default:
-			order.LogisticsStatus = 99
+			order.LogisticsStatus = 999
 		}
 	case 3:
 		order.ShipmentNo = params["CVSPaymentNo"]
@@ -269,32 +269,32 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 		case "300":
 			fallthrough
 		case "310":
-			order.LogisticsStatus = 2
+			order.Status = 23
 		case "3024": //貨件已至物流中心
 			fallthrough
 		case "3032": //賣家已到門市寄件
-			order.Status = 31
-			order.LogisticsStatus = 4
+			order.Status = 51
+			order.LogisticsStatus = 110
 		case "3018": //到店尚未取貨，簡訊通知取件
-			order.Status = 31
-			order.LogisticsStatus = 5
+			order.Status = 51
+			order.LogisticsStatus = 120
 		case "3022":
 			order.Status = 91
-			order.LogisticsStatus = 9
+			order.LogisticsStatus = 199
 		case "3025":
-			order.Status = 71
-			order.LogisticsStatus = 6
+			order.Status = 61
+			order.LogisticsStatus = 200
 		case "3020":
-			order.Status = 71
-			order.LogisticsStatus = 6
+			order.Status = 61
+			order.LogisticsStatus = 200
 		case "3019":
-			order.Status = 71
-			order.LogisticsStatus = 7
+			order.Status = 61
+			order.LogisticsStatus = 210
 		case "3023":
 			order.Status = 92
-			order.LogisticsStatus = 8
+			order.LogisticsStatus = 299
 		default:
-			order.LogisticsStatus = 99
+			order.LogisticsStatus = 999
 		}
 	case 4:
 		order.ShipmentNo = params["CVSPaymentNo"]
@@ -304,53 +304,59 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 		case "310":
 			fallthrough
 		case "2001":
-			order.LogisticsStatus = 2
+			order.Status = 23
 		case "2041": //物流中心理貨中
 			fallthrough
 		case "3032": //賣家已到門市寄件
 			fallthrough
 		case "2068":
-			order.Status = 31
-			order.LogisticsStatus = 4
+			order.Status = 51
+			order.LogisticsStatus = 110
 		case "2063": //門市配達
-			order.LogisticsStatus = 5
+			order.Status = 51
+			order.LogisticsStatus = 120
 		case "2067":
 			order.Status = 91
-			order.LogisticsStatus = 9
+			order.LogisticsStatus = 199
 		case "2074":
-			order.LogisticsStatus = 6
+			order.Status = 61
+			order.LogisticsStatus = 200
 		case "2069":
-			order.LogisticsStatus = 7
+			order.Status = 61
+			order.LogisticsStatus = 210
 		case "2070":
 			order.Status = 92
-			order.LogisticsStatus = 8
+			order.LogisticsStatus = 299
 		default:
-			order.LogisticsStatus = 99
+			order.LogisticsStatus = 999
 		}
 	case 5:
 		order.ShipmentNo = params["CVSPaymentNo"]
 		switch params["RtnCode"] {
 		case "300":
-			order.LogisticsStatus = 1
+			order.Status = 23
 		case "2030": // 物流中心驗收成功
 			fallthrough
 		case "3032":
-			order.Status = 31
-			order.LogisticsStatus = 4
+			order.Status = 51
+			order.LogisticsStatus = 110
 		case "2073": //商品配達買家取貨門市
-			order.LogisticsStatus = 5
+			order.Status = 51
+			order.LogisticsStatus = 120
 		case "3022":
 			order.Status = 91
-			order.LogisticsStatus = 9
+			order.LogisticsStatus = 199
 		case "2074":
-			order.LogisticsStatus = 6
+			order.Status = 61
+			order.LogisticsStatus = 200
 		case "2072":
-			order.LogisticsStatus = 7
+			order.Status = 61
+			order.LogisticsStatus = 210
 		case "3023":
 			order.Status = 92
-			order.LogisticsStatus = 8
+			order.LogisticsStatus = 299
 		default:
-			order.LogisticsStatus = 99
+			order.LogisticsStatus = 999
 		}
 	}
 }
