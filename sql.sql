@@ -44,7 +44,12 @@ MODIFY COLUMN `logistics_status` tinyint(4) UNSIGNED NULL DEFAULT 0 COMMENT '物
 MODIFY COLUMN `created_at` int(11) NULL DEFAULT NULL AFTER `status`;
 
 UPDATE orders SET `status` = 51 WHERE `status` = 31;
+UPDATE orders SET `status` = 51 WHERE `status` = 31;
 UPDATE orders SET `status` = 99 WHERE `status` = -99;
 UPDATE orders SET `logistics_status` = 110 WHERE `logistics_status` = 3;
 UPDATE orders SET `logistics_status` = 120 WHERE `logistics_status` = 4;
 UPDATE orders SET `logistics_status` = 199 WHERE `logistics_status` = 5;
+UPDATE orders SET `status` = 24 WHERE `status` = 21 and shipment_no is not null;
+
+ALTER TABLE `platform` 
+ADD COLUMN `mobile_logo_url` varchar(255) NULL AFTER `logo_url`;

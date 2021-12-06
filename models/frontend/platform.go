@@ -13,6 +13,7 @@ type Platform struct {
 	Title              string `json:"title"`
 	Description        string `json:"description"`
 	LogoUrl            string `json:"logo_url"`
+	MobileLogoUrl      string `json:"mobile_logo_url"`
 	IconUrl            string `json:"icon_url"`
 	Code               string `json:"code"`
 	FBPageID           string `json:"fb_page_id"`
