@@ -141,22 +141,22 @@ func ShipmentPrint(c *gin.Context) {
 	switch orders[0].Method {
 	case 1:
 		params["MerchantTradeNo"] = ""
-		url = "https://logistics-stage.ecpay.com.tw/helper/PrintTradeDocument"
+		url = fmt.Sprintf("%s/helper/PrintTradeDocument", os.Getenv("ECPAY_LOGISTICS_URL"))
 	case 2:
 		params["CVSPaymentNo"] = strings.Join(paymentNo, ",")
 		params["CVSValidationNo"] = strings.Join(validationNo, ",")
-		url = "https://logistics.ecpay.com.tw/Express/PrintUniMartC2COrderInfo"
+		url = fmt.Sprintf("%s/Express/PrintUniMartC2COrderInfo", os.Getenv("ECPAY_LOGISTICS_URL"))
 	case 3:
 		params["CVSPaymentNo"] = strings.Join(shipmentNo, ",")
 		params["CVSValidationNo"] = ""
-		url = "https://logistics.ecpay.com.tw/Express/PrintFAMIC2COrderInfo"
+		url = fmt.Sprintf("%s/Express/PrintFAMIC2COrderInfo", os.Getenv("ECPAY_LOGISTICS_URL"))
 	case 4:
 		params["MerchantTradeNo"] = strings.Join(tradeNo, ",")
-		url = "https://logistics.ecpay.com.tw/helper/PrintTradeDocument"
+		url = fmt.Sprintf("%s/helper/PrintTradeDocument", os.Getenv("ECPAY_LOGISTICS_URL"))
 	case 5:
 		params["CVSPaymentNo"] = strings.Join(paymentNo, ",")
 		params["CVSValidationNo"] = strings.Join(validationNo, ",")
-		url = "https://logistics.ecpay.com.tw/Express/PrintOKMARTC2COrderInfo"
+		url = fmt.Sprintf("%s/Express/PrintOKMARTC2COrderInfo", os.Getenv("ECPAY_LOGISTICS_URL"))
 	}
 
 	params["AllPayLogisticsID"] = strings.Join(ids, ",")
