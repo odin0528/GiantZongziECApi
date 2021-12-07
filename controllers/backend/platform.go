@@ -37,12 +37,17 @@ func PlatformUpdate(c *gin.Context) {
 		platform.LogoUrl = uploader.Thumbnail(filename, platform.LogoUrl, 2048)
 	}
 
+	if strings.Index(platform.MobileLogoUrl, ",") > 0 {
+		filename := fmt.Sprintf("/upload/%08d/mobile_logo", PlatformID.(int))
+		platform.MobileLogoUrl = uploader.Thumbnail(filename, platform.MobileLogoUrl, 2048)
+	}
+
 	if strings.Index(platform.IconUrl, ",") > 0 {
 		filename := fmt.Sprintf("/upload/%08d/favicon", PlatformID.(int))
 		platform.IconUrl = uploader.Thumbnail(filename, platform.IconUrl, 2048)
 	}
 
-	DB.Select("title", "description", "logo_url", "icon_url", "fb_messenger_enabled", "fb_pixel").Updates(&platform)
+	DB.Select("title", "description", "logo_url", "mobile_logo_url", "icon_url", "fb_messenger_enabled", "fb_pixel").Updates(&platform)
 
 	g.Response(http.StatusOK, e.Success, platform)
 }
