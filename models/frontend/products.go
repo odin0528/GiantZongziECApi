@@ -130,7 +130,7 @@ func (product *Products) GetSubStyle() {
 
 func (product *Products) GetStyleTable() {
 	var styleList []ProductStyleTable
-	DB.Table("product_style_table").Where("product_id = ?", product.ID).Order("group_no ASC").Scan(&styleList)
+	DB.Table("product_style_table").Where("product_id = ?", product.ID).Order("group_no ASC, sort ASC").Scan(&styleList)
 
 	for _, style := range styleList {
 		if len(product.StyleTable) < style.GroupNo+1 {

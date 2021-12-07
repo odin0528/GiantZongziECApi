@@ -242,11 +242,12 @@ func ProductModify(c *gin.Context) {
 		req.Min = req.StyleTable[0][0].Price
 		req.Max = req.StyleTable[0][0].Price
 		for index, list := range req.StyleTable {
-			for _, item := range list {
+			for sort, item := range list {
 				item.ProductID = req.ID
 				item.PlatformID = platformID.(int)
 				item.Title = req.Title
 				item.GroupNo = index
+				item.Sort = sort
 
 				if len(req.Style) > 0 && req.Style[index].Img != "" {
 					item.Photo = req.Style[index].Img

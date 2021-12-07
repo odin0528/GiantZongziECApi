@@ -9,6 +9,7 @@ type ProductStyleTable struct {
 	PlatformID    int     `json:"-" gorm:"<-:create"`
 	ProductID     int     `json:"-" gorm:"<-:create"`
 	GroupNo       int     `json:"-"`
+	Sort          int     `json:"sort"`
 	Title         string  `json:"title"`
 	StyleTitle    string  `json:"style_title"`
 	SubStyleTitle string  `json:"sub_style_title"`
