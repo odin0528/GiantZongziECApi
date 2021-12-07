@@ -53,3 +53,7 @@ UPDATE orders SET `status` = 24 WHERE `status` = 21 and shipment_no is not null;
 
 ALTER TABLE `platform` 
 ADD COLUMN `mobile_logo_url` varchar(255) NULL AFTER `logo_url`;
+
+ALTER TABLE `product_style_table` 
+MODIFY COLUMN `group_no` tinyint(4) UNSIGNED NULL DEFAULT NULL AFTER `product_id`,
+ADD COLUMN `sort` tinyint(4) UNSIGNED NULL AFTER `group_no`;
