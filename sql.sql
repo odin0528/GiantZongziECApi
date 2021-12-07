@@ -40,7 +40,7 @@ ALTER TABLE `orders`
 ADD COLUMN `paid_at` int(11) NULL COMMENT '付款時間' AFTER `status`,
 ADD COLUMN `delivered_at` int(11) NULL COMMENT '到貨時間' AFTER `paid_at`,
 ADD COLUMN `picker_id` int(11) NULL DEFAULT 0 COMMENT '撿貨者id' AFTER `member_id`,
-MODIFY COLUMN `logistics_status` tinyint(4) UNSIGNED NULL DEFAULT 0 COMMENT '物流狀態' AFTER `shipment_no`,
+MODIFY COLUMN `logistics_status` int(11) UNSIGNED NULL DEFAULT 0 COMMENT '物流狀態' AFTER `shipment_no`,
 MODIFY COLUMN `created_at` int(11) NULL DEFAULT NULL AFTER `status`;
 
 UPDATE orders SET `status` = 51 WHERE `status` = 31;

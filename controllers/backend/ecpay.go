@@ -303,6 +303,8 @@ func ChangeLogisticsStatus(order *models.Orders, params map[string]string) {
 			fallthrough
 		case "310":
 			fallthrough
+		case "2001":
+			fallthrough
 		case "2101":
 			order.Status = 23
 		case "2041": //物流中心理貨中
