@@ -76,7 +76,7 @@ func ProductModify(c *gin.Context) {
 				productPhotos := models.ProductPhotos{
 					ProductID:  req.ID,
 					PlatformID: platformID.(int),
-					Img:        uploader.Thumbnail(filename, photo.Img, 720),
+					Img:        uploader.Thumbnail(filename, photo.Img, 1440),
 					Sort:       sort,
 				}
 				productPhotos.Create()
@@ -93,7 +93,7 @@ func ProductModify(c *gin.Context) {
 			style.Sort = index
 			if strings.Index(style.Img, ",") > 0 {
 				filename := fmt.Sprintf("/upload/%08d/products/%08d/%d", platformID.(int), req.ID, time.Now().UnixNano())
-				style.Img = uploader.Thumbnail(filename, style.Img, 720)
+				style.Img = uploader.Thumbnail(filename, style.Img, 1440)
 				req.Style[index].Img = style.Img
 			}
 			style.Create()
@@ -152,7 +152,7 @@ func ProductModify(c *gin.Context) {
 					productPhotos := models.ProductPhotos{
 						ProductID:  req.ID,
 						PlatformID: platformID.(int),
-						Img:        uploader.Thumbnail(filename, photo.Img, 720),
+						Img:        uploader.Thumbnail(filename, photo.Img, 1440),
 						Sort:       sort,
 					}
 					productPhotos.Create()
@@ -180,7 +180,7 @@ func ProductModify(c *gin.Context) {
 					//有找到base64的編碼關鍵字
 					if strings.Index(photo.Img, ",") > 0 {
 						filename := fmt.Sprintf("/upload/%08d/products/%08d/%d", platformID.(int), req.ID, time.Now().UnixNano())
-						productPhotos.Img = uploader.Thumbnail(filename, photo.Img, 720)
+						productPhotos.Img = uploader.Thumbnail(filename, photo.Img, 1440)
 					} else {
 						productPhotos.Img = photo.Img
 					}
@@ -199,7 +199,7 @@ func ProductModify(c *gin.Context) {
 			style.Sort = index
 			if strings.Index(style.Img, ",") > 0 {
 				filename := fmt.Sprintf("/upload/%08d/products/%08d/%d", platformID.(int), req.ID, time.Now().UnixNano())
-				style.Img = uploader.Thumbnail(filename, style.Img, 720)
+				style.Img = uploader.Thumbnail(filename, style.Img, 1440)
 				req.Style[index].Img = style.Img
 			}
 			if style.ID == 0 {
