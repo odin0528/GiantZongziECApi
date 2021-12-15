@@ -92,7 +92,7 @@ func DraftComponentEdit(c *gin.Context) {
 			case "image":
 				maxSize = 720
 			default:
-				maxSize = 1100
+				maxSize = 1440
 			}
 
 			switch strings.TrimSuffix(data.Img[5:i], ";base64") {
@@ -104,6 +104,9 @@ func DraftComponentEdit(c *gin.Context) {
 				img, _ = jpeg.Decode(bytes.NewReader(blob))
 				thumbnail := resize.Resize(maxSize, 0, img, resize.Lanczos3)
 				jpeg.Encode(buff, thumbnail, nil)
+			default:
+				g.Response(http.StatusOK, e.StatusInternalServerError, "不支援的圖片格式")
+				return
 			}
 
 			result, _ := Uploader.Upload(&s3manager.UploadInput{

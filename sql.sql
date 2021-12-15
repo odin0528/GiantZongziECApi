@@ -57,3 +57,9 @@ ADD COLUMN `mobile_logo_url` varchar(255) NULL AFTER `logo_url`;
 ALTER TABLE `product_style_table` 
 MODIFY COLUMN `group_no` tinyint(4) UNSIGNED NULL DEFAULT NULL AFTER `product_id`,
 ADD COLUMN `sort` tinyint(4) UNSIGNED NULL AFTER `group_no`;
+
+ALTER TABLE `product_style_table` 
+ADD COLUMN `cost` double(10, 2) NULL COMMENT '單件產品成本' AFTER `qty`,
+ADD COLUMN `suggest_price` double(10, 2) NULL COMMENT '建議售價' AFTER `cost`,
+ADD COLUMN `no_store_delivery` tinyint(4) NULL COMMENT '超過此數量後不可超取，若為0則皆可超取' AFTER `suggest_price`,
+ADD COLUMN `no_over_sale` tinyint(4) NULL COMMENT '不可超賣' AFTER `no_store_delivery`;
