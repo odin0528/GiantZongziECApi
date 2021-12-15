@@ -63,3 +63,5 @@ ADD COLUMN `cost` double(10, 2) NULL COMMENT '單件產品成本' AFTER `qty`,
 ADD COLUMN `suggest_price` double(10, 2) NULL COMMENT '建議售價' AFTER `cost`,
 ADD COLUMN `no_store_delivery` tinyint(4) NULL COMMENT '超過此數量後不可超取，若為0則皆可超取' AFTER `suggest_price`,
 ADD COLUMN `no_over_sale` tinyint(4) NULL COMMENT '不可超賣' AFTER `no_store_delivery`;
+
+UPDATE `product_style_table` SET cost = price, suggest_price = price, no_store_delivery = 0, no_over_sale = 0;

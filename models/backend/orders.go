@@ -145,7 +145,7 @@ func (query *BatchOrderQuery) GetCondition() *gorm.DB {
 }
 
 func (query *OrderListReq) GetCondition() *gorm.DB {
-	sql := DB.Debug().Model(Orders{})
+	sql := DB.Model(Orders{})
 	timeLayout := "2006-01-02"
 
 	if len(query.IDs) > 0 {
