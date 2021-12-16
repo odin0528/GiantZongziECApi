@@ -2,6 +2,7 @@ package e
 
 const (
 	Success                   = 200
+	ReloadPage                = 300
 	InvalidParams             = 400
 	Unauthorized              = 401
 	Forbidden                 = 403
@@ -21,9 +22,11 @@ const (
 	NoLogginOrTokenExpired = 91002
 
 	// order frontend
-	ProductPriceChange = 91100
-	PromotionChange    = 91101
-	ShippingChange     = 91102
-	OrderNotExist      = 91102
-	OrderIsFinish      = 91103
+	ProductPriceChange      = 91100
+	PromotionChange         = 91101
+	ShippingChange          = 91102
+	OutOfStock              = 91103
+	UpdateFailForOutOfStock = 91104
+	OrderNotExist           = 91105
+	OrderIsFinish           = 91106
 )

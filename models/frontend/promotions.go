@@ -19,9 +19,9 @@ type Promotions struct {
 	Mode           string  `json:"mode"`
 	Method         string  `json:"method"`
 	Qty            int     `json:"qty"`
-	Money          float32 `json:"money"`
-	Percent        float32 `json:"percent"`
-	Discount       float32 `json:"discount"`
+	Money          float64 `json:"money"`
+	Percent        float64 `json:"percent"`
+	Discount       float64 `json:"discount"`
 	IsEnabled      bool    `json:"is_enabled"`
 	DeletedAt      int     `json:"-"`
 	TimeDefault

@@ -63,3 +63,29 @@ ADD COLUMN `cost` double(10, 2) NULL COMMENT '單件產品成本' AFTER `qty`,
 ADD COLUMN `suggest_price` double(10, 2) NULL COMMENT '建議售價' AFTER `cost`,
 ADD COLUMN `no_store_delivery` tinyint(4) NULL COMMENT '超過此數量後不可超取，若為0則皆可超取' AFTER `suggest_price`,
 ADD COLUMN `no_over_sale` tinyint(4) NULL COMMENT '不可超賣' AFTER `no_store_delivery`;
+
+ALTER TABLE `carts` 
+CHANGE COLUMN `qty` `buy_count` int(11) NOT NULL AFTER `style_id`;
+
+ALTER TABLE `products` 
+ADD COLUMN `sold` int(11) UNSIGNED NULL COMMENT '賣出數量' AFTER `photo`;
+
+
+ALTER TABLE `product_style_table` 
+ADD COLUMN `sold` int(11) UNSIGNED NULL COMMENT '賣出數量' AFTER `no_over_sale`;
+
+CREATE TRIGGER `sold_out` BEFORE INSERT ON `order_products` FOR EACH ROW BEGIN
+	DECLARE affected tinyint;
+	DECLARE msg varchar(128);
+	
+	UPDATE product_style_table 
+	SET qty = qty - new.qty, sold = sold + new.qty
+	WHERE id = new.style_id AND (no_over_sale = 0 OR qty >= new.qty);
+	SELECT ROW_COUNT() into affected;
+	if affected = 0 then
+		set msg = 'out_of_stock';
+    signal sqlstate '45000' set message_text = msg;
+	end if;
+	
+	UPDATE products SET sold = sold + new.qty WHERE new.product_id;
+END;

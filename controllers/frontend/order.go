@@ -18,6 +18,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gotokatsuya/line-pay-sdk-go/linepay"
 	"golang.org/x/crypto/scrypt"
+	"gorm.io/gorm"
 
 	. "eCommerce/internal/database"
 )
@@ -45,7 +46,9 @@ func OrderCreate(c *gin.Context) {
 		MemberID = member.MemberID
 	}
 
-	errCode := OrderValidation(PlatformID, &order)
+	tx := DB.Begin()
+
+	errCode := OrderValidation(tx, PlatformID, &order)
 	if errCode != 200 {
 		g.Response(http.StatusOK, errCode, order.Products)
 		return
@@ -64,8 +67,9 @@ func OrderCreate(c *gin.Context) {
 			PlatformID: PlatformID,
 		}
 
-		err = DB.Create(&member).Error
+		err = tx.Create(&member).Error
 		if err != nil {
+			tx.Rollback()
 			g.Response(http.StatusOK, e.EmailDuplicate, err)
 			return
 		}
@@ -93,7 +97,12 @@ func OrderCreate(c *gin.Context) {
 			StorePhone:   order.StorePhone,
 		}
 
-		DB.Create(&delivery)
+		err = tx.Create(&delivery).Error
+		if err != nil {
+			tx.Rollback()
+			g.Response(http.StatusInternalServerError, e.StatusInternalServerError, err)
+			return
+		}
 	}
 
 	switch order.Payment {
@@ -102,7 +111,15 @@ func OrderCreate(c *gin.Context) {
 	default:
 		order.Status = 11
 	}
-	order.Create()
+
+	// 新增訂單
+	order.Total = order.Price + order.Shipping - order.Discount
+	err = tx.Create(&order).Error
+	if err != nil {
+		tx.Rollback()
+		g.Response(http.StatusInternalServerError, e.StatusInternalServerError, err)
+		return
+	}
 
 	for pi, product := range order.Products {
 		for si, style := range product.Styles {
@@ -112,19 +129,31 @@ func OrderCreate(c *gin.Context) {
 				OrderID:         order.ID,
 				ProductID:       product.ProductID,
 				StyleID:         style.StyleID,
-				Qty:             style.Qty,
+				Qty:             style.BuyCount,
 				Price:           style.Price,
 				IsDiscount:      style.IsDiscount,
 				Discount:        style.Discount,
 				DiscountedPrice: style.DiscountedPrice,
-				Total:           float32(style.Qty) * style.DiscountedPrice,
+				Total:           float64(style.BuyCount) * style.DiscountedPrice,
 				Title:           product.Title,
 				StyleTitle:      style.StyleTitle,
 				Photo:           style.Photo,
 				Sku:             style.Sku,
 			}
 
-			orderProduct.Create()
+			err = tx.Create(&orderProduct).Error
+
+			if err.Error() == "out_of_stock" {
+				tx.Rollback()
+				g.Response(http.StatusOK, e.UpdateFailForOutOfStock, err)
+				return
+			}
+
+			if err != nil {
+				tx.Rollback()
+				g.Response(http.StatusInternalServerError, e.StatusInternalServerError, err)
+				return
+			}
 		}
 	}
 
@@ -158,13 +187,13 @@ func OrderCreate(c *gin.Context) {
 				requestReq.Packages = append(requestReq.Packages,
 					&linepay.RequestPackage{
 						ID:     fmt.Sprintf("%d", order.ID),
-						Amount: style.Qty * int(style.DiscountedPrice),
+						Amount: style.BuyCount * int(style.DiscountedPrice),
 						Name:   Platform.Title,
 						Products: []*linepay.RequestPackageProduct{
 							&linepay.RequestPackageProduct{
 								ID:       fmt.Sprintf("%d-%d", product.ProductID, style.StyleID),
 								Name:     fmt.Sprintf("%s %s", product.Title, style.StyleTitle),
-								Quantity: style.Qty,
+								Quantity: style.BuyCount,
 								Price:    int(style.DiscountedPrice),
 								ImageURL: style.Photo,
 							},
@@ -296,11 +325,13 @@ func OrderUpdate(c *gin.Context) {
 	g.Response(http.StatusOK, e.Success, order)
 }
 
-func OrderValidation(PlatformID int, order *models.OrderCreateRequest) int {
-	priceChange := false
+func OrderValidation(tx *gorm.DB, PlatformID int, order *models.OrderCreateRequest) int {
+	priceChange, outOfStock := false, false
 	count := 0
-	var total, shipping, checkoutPercent, checkoutDiscount, productDiscount, shippingDiscount float32 = 0, 0, 100, 0, 0, 0
+	var total, shipping, checkoutPercent, checkoutDiscount, productDiscount, shippingDiscount float64 = 0, 0, 100, 0, 0, 0
 	isFreeShipping := false
+
+	// 檢查價格或庫存
 	for productIndex, product := range order.Products {
 		for styleIndex, style := range product.Styles {
 			query := &models.ProductStyleQuery{
@@ -316,15 +347,26 @@ func OrderValidation(PlatformID int, order *models.OrderCreateRequest) int {
 				priceChange = true
 			}
 
-			count += style.Qty
-			total += float32(style.Qty) * style.Price
+			// 判斷價格是否有異動或正確
+			if item.NoOverSale && item.Qty < style.BuyCount {
+				order.Products[productIndex].Styles[styleIndex].Qty = item.Qty
+				outOfStock = true
+			}
+
+			count += style.BuyCount
+			total += float64(style.BuyCount) * style.Price
 		}
+	}
+
+	if outOfStock {
+		// return e.OutOfStock
 	}
 
 	if priceChange || total != order.Price {
 		return e.ProductPriceChange
 	}
 
+	// 檢查有沒有調整運費
 	platform := &models.Platform{
 		ID: PlatformID,
 	}
@@ -395,23 +437,23 @@ func OrderValidation(PlatformID int, order *models.OrderCreateRequest) int {
 	}
 	order.IsFreeShipping = isFreeShipping
 
-	if total-float32(math.Round(float64((total-productDiscount)*(checkoutPercent/100)-checkoutDiscount)))+shippingDiscount != order.Discount {
+	if total-math.Round((total-productDiscount)*(checkoutPercent/100)-checkoutDiscount)+shippingDiscount != order.Discount {
 		return e.PromotionChange
 	}
 
 	return e.Success
 }
 
-func CheckSpecialPrice(promotion models.Promotions, products []models.OrderProductsCreateReq) float32 {
-	var discount float32
+func CheckSpecialPrice(promotion models.Promotions, products []models.OrderProductsCreateReq) float64 {
+	var discount float64
 	discount = 0
 	for _, product := range products {
 		for _, style := range product.Styles {
-			discountedPrice := float32(math.Round(float64(style.Price * promotion.Percent / 100)))
+			discountedPrice := math.Round(style.Price * promotion.Percent / 100)
 			if style.DiscountedPrice != discountedPrice || style.Discount != style.Price-discountedPrice {
 				return -1
 			}
-			discount += style.Discount * float32(style.Qty)
+			discount += style.Discount * float64(style.BuyCount)
 		}
 	}
 
