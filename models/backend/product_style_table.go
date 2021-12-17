@@ -5,18 +5,22 @@ import (
 )
 
 type ProductStyleTable struct {
-	ID            int     `json:"id" gorm:"<-:create"`
-	PlatformID    int     `json:"-" gorm:"<-:create"`
-	ProductID     int     `json:"-" gorm:"<-:create"`
-	GroupNo       int     `json:"-"`
-	Sort          int     `json:"sort"`
-	Title         string  `json:"title"`
-	StyleTitle    string  `json:"style_title"`
-	SubStyleTitle string  `json:"sub_style_title"`
-	Photo         string  `json:"photo"`
-	Sku           string  `json:"sku"`
-	Price         float32 `json:"price"`
-	Qty           int     `json:"qty"`
+	ID              int     `json:"id" gorm:"<-:create"`
+	PlatformID      int     `json:"-" gorm:"<-:create"`
+	ProductID       int     `json:"-" gorm:"<-:create"`
+	GroupNo         int     `json:"-"`
+	Sort            int     `json:"sort"`
+	Title           string  `json:"title"`
+	StyleTitle      string  `json:"style_title"`
+	SubStyleTitle   string  `json:"sub_style_title"`
+	Photo           string  `json:"photo"`
+	Sku             string  `json:"sku"`
+	Price           float64 `json:"price"`
+	Qty             int     `json:"qty"`
+	Cost            float64 `json:"cost"`
+	SuggestPrice    float64 `json:"suggest_price"`
+	NoStoreDelivery int     `json:"no_store_delivery"`
+	NoOverSale      bool    `json:"no_over_sale"`
 	TimeDefault
 }
 

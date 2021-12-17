@@ -3,6 +3,7 @@ package backend
 import (
 	. "eCommerce/internal/database"
 	"fmt"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -75,7 +76,15 @@ type OrderListReq struct {
 	PickerID        int    `json:"-"`
 	Status          []int  `json:"status"`
 	LogisticsStatus int    `json:"logistics_status"`
+	ShipmentNo      string `json:"shipment_no"`
+	Fullname        string `json:"fullname"`
+	Phone           string `json:"phone"`
+	Payment         int    `json:"payment"`
 	Method          int    `json:"method"`
+	StartDate       string `json:"start_date"`
+	EndDate         string `json:"end_date"`
+	MinPrice        int    `json:"min_price"`
+	MaxPrice        int    `json:"max_price"`
 	WithoutProducts bool   `json:"without_products"`
 	OrderBy         string `json:"order_by"`
 	Sort            string `json:"sort"`
@@ -136,7 +145,8 @@ func (query *BatchOrderQuery) GetCondition() *gorm.DB {
 }
 
 func (query *OrderListReq) GetCondition() *gorm.DB {
-	sql := DB.Debug().Model(Orders{})
+	sql := DB.Model(Orders{})
+	timeLayout := "2006-01-02"
 
 	if len(query.IDs) > 0 {
 		sql.Where("id IN ?", query.IDs)
@@ -153,9 +163,36 @@ func (query *OrderListReq) GetCondition() *gorm.DB {
 	if query.Method != 0 {
 		sql.Where("method = ?", query.Method)
 	}
+	if query.Payment != 0 {
+		sql.Where("method = ?", query.Payment)
+	}
 
 	if query.PickerID != 0 {
 		sql.Where("picker_id = ?", query.PickerID)
+	}
+
+	if query.Fullname != "" {
+		sql.Where("fullname like ?", query.Fullname)
+	}
+	if query.Phone != "" {
+		sql.Where("phone like ?", query.Phone)
+	}
+	if query.ShipmentNo != "" {
+		sql.Where("shipment_no like ?", query.ShipmentNo)
+	}
+	if query.StartDate != "" {
+		t, _ := time.Parse(timeLayout, query.StartDate)
+		sql.Where("created_at >= ?", t.Unix())
+	}
+	if query.EndDate != "" {
+		t, _ := time.Parse(timeLayout, query.EndDate)
+		sql.Where("created_at <= ?", t.Unix())
+	}
+	if query.MinPrice > 0 {
+		sql.Where("total >= ?", query.MinPrice)
+	}
+	if query.MaxPrice > 0 {
+		sql.Where("total <= ?", query.MaxPrice)
 	}
 
 	sql.Where("platform_id = ?", query.PlatformID)

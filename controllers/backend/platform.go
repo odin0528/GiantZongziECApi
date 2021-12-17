@@ -93,7 +93,7 @@ func PlatformLogisticsUpdate(c *gin.Context) {
 	PlatformID, _ := c.Get("platform_id")
 	c.BindJSON(&logistics)
 
-	DB.Debug().Where("platform_id = ?", PlatformID.(int)).Updates(&logistics)
+	DB.Where("platform_id = ?", PlatformID.(int)).Updates(&logistics)
 
 	g.Response(http.StatusOK, e.Success, nil)
 }

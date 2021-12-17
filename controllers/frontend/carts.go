@@ -96,7 +96,7 @@ func CartsResetProduct(c *gin.Context) {
 	memberCarts.Clean() */
 
 	for _, product := range carts {
-		err = DB.Debug().Model(&models.Carts{}).Where("platform_id = ? AND member_id = ? AND product_id = ? AND style_id = ?", PlatformID.(int), MemberID.(int), product.ProductID, product.StyleID).
+		err = DB.Model(&models.Carts{}).Where("platform_id = ? AND member_id = ? AND product_id = ? AND style_id = ?", PlatformID.(int), MemberID.(int), product.ProductID, product.StyleID).
 			Updates(map[string]interface{}{
 				"qty": product.Qty,
 			}).Error

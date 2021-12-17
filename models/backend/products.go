@@ -32,8 +32,8 @@ type Products struct {
 	StyleTable      [][]ProductStyleTable `json:"style_table" gorm:"-"`
 	StyleEnabled    bool                  `json:"style_enabled"`
 	SubStyleEnabled bool                  `json:"sub_style_enabled"`
-	Min             float32               `json:"min"`
-	Max             float32               `json:"max"`
+	Min             float64               `json:"min"`
+	Max             float64               `json:"max"`
 	IsPublic        bool                  `json:"is_public"`
 	DeletedAt       soft_delete.DeletedAt `json:"-"`
 	TimeDefault
@@ -107,7 +107,7 @@ func (product *Products) GetSubStyle() {
 
 func (product *Products) GetStyleTable() {
 	var styleList []ProductStyleTable
-	DB.Debug().Table("product_style_table").Where("product_id = ?", product.ID).Order("group_no ASC, sort ASC").Scan(&styleList)
+	DB.Table("product_style_table").Where("product_id = ?", product.ID).Order("group_no ASC, sort ASC").Scan(&styleList)
 
 	for _, style := range styleList {
 		if len(product.StyleTable) < style.GroupNo+1 {
