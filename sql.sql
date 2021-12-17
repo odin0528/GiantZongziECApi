@@ -94,3 +94,5 @@ UPDATE product_style_table SET sold = (select count(*) from order_products where
 UPDATE products SET sold = (select count(*) from order_products where order_products.product_id = products.id);
 UPDATE product_style_table SET no_over_sale = 0 WHERE no_over_sale IS NULL;
 UPDATE product_style_table SET no_store_delivery = 0 WHERE no_store_delivery IS NULL;
+UPDATE product_style_table SET cost = 0 WHERE cost IS NULL;
+UPDATE product_style_table SET suggest_price = 0 WHERE suggest_price IS NULL;

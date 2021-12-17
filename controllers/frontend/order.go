@@ -340,6 +340,7 @@ func OrderValidation(tx *gorm.DB, PlatformID int, order *models.OrderCreateReque
 			// 判斷價格是否有異動或正確
 			if item.NoOverSale && item.Qty < style.BuyCount {
 				order.Products[productIndex].Styles[styleIndex].Qty = item.Qty
+				order.Products[productIndex].Styles[styleIndex].NoOverSale = true
 				outOfStock = true
 			}
 
