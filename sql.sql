@@ -89,3 +89,8 @@ CREATE TRIGGER `sold_out` BEFORE INSERT ON `order_products` FOR EACH ROW BEGIN
 	
 	UPDATE products SET sold = sold + new.qty WHERE new.product_id;
 END;
+
+UPDATE product_style_table SET sold = (select count(*) from order_products where order_products.style_id = product_style_table.id);
+UPDATE products SET sold = (select count(*) from order_products where order_products.product_id = products.id);
+UPDATE product_style_table SET no_over_sale = 0 WHERE no_over_sale IS NULL;
+UPDATE product_style_table SET no_store_delivery = 0 WHERE no_store_delivery IS NULL;

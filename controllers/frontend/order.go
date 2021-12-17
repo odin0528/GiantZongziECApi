@@ -143,19 +143,22 @@ func OrderCreate(c *gin.Context) {
 
 			err = tx.Create(&orderProduct).Error
 
-			if err.Error() == "out_of_stock" {
+			if err != nil {
 				tx.Rollback()
 				g.Response(http.StatusOK, e.UpdateFailForOutOfStock, err)
 				return
 			}
-
-			if err != nil {
-				tx.Rollback()
-				g.Response(http.StatusInternalServerError, e.StatusInternalServerError, err)
-				return
-			}
 		}
 	}
+
+	if order.Payment != 4 && MemberID != 0 {
+		carts := models.Carts{
+			MemberID:   MemberID,
+			PlatformID: PlatformID,
+		}
+		carts.Clean()
+	}
+	tx.Commit()
 
 	if order.Payment == 4 {
 
@@ -234,20 +237,14 @@ func OrderCreate(c *gin.Context) {
 			DB.Model(models.Orders{}).Where("id = ?", order.ID).
 				Updates(map[string]interface{}{"order_uuid": orderUuid, "transaction_id": requestResp.Info.TransactionID})
 		}
-
+		tx.Commit()
 		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "payment": requestResp.Info.PaymentURL, "request": requestReq})
 		return
 	} else if order.Payment == 2 {
 		// 貨到付款就等後台出託運單
-		carts := models.Carts{
-			MemberID:   MemberID,
-			PlatformID: PlatformID,
-		}
-		carts.Clean()
-
 		// email.SendOrderNotify(order)
 		line.SendOrderNotifyByOrderCreateRequest(order)
-
+		tx.Commit()
 		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token})
 	} else {
 		var client *ecpay.Client
@@ -286,13 +283,6 @@ func OrderCreate(c *gin.Context) {
 			aio.SetBarcodePayment()
 		}
 		html, _ := aio.GenerateRequestHtml()
-
-		carts := models.Carts{
-			MemberID:   MemberID,
-			PlatformID: PlatformID,
-		}
-		carts.Clean()
-
 		g.Response(http.StatusOK, e.Success, map[string]interface{}{"token": token, "ecpay": html})
 	}
 
@@ -359,7 +349,7 @@ func OrderValidation(tx *gorm.DB, PlatformID int, order *models.OrderCreateReque
 	}
 
 	if outOfStock {
-		// return e.OutOfStock
+		return e.OutOfStock
 	}
 
 	if priceChange || total != order.Price {
