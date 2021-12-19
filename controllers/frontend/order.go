@@ -354,12 +354,12 @@ func OrderValidation(tx *gorm.DB, PlatformID int, order *models.OrderCreateReque
 		}
 	}
 
-	if noStoreDelivery && order.Method != 1 {
-		return e.NoStoreDelivery
-	}
-
 	if outOfStock {
 		return e.OutOfStock
+	}
+
+	if noStoreDelivery && order.Method != 1 {
+		return e.NoStoreDelivery
 	}
 
 	if priceChange || total != order.Price {
