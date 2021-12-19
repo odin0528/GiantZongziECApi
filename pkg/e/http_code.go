@@ -27,6 +27,7 @@ const (
 	ShippingChange          = 91102
 	OutOfStock              = 91103
 	UpdateFailForOutOfStock = 91104
-	OrderNotExist           = 91105
-	OrderIsFinish           = 91106
+	NoStoreDelivery         = 91105
+	OrderNotExist           = 91106
+	OrderIsFinish           = 91107
 )

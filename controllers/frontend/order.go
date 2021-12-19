@@ -316,7 +316,7 @@ func OrderUpdate(c *gin.Context) {
 }
 
 func OrderValidation(tx *gorm.DB, PlatformID int, order *models.OrderCreateRequest) int {
-	priceChange, outOfStock := false, false
+	priceChange, outOfStock, noStoreDelivery := false, false, false
 	count := 0
 	var total, shipping, checkoutPercent, checkoutDiscount, productDiscount, shippingDiscount float64 = 0, 0, 100, 0, 0, 0
 	isFreeShipping := false
@@ -344,9 +344,18 @@ func OrderValidation(tx *gorm.DB, PlatformID int, order *models.OrderCreateReque
 				outOfStock = true
 			}
 
+			if item.NoStoreDelivery > 0 && style.BuyCount >= item.NoStoreDelivery {
+				order.Products[productIndex].Styles[styleIndex].NoStoreDelivery = item.NoStoreDelivery
+				noStoreDelivery = true
+			}
+
 			count += style.BuyCount
 			total += float64(style.BuyCount) * style.Price
 		}
+	}
+
+	if noStoreDelivery && order.Method != 1 {
+		return e.NoStoreDelivery
 	}
 
 	if outOfStock {
