@@ -7,11 +7,11 @@ type PlatformLogistics struct {
 	FamilyEnabled   bool    `json:"family_enabled"`
 	HilifeEnabled   bool    `json:"hilife_enabled"`
 	OkEnabled       bool    `json:"ok_enabled"`
-	HomeChargeFee   float32 `json:"home_charge_fee"`
-	UniChargeFee    float32 `json:"uni_charge_fee"`
-	FamilyChargeFee float32 `json:"family_charge_fee"`
-	HilifeChargeFee float32 `json:"hilife_charge_fee"`
-	OkChargeFee     float32 `json:"ok_charge_fee"`
+	HomeChargeFee   float64 `json:"home_charge_fee"`
+	UniChargeFee    float64 `json:"uni_charge_fee"`
+	FamilyChargeFee float64 `json:"family_charge_fee"`
+	HilifeChargeFee float64 `json:"hilife_charge_fee"`
+	OkChargeFee     float64 `json:"ok_charge_fee"`
 	TimeDefault
 }
 

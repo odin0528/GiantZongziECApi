@@ -23,13 +23,15 @@ type Request struct {
 }
 
 func SendOrderNotify(container linebot.FlexContainer) {
-	bot, err := linebot.New(os.Getenv("LINE_MESSAGE_API_SECRET"), os.Getenv("LINE_MESSAGE_API_TOKEN"))
-	message := linebot.NewFlexMessage("您有一筆新訂單", container)
-	_, err = bot.Multicast([]string{"U14fff345bfc700aa44170a860d851c23", "Ub79e88993077ecc98abc2a53711a5c9f"}, message).Do()
-	// _, err = bot.Multicast([]string{"U14fff345bfc700aa44170a860d851c23"}, message).Do()
-	if err != nil {
-		log.Println(err)
-		// Do something when some bad happened
+	if os.Getenv("ENV") == "production" {
+		bot, err := linebot.New(os.Getenv("LINE_MESSAGE_API_SECRET"), os.Getenv("LINE_MESSAGE_API_TOKEN"))
+		message := linebot.NewFlexMessage("您有一筆新訂單", container)
+		_, err = bot.Multicast([]string{"U14fff345bfc700aa44170a860d851c23", "Ub79e88993077ecc98abc2a53711a5c9f"}, message).Do()
+		// _, err = bot.Multicast([]string{"U14fff345bfc700aa44170a860d851c23"}, message).Do()
+		if err != nil {
+			log.Println(err)
+			// Do something when some bad happened
+		}
 	}
 }
 
@@ -180,7 +182,7 @@ func GenerateOrderNotifyFirstBubble(total int, createdAt int, memo string) *line
 	}
 }
 
-func GenerateOrderNotifyOrderItemBubble(title string, styleTitle string, photo string, price float32, qty int) *linebot.BubbleContainer {
+func GenerateOrderNotifyOrderItemBubble(title string, styleTitle string, photo string, price float64, qty int) *linebot.BubbleContainer {
 	p := message.NewPrinter(language.English)
 	if photo[:8] != "https://" {
 		photo = "https://giant-zongzi-ec.s3.ap-northeast-1.amazonaws.com" + photo

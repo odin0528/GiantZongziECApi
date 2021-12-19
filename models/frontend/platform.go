@@ -44,6 +44,10 @@ func (platform *Platform) GetPayments() (payment PlatformPayment) {
 	DB.Model(&PlatformPayment{}).Where("platform_id = ?", platform.ID).Scan(&payment)
 	return
 }
+func (platform *Platform) GetCategory() (categories []Category) {
+	DB.Model(&Category{}).Where("platform_id = ? AND layer = 1", platform.ID).Scan(&categories)
+	return
+}
 
 func (platform *Platform) GetLogistics() (logistics PlatformLogistics) {
 	DB.Model(&PlatformLogistics{}).Where("platform_id = ?", platform.ID).Scan(&logistics)

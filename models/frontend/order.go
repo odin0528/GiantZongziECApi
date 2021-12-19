@@ -27,10 +27,10 @@ type OrderCreateRequest struct {
 	Address        string                   `json:"address"`
 	Memo           string                   `json:"memo"`
 	Method         int                      `json:"method"`
-	Total          float32                  `json:"-"`
-	Price          float32                  `json:"price"`
-	Discount       float32                  `json:"discount"`
-	Shipping       float32                  `json:"shipping"`
+	Total          float64                  `json:"-"`
+	Price          float64                  `json:"price"`
+	Discount       float64                  `json:"discount"`
+	Shipping       float64                  `json:"shipping"`
 	IsFreeShipping bool                     `json:"-"`
 	Qty            int                      `json:"-"`
 	Payment        int                      `json:"payment"`
@@ -56,10 +56,10 @@ type Orders struct {
 	Address         string          `json:"address"`
 	Memo            string          `json:"memo"`
 	Method          int             `json:"method"`
-	Total           float32         `json:"total"`
-	Price           float32         `json:"price"`
-	Discount        float32         `json:"discount"`
-	Shipping        float32         `json:"shipping"`
+	Total           float64         `json:"total"`
+	Price           float64         `json:"price"`
+	Discount        float64         `json:"discount"`
+	Shipping        float64         `json:"shipping"`
 	Qty             int             `json:"qty"`
 	Payment         int             `json:"payment"`
 	StoreID         string          `json:"store_id"`

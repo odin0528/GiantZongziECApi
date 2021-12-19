@@ -10,11 +10,11 @@ type OrderProducts struct {
 	ProductID       int     `json:"-"`
 	StyleID         int     `json:"-"`
 	Qty             int     `json:"qty"`
-	Price           float32 `json:"price"`
-	IsDiscount      bool    `json:"isDiscount"`
-	Discount        float32 `json:"discount"`
-	DiscountedPrice float32 `json:"discountedPrice"`
-	Total           float32 `json:"total"`
+	Price           float64 `json:"price"`
+	IsDiscount      bool    `json:"is_discount"`
+	Discount        float64 `json:"discount"`
+	DiscountedPrice float64 `json:"discounted_price"`
+	Total           float64 `json:"total"`
 	Title           string  `json:"title"`
 	StyleTitle      string  `json:"style_title"`
 	Photo           string  `json:"photo"`
@@ -34,11 +34,14 @@ type OrderProductStyleCreateReq struct {
 	StyleTitle      string  `json:"style_title"`
 	Photo           string  `json:"photo"`
 	Sku             string  `json:"sku"`
-	Qty             int     `json:"buyCount"`
-	Price           float32 `json:"price"`
-	IsDiscount      bool    `json:"isDiscount"`
-	Discount        float32 `json:"discount"`
-	DiscountedPrice float32 `json:"discountedPrice"`
+	BuyCount        int     `json:"buy_count"`
+	Qty             int     `json:"qty"`
+	Price           float64 `json:"price"`
+	IsDiscount      bool    `json:"is_discount"`
+	Discount        float64 `json:"discount"`
+	DiscountedPrice float64 `json:"discounted_price"`
+	NoStoreDelivery int     `json:"no_store_delivery"`
+	NoOverSale      bool    `json:"no_over_sale"`
 }
 
 // 基本CURD功能
