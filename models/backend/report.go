@@ -13,6 +13,7 @@ type ReportType struct {
 func (query *ReportType) LowStock() (products []Products, pagination Pagination) {
 	var count int64
 	sql := DB.Debug().Table("report_low_stock")
+	sql.Where("platform_id = ?", query.PlatformID)
 	sql.Count(&count)
 	sql.Offset((query.Page - 1) * query.Items).Limit(query.Items).Order("created_at DESC").Scan(&products)
 	pagination = CreatePagination(query.Page, query.Items, count)

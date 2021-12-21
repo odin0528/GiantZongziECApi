@@ -121,11 +121,14 @@ func (product *Products) GetLowStockStyleTable() {
 	var styleList []ProductStyleTable
 	DB.Table("product_style_table").Where("product_id = ? and qty <= low_stock", product.ID).Order("group_no ASC, sort ASC").Scan(&styleList)
 
+	index := 0
+	groupNo := styleList[0].GroupNo
 	for _, style := range styleList {
-		if len(product.StyleTable) < style.GroupNo+1 {
+		if groupNo != style.GroupNo {
 			product.StyleTable = append(product.StyleTable, []ProductStyleTable{})
+			index++
 		}
-		product.StyleTable[style.GroupNo] = append(product.StyleTable[style.GroupNo], style)
+		product.StyleTable[index] = append(product.StyleTable[index], style)
 	}
 }
 

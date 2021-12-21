@@ -98,12 +98,12 @@ UPDATE product_style_table SET cost = 0 WHERE cost IS NULL;
 UPDATE product_style_table SET suggest_price = 0 WHERE suggest_price IS NULL;
 
 
-ALTER TABLE `ec`.`product_style_table` 
+ALTER TABLE `product_style_table` 
 ADD COLUMN `low_stock` int(11) NULL COMMENT '低庫存數量，庫存低於此數字時發通知' AFTER `qty`;
 
 UPDATE product_style_table SET low_stock = 0;
 
-CREATE OR REPLACE ALGORITHM = UNDEFINED DEFINER = `root`@`%` SQL SECURITY DEFINER VIEW `ec`.`report_low_stock` AS SELECT
+CREATE OR REPLACE ALGORITHM = UNDEFINED DEFINER = `root`@`%` SQL SECURITY DEFINER VIEW `report_low_stock` AS SELECT
 	`products`.`id` AS `id`,
 	`products`.`platform_id` AS `platform_id`,
 	`products`.`category_layer1` AS `category_layer1`,
