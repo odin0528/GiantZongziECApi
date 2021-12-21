@@ -17,6 +17,7 @@ type ProductStyleTable struct {
 	Sku             string  `json:"sku"`
 	Price           float64 `json:"price"`
 	Qty             int     `json:"qty"`
+	LowStock        int     `json:"low_stock"`
 	Cost            float64 `json:"cost"`
 	SuggestPrice    float64 `json:"suggest_price"`
 	NoStoreDelivery int     `json:"no_store_delivery"`
