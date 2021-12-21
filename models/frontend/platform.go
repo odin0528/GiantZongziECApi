@@ -45,7 +45,7 @@ func (platform *Platform) GetPayments() (payment PlatformPayment) {
 	return
 }
 func (platform *Platform) GetCategory() (categories []Category) {
-	DB.Model(&Category{}).Where("platform_id = ? AND layer = 1", platform.ID).Scan(&categories)
+	DB.Model(&Category{}).Where("platform_id = ? AND layer = 1", platform.ID).Order("sort ASC").Scan(&categories)
 	return
 }
 
