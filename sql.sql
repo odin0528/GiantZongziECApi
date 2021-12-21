@@ -96,3 +96,9 @@ UPDATE product_style_table SET no_over_sale = 0 WHERE no_over_sale IS NULL;
 UPDATE product_style_table SET no_store_delivery = 0 WHERE no_store_delivery IS NULL;
 UPDATE product_style_table SET cost = 0 WHERE cost IS NULL;
 UPDATE product_style_table SET suggest_price = 0 WHERE suggest_price IS NULL;
+
+
+ALTER TABLE `ec`.`product_style_table` 
+ADD COLUMN `low_stock` int(11) NULL COMMENT '低庫存數量，庫存低於此數字時發通知' AFTER `qty`;
+
+UPDATE product_style_table SET low_stock = 0;
