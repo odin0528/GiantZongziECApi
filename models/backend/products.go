@@ -117,6 +117,18 @@ func (product *Products) GetStyleTable() {
 	}
 }
 
+func (product *Products) GetLowStockStyleTable() {
+	var styleList []ProductStyleTable
+	DB.Table("product_style_table").Where("product_id = ? and qty <= low_stock", product.ID).Order("group_no ASC, sort ASC").Scan(&styleList)
+
+	for _, style := range styleList {
+		if len(product.StyleTable) < style.GroupNo+1 {
+			product.StyleTable = append(product.StyleTable, []ProductStyleTable{})
+		}
+		product.StyleTable[style.GroupNo] = append(product.StyleTable[style.GroupNo], style)
+	}
+}
+
 func (product *Products) ChangePubliced() {
 	godump.Dump(product)
 	DB.Table("products").Where("id = ?", product.ID).Update("is_public", product.IsPublic)

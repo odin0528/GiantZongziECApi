@@ -135,6 +135,7 @@ func main() {
 			authRequired.POST("/menus/move", backend.MenuMove)
 			authRequired.POST("/menus/delete", backend.MenuDelete)
 
+			authRequired.POST("/report/stock", backend.StockReport)
 		}
 	}
 

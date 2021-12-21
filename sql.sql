@@ -102,3 +102,37 @@ ALTER TABLE `ec`.`product_style_table`
 ADD COLUMN `low_stock` int(11) NULL COMMENT '低庫存數量，庫存低於此數字時發通知' AFTER `qty`;
 
 UPDATE product_style_table SET low_stock = 0;
+
+CREATE OR REPLACE ALGORITHM = UNDEFINED DEFINER = `root`@`%` SQL SECURITY DEFINER VIEW `ec`.`report_low_stock` AS SELECT
+	`products`.`id` AS `id`,
+	`products`.`platform_id` AS `platform_id`,
+	`products`.`category_layer1` AS `category_layer1`,
+	`products`.`category_layer2` AS `category_layer2`,
+	`products`.`category_layer3` AS `category_layer3`,
+	`products`.`category_layer4` AS `category_layer4`,
+	`products`.`title` AS `title`,
+	`products`.`description` AS `description`,
+	`products`.`style_title` AS `style_title`,
+	`products`.`sub_style_title` AS `sub_style_title`,
+	`products`.`style_enabled` AS `style_enabled`,
+	`products`.`sub_style_enabled` AS `sub_style_enabled`,
+	`products`.`min` AS `min`,
+	`products`.`max` AS `max`,
+	`products`.`photo` AS `photo`,
+	`products`.`sold` AS `sold`,
+	`products`.`is_public` AS `is_public`,
+	`products`.`created_at` AS `created_at`,
+	`products`.`updated_at` AS `updated_at`,
+	`products`.`deleted_at` AS `deleted_at` 
+FROM
+	`products` 
+WHERE
+	`products`.`id` IN (
+	SELECT
+		`product_style_table`.`product_id` 
+	FROM
+		`product_style_table` 
+	WHERE
+		( `product_style_table`.`qty` <= `product_style_table`.`low_stock` ) 
+GROUP BY
+	`product_style_table`.`product_id`);
