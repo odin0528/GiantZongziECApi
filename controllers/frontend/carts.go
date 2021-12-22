@@ -1,12 +1,18 @@
 package frontend
 
 import (
+	"crypto/sha256"
 	models "eCommerce/models/frontend"
 	"eCommerce/pkg/e"
+	"encoding/hex"
+	"fmt"
 	"net/http"
+	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
+	"eCommerce/internal/ads"
 	. "eCommerce/internal/database"
 )
 
@@ -63,11 +69,30 @@ func CartsAddProduct(c *gin.Context) {
 
 	PlatformID, _ := c.Get("platform_id")
 	MemberID, _ := c.Get("member_id")
+	MemberEmail, _ := c.Get("member_email")
+	p, _ := c.Get("platform")
+	platform := p.(models.Platform)
 
 	carts.PlatformID = PlatformID.(int)
 	carts.MemberID = MemberID.(int)
 
 	err = DB.Create(&carts).Error
+
+	if platform.FBPixel != "" && platform.FBPixelToken != "" {
+		em := sha256.Sum256([]byte(strings.ToLower(MemberEmail.(string))))
+		params := ads.FbConversionParams{
+			EventName:      "AddToCart",
+			EventTime:      time.Now().Unix(),
+			EventSourceUrl: fmt.Sprintf("https://%s/%s", platform.Hostname, fmt.Sprintf("products/%d", carts.ProductID)),
+			ActionSource:   "website",
+			UserData: ads.FbConversionUserData{
+				EM:         hex.EncodeToString(em[:]),
+				ExternalID: fmt.Sprintf("%d", carts.StyleID),
+			},
+		}
+
+		ads.Send(params, platform.FBPixel, platform.FBPixelToken)
+	}
 
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.StatusInternalServerError, err)

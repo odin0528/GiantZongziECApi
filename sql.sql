@@ -136,3 +136,7 @@ WHERE
 		( `product_style_table`.`qty` <= `product_style_table`.`low_stock` ) 
 GROUP BY
 	`product_style_table`.`product_id`);
+
+
+ALTER TABLE `platform` 
+ADD COLUMN `fb_pixel_token` varchar(255) NULL COMMENT 'conversion api token' AFTER `fb_pixel`;

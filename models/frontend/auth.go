@@ -30,6 +30,7 @@ type MemberToken struct {
 type Claims struct {
 	MemberID   int
 	PlatformID int
+	Email      string `json:"email"`
 	Nickname   string `json:"nickname"`
 	Avatar     string `json:"avatar"`
 	jwt.StandardClaims
@@ -70,6 +71,7 @@ func GenerateToken(member Members) (token string) {
 		MemberID:   member.ID,
 		PlatformID: member.PlatformID,
 		Nickname:   member.Nickname,
+		Email:      member.Email,
 		Avatar:     member.Avatar,
 		StandardClaims: jwt.StandardClaims{
 			Issuer: issuer,

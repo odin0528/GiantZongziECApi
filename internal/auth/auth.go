@@ -61,6 +61,7 @@ func TokenRequred(c *gin.Context) {
 	if tokenClaims != nil {
 		if claims, ok := tokenClaims.Claims.(*frontend.Claims); ok && tokenClaims.Valid {
 			c.Set("member_id", claims.MemberID)
+			c.Set("member_email", claims.Email)
 			c.Set("platform_id", claims.PlatformID)
 		} else {
 			Unauthorized(c)
