@@ -149,6 +149,22 @@ func (product *Products) GetOverSaleStyleTable() {
 	}
 }
 
+func (product *Products) GetWaitDeliveryStyleTable() {
+	var styleList []ProductStyleTable
+	DB.Table("report_wait_delivery_style_table").Where("product_id = ?", product.ID).Order("group_no ASC, sort ASC").Scan(&styleList)
+
+	index := -1
+	groupNo := -1
+	for _, style := range styleList {
+		if groupNo != style.GroupNo {
+			product.StyleTable = append(product.StyleTable, []ProductStyleTable{})
+			groupNo = style.GroupNo
+			index++
+		}
+		product.StyleTable[index] = append(product.StyleTable[index], style)
+	}
+}
+
 func (product *Products) ChangePubliced() {
 	godump.Dump(product)
 	DB.Table("products").Where("id = ?", product.ID).Update("is_public", product.IsPublic)

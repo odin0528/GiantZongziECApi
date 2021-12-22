@@ -136,3 +136,48 @@ WHERE
 		( `product_style_table`.`qty` <= `product_style_table`.`low_stock` ) 
 GROUP BY
 	`product_style_table`.`product_id`);
+
+CREATE VIEW `report_over_sale` AS SELECT
+	`products`.`id` AS `id`,
+	`products`.`platform_id` AS `platform_id`,
+	`products`.`category_layer1` AS `category_layer1`,
+	`products`.`category_layer2` AS `category_layer2`,
+	`products`.`category_layer3` AS `category_layer3`,
+	`products`.`category_layer4` AS `category_layer4`,
+	`products`.`title` AS `title`,
+	`products`.`description` AS `description`,
+	`products`.`style_title` AS `style_title`,
+	`products`.`sub_style_title` AS `sub_style_title`,
+	`products`.`style_enabled` AS `style_enabled`,
+	`products`.`sub_style_enabled` AS `sub_style_enabled`,
+	`products`.`min` AS `min`,
+	`products`.`max` AS `max`,
+	`products`.`photo` AS `photo`,
+	`products`.`sold` AS `sold`,
+	`products`.`is_public` AS `is_public`,
+	`products`.`created_at` AS `created_at`,
+	`products`.`updated_at` AS `updated_at`
+FROM
+	`products` 
+WHERE
+	`products`.`id` IN (
+	SELECT
+		`product_style_table`.`product_id` 
+	FROM
+		`product_style_table` 
+	WHERE
+		( `product_style_table`.`qty` < 0 ) 
+GROUP BY
+	`product_style_table`.`product_id`);
+
+CREATE VIEW `report_wait_delivery_product` AS select products.* from orders
+	inner join order_products as op on op.order_id = orders.id
+	inner join products on products.id = op.product_id
+	where orders.`status` = 21
+	group by products.id;
+
+CREATE VIEW `report_wait_delivery_style_table` AS select pst.*, count(pst.id) as wait_for_delivery from product_style_table as pst
+inner join order_products as op on op.style_id = pst.id
+inner join orders on orders.id = op.order_id
+where orders.`status` = 21
+group by pst.id;

@@ -45,7 +45,7 @@ func SendOrderNotifyByOrderCreateRequest(order models.OrderCreateRequest) {
 				style.StyleTitle,
 				style.Photo,
 				style.DiscountedPrice,
-				style.Qty,
+				style.BuyCount,
 			))
 		}
 	}
