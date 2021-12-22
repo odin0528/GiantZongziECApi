@@ -36,7 +36,7 @@ func StockReport(c *gin.Context) {
 			products[index].GetOverSaleStyleTable()
 		}
 	case "wait_for_delivery":
-		products, pagination = req.OverSale()
+		products, pagination = req.WaitForDelivery()
 		for index := range products {
 			products[index].GetWaitDeliveryStyleTable()
 		}
