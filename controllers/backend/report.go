@@ -30,6 +30,11 @@ func StockReport(c *gin.Context) {
 		for index := range products {
 			products[index].GetLowStockStyleTable()
 		}
+	case "over_sale":
+		products, pagination = req.OverSale()
+		for index := range products {
+			products[index].GetOverSaleStyleTable()
+		}
 	}
 
 	g.PaginationResponse(http.StatusOK, e.Success, products, pagination)
