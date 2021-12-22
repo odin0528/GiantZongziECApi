@@ -23,7 +23,7 @@ type ProductStyleTable struct {
 	SuggestPrice    float64 `json:"suggest_price"`
 	NoStoreDelivery int     `json:"no_store_delivery"`
 	NoOverSale      bool    `json:"no_over_sale"`
-	WaitForDelivery int     `json:"wait_for_delivery"`
+	WaitForDelivery int     `json:"wait_for_delivery" gorm:"->"`
 	TimeDefault
 }
 
