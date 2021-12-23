@@ -184,3 +184,24 @@ group by pst.id;
 
 ALTER TABLE `platform` 
 ADD COLUMN `fb_pixel_token` varchar(255) NULL COMMENT 'conversion api token' AFTER `fb_pixel`;
+
+
+CREATE TABLE `provider`  (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `platform_id` int NULL,
+  `title` varchar(255) NULL,
+  `job_title` varchar(255) NULL,
+  `name` varchar(255) NULL,
+  `mobile` varchar(255) NULL,
+  `email` varchar(255) NULL,
+  `line` varchar(255) NULL,
+  `address` varchar(255) NULL,
+  `bank` varchar(255) NULL,
+  `account` varchar(255) NULL,
+  `tax_id` varchar(8) NULL,
+  `memo` tinytext NULL,
+  `created_at` int(255) UNSIGNED NULL,
+  `updated_at` int(255) UNSIGNED NULL,
+  `deleted_at` int(255) UNSIGNED NULL,
+  PRIMARY KEY (`id`)
+);
