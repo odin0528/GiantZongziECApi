@@ -17,13 +17,13 @@ type ProductStyleTable struct {
 	Sku             string  `json:"sku"`
 	Price           float64 `json:"price"`
 	Qty             int     `json:"qty"`
+	OrderedQty      int     `json:"ordered_qty" gorm:"->"`
 	LowStock        int     `json:"low_stock"`
 	Sold            int     `json:"sold"`
 	Cost            float64 `json:"cost"`
 	SuggestPrice    float64 `json:"suggest_price"`
 	NoStoreDelivery int     `json:"no_store_delivery"`
 	NoOverSale      bool    `json:"no_over_sale"`
-	WaitForDelivery int     `json:"wait_for_delivery" gorm:"->"`
 	TimeDefault
 }
 

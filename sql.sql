@@ -187,7 +187,7 @@ ADD COLUMN `fb_pixel_token` varchar(255) NULL COMMENT 'conversion api token' AFT
 
 ALTER TABLE `product_style_table` 
 MODIFY COLUMN `qty` int(11) NULL DEFAULT NULL COMMENT '庫存數' AFTER `price`,
-ADD COLUMN `wait_for_delivery` int(11) NULL COMMENT '待出貨數' AFTER `qty`;
+ADD COLUMN `ordered_qty` int(11) NULL COMMENT '已訂購數' AFTER `qty`;
 
 DROP TRIGGER `sold_out`
 
@@ -196,8 +196,8 @@ CREATE DEFINER = `root`@`%` TRIGGER `sold_out` BEFORE INSERT ON `order_products`
 	DECLARE msg varchar(128);
 	
 	UPDATE product_style_table 
-	SET wait_for_delivery = wait_for_delivery + new.qty
-	WHERE id = new.style_id AND (no_over_sale = 0 OR qty >= wait_for_delivery + new.qty);
+	SET ordered_qty = ordered_qty + new.qty
+	WHERE id = new.style_id AND (no_over_sale = 0 OR qty >= ordered_qty + new.qty);
 	SELECT ROW_COUNT() into affected;
 	if affected = 0 then
 		set msg = 'out_of_stock';
@@ -207,4 +207,4 @@ CREATE DEFINER = `root`@`%` TRIGGER `sold_out` BEFORE INSERT ON `order_products`
 	UPDATE products SET sold = sold + new.qty WHERE new.product_id;
 END;
 
-update product_style_table set wait_for_delivery = 0;
+update product_style_table set ordered_qty = 0;

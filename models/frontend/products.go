@@ -137,7 +137,7 @@ func (product *Products) GetStyleTable() {
 			product.StyleTable = append(product.StyleTable, []ProductStyleTable{})
 		}
 		// 庫存等於 剩餘庫存 - 待出貨
-		style.Qty = style.Qty - style.WaitForDelivery
+		style.Qty = style.Qty - style.OrderedQty
 		product.StyleTable[style.GroupNo] = append(product.StyleTable[style.GroupNo], style)
 	}
 }

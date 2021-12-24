@@ -243,5 +243,10 @@ func (query *OrderQuery) FetchUntreated() (count int64) {
 
 // 關連功能
 func (order *Orders) GetProducts() {
-	DB.Model(&OrderProducts{}).Where("order_id = ?", order.ID).Order("created_at ASC").Scan(&order.Products)
+	DB.Raw(`
+		SELECT *, (SELECT qty FROM product_style_table AS pst WHERE pst.id = order_products.style_id) AS stock_qty 
+		FROM order_products 
+		WHERE order_id = ? 
+		ORDER BY created_at ASC
+	`, order.ID).Scan(&order.Products)
 }
