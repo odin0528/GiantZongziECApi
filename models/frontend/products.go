@@ -136,6 +136,8 @@ func (product *Products) GetStyleTable() {
 		if len(product.StyleTable) < style.GroupNo+1 {
 			product.StyleTable = append(product.StyleTable, []ProductStyleTable{})
 		}
+		// 庫存等於 剩餘庫存 - 待出貨
+		style.Qty = style.Qty - style.WaitForDelivery
 		product.StyleTable[style.GroupNo] = append(product.StyleTable[style.GroupNo], style)
 	}
 }
