@@ -7,6 +7,7 @@ type OrderProducts struct {
 	StyleID         int     `json:"-"`
 	Qty             int     `json:"qty"`
 	StockQty        int     `json:"stock_qty"`
+	OrderedQty      int     `json:"ordered_qty"`
 	Price           float64 `json:"price"`
 	DiscountedPrice float64 `json:"discounted_price"`
 	Total           float64 `json:"total"`

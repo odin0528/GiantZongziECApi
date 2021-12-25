@@ -244,9 +244,10 @@ func (query *OrderQuery) FetchUntreated() (count int64) {
 // 關連功能
 func (order *Orders) GetProducts() {
 	DB.Raw(`
-		SELECT *, (SELECT qty FROM product_style_table AS pst WHERE pst.id = order_products.style_id) AS stock_qty 
-		FROM order_products 
-		WHERE order_id = ? 
-		ORDER BY created_at ASC
+	SELECT op.*, pst.qty as stock_qty, pst.ordered_qty
+	FROM order_products AS op
+	INNER JOIN product_style_table AS pst ON op.style_id = pst.id
+	WHERE order_id = ? 
+	ORDER BY created_at ASC
 	`, order.ID).Scan(&order.Products)
 }

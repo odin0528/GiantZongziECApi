@@ -208,3 +208,39 @@ CREATE DEFINER = `root`@`%` TRIGGER `sold_out` BEFORE INSERT ON `order_products`
 END;
 
 update product_style_table set ordered_qty = 0;
+
+CREATE TRIGGER `pickup_product` AFTER UPDATE ON `orders` FOR EACH ROW BEGIN
+	DECLARE p_style_id INT;
+  DECLARE p_qty INT;
+	DECLARE affected tinyint;
+	DECLARE msg varchar(128);
+	DECLARE done INT DEFAULT 0;
+	
+	DECLARE cursorOrderProduct CURSOR FOR 
+			select style_id, qty
+			from order_products
+			where order_id = old.id;
+	
+	DECLARE CONTINUE HANDLER 
+		FOR NOT FOUND SET done=1;
+	
+	if old.status = 21 AND new.status = 22 then
+		#get produts of order
+		OPEN cursorOrderProduct;
+		
+		REPEAT
+			FETCH cursorOrderProduct INTO p_style_id, p_qty;
+			IF NOT done THEN			
+				UPDATE product_style_table 
+				SET ordered_qty = ordered_qty - p_qty, qty = qty - p_qty 
+				WHERE id = p_style_id AND qty >= p_qty;
+				
+				SELECT ROW_COUNT() into affected;
+				IF affected = 0 then
+					set msg = 'out_of_stock';
+					signal sqlstate '45000' set message_text = msg;
+				END IF;
+			END IF;
+		UNTIL done END REPEAT;
+	END IF;
+END
