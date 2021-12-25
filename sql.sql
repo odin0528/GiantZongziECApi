@@ -207,7 +207,10 @@ CREATE DEFINER = `root`@`%` TRIGGER `sold_out` BEFORE INSERT ON `order_products`
 	UPDATE products SET sold = sold + new.qty WHERE new.product_id;
 END;
 
-update product_style_table set ordered_qty = 0;
+update product_style_table set ordered_qty = (
+select count(*) from orders inner join order_products on orders.id = order_products.order_id
+where orders.`status` <= 21 and order_products.style_id = product_style_table.id
+);
 
 CREATE TRIGGER `pickup_product` AFTER UPDATE ON `orders` FOR EACH ROW BEGIN
 	DECLARE p_style_id INT;

@@ -3,7 +3,7 @@ package backend
 type OrderProducts struct {
 	ID              int     `json:"-"`
 	OrderID         int     `json:"-"`
-	ProductID       int     `json:"-"`
+	ProductID       int     `json:"product_id"`
 	StyleID         int     `json:"-"`
 	Qty             int     `json:"qty"`
 	StockQty        int     `json:"stock_qty"`
