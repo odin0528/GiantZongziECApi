@@ -17,12 +17,13 @@ type CategoryQuery struct {
 }
 
 type Category struct {
-	ID         int    `json:"id"`
-	PlatformID int    `json:"-"`
-	ParentID   int    `json:"parent_id"`
-	Layer      int    `json:"layer"`
-	Title      string `json:"title"`
-	Sort       int    `json:"sort"`
+	ID         int        `json:"id"`
+	PlatformID int        `json:"-"`
+	ParentID   int        `json:"parent_id"`
+	Layer      int        `json:"layer"`
+	Title      string     `json:"title"`
+	Sort       int        `json:"sort"`
+	Child      []Category `json:"child" gorm:"-"`
 	DeletedAt  soft_delete.DeletedAt
 	TimeDefault
 }

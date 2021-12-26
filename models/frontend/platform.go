@@ -46,9 +46,27 @@ func (platform *Platform) GetPayments() (payment PlatformPayment) {
 	DB.Model(&PlatformPayment{}).Where("platform_id = ?", platform.ID).Scan(&payment)
 	return
 }
-func (platform *Platform) GetCategory() (categories []Category) {
-	DB.Model(&Category{}).Where("platform_id = ? AND layer = 1", platform.ID).Order("sort ASC").Scan(&categories)
+func (platform *Platform) GetCategory() (sortCategory []Category) {
+	categories := []Category{}
+	DB.Model(&Category{}).Where("platform_id = ?", platform.ID).Order("layer ASC, sort ASC").Scan(&categories)
+	for _, category := range categories {
+		if category.ParentID == -1 {
+			sortCategory = append(sortCategory, category)
+		} else {
+			FindParentCategory(&sortCategory, category)
+		}
+	}
 	return
+}
+
+func FindParentCategory(parentCategory *[]Category, child Category) {
+	for index := range *parentCategory {
+		if (*parentCategory)[index].ID == child.ParentID {
+			(*parentCategory)[index].Child = append((*parentCategory)[index].Child, child)
+			return
+		}
+		FindParentCategory(&(*parentCategory)[index].Child, child)
+	}
 }
 
 func (platform *Platform) GetLogistics() (logistics PlatformLogistics) {
