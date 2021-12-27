@@ -21,7 +21,12 @@ func main() {
 
 	env.Load()
 
-	gin.SetMode("debug")
+	if os.Getenv("ENV") == "production" {
+		gin.SetMode("release")
+	} else {
+		gin.SetMode("debug")
+	}
+
 	gin.ForceConsoleColor()
 	router := gin.New()
 	router.Use(LoggerToFile())

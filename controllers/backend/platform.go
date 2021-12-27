@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	. "eCommerce/internal/database"
+	"eCommerce/internal/rdb"
 	"eCommerce/internal/uploader"
 	models "eCommerce/models/backend"
 
@@ -94,6 +95,8 @@ func PlatformLogisticsUpdate(c *gin.Context) {
 	c.BindJSON(&logistics)
 
 	DB.Where("platform_id = ?", PlatformID.(int)).Updates(&logistics)
+
+	rdb.Del("platform_momofriend_logistics")
 
 	g.Response(http.StatusOK, e.Success, nil)
 }

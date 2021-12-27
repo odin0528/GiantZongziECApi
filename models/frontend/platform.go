@@ -2,6 +2,10 @@ package frontend
 
 import (
 	. "eCommerce/internal/database"
+	"eCommerce/internal/rdb"
+	"fmt"
+
+	"github.com/go-redis/redis/v8"
 )
 
 type PlatformQuery struct {
@@ -33,29 +37,51 @@ func (query *PlatformQuery) Fetch() (platform Platform) {
 }
 
 func (platform *Platform) GetMenu() (menus []Menus) {
-	DB.Model(&Menus{}).Where("platform_id = ? and is_enabled = 1", platform.ID).Order("sort ASC").Scan(&menus)
+	key := fmt.Sprintf("platform_%s_menu", platform.Code)
+	err := rdb.Get(key, &menus)
+	if err == redis.Nil {
+		DB.Model(&Menus{}).Where("platform_id = ? and is_enabled = 1", platform.ID).Order("sort ASC").Scan(&menus)
+		rdb.Set(key, menus)
+	}
 	return
 }
 
 func (platform *Platform) GetPromotions() (promotions []Promotions) {
-	DB.Model(&Promotions{}).Where("platform_id = ? AND is_enabled = 1 AND start_timestamp <= UNIX_TIMESTAMP() AND end_timestamp > UNIX_TIMESTAMP()", platform.ID).Scan(&promotions)
+	key := fmt.Sprintf("platform_%s_promotion", platform.Code)
+	err := rdb.Get(key, &promotions)
+	if err == redis.Nil {
+		DB.Model(&Promotions{}).Where("platform_id = ? AND is_enabled = 1 AND start_timestamp <= UNIX_TIMESTAMP() AND end_timestamp > UNIX_TIMESTAMP()", platform.ID).Scan(&promotions)
+		rdb.Set(key, promotions)
+	}
 	return
 }
 
 func (platform *Platform) GetPayments() (payment PlatformPayment) {
-	DB.Model(&PlatformPayment{}).Where("platform_id = ?", platform.ID).Scan(&payment)
+	key := fmt.Sprintf("platform_%s_payment", platform.Code)
+	err := rdb.Get(key, &payment)
+	if err == redis.Nil {
+		DB.Model(&PlatformPayment{}).Where("platform_id = ?", platform.ID).Scan(&payment)
+		rdb.Set(key, payment)
+	}
 	return
 }
 func (platform *Platform) GetCategory() (sortCategory []Category) {
-	categories := []Category{}
-	DB.Model(&Category{}).Where("platform_id = ?", platform.ID).Order("layer ASC, sort ASC").Scan(&categories)
-	for _, category := range categories {
-		if category.ParentID == -1 {
-			sortCategory = append(sortCategory, category)
-		} else {
-			FindParentCategory(&sortCategory, category)
+
+	key := fmt.Sprintf("platform_%s_category", platform.Code)
+	err := rdb.Get(key, &sortCategory)
+	if err == redis.Nil {
+		categories := []Category{}
+		DB.Model(&Category{}).Where("platform_id = ?", platform.ID).Order("layer ASC, sort ASC").Scan(&categories)
+		for _, category := range categories {
+			if category.ParentID == -1 {
+				sortCategory = append(sortCategory, category)
+			} else {
+				FindParentCategory(&sortCategory, category)
+			}
 		}
+		rdb.Set(key, sortCategory)
 	}
+
 	return
 }
 
@@ -70,6 +96,13 @@ func FindParentCategory(parentCategory *[]Category, child Category) {
 }
 
 func (platform *Platform) GetLogistics() (logistics PlatformLogistics) {
-	DB.Model(&PlatformLogistics{}).Where("platform_id = ?", platform.ID).Scan(&logistics)
+	key := fmt.Sprintf("platform_%s_logistics", platform.Code)
+	err := rdb.Get(key, &logistics)
+	if err == redis.Nil {
+		DB.Model(&PlatformLogistics{}).Where("platform_id = ?", platform.ID).Scan(&logistics)
+		rdb.Set(key, logistics)
+	} else {
+		println("logistics is cached")
+	}
 	return
 }
