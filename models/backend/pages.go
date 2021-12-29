@@ -50,8 +50,8 @@ func (req *PageReq) DeepDuplicate() error {
 			return err
 		}
 		if err := tx.Exec(`
-			INSERT INTO page_component_data (id, page_id, com_id, title, img, link_type, link, text, start_time, end_time) 
-			(SELECT id, page_id, com_id, title, img, link_type, link, text, start_time, end_time FROM page_component_data_draft WHERE page_id = ?)
+			INSERT INTO page_component_data (id, page_id, com_id, title, img, link_type, link, text, start_time, end_time, created_at, updated_at) 
+			(SELECT id, page_id, com_id, title, img, link_type, link, text, start_time, end_time, UNIX_TIMESTAMP(), UNIX_TIMESTAMP() FROM page_component_data_draft WHERE page_id = ?)
 		`, req.ID, req.PlatformID).Error; err != nil {
 			return err
 		}

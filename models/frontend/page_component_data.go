@@ -19,6 +19,7 @@ type PageComponentData struct {
 	Text      string `json:"text"`
 	StartTime int    `json:"start_time"`
 	EndTime   int    `json:"end_time"`
+	TimeDefault
 }
 
 func (PageComponentData) TableName() string {

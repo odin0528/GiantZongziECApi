@@ -246,4 +246,8 @@ CREATE TRIGGER `pickup_product` AFTER UPDATE ON `orders` FOR EACH ROW BEGIN
 			END IF;
 		UNTIL done END REPEAT;
 	END IF;
-END
+END;
+
+ALTER TABLE `page_component_data` 
+ADD COLUMN `created_at` int(11) NULL AFTER `end_time`,
+ADD COLUMN `updated_at` int(11) NULL AFTER `created_at`
