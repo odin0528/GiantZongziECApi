@@ -27,6 +27,7 @@ type Platform struct {
 	FBPixel            string `json:"fb_pixel"`
 	FBPixelToken       string `json:"-"`
 	LineChannelID      string `json:"line_channel_id"`
+	LineChannelSecret  string `json:"_"`
 }
 
 func (Platform) TableName() string {

@@ -124,6 +124,8 @@ func MemberOAuth(c *gin.Context) {
 	var member models.Members
 
 	PlatformID, _ := c.Get("platform_id")
+	p, _ := c.Get("platform")
+	platform := p.(models.Platform)
 
 	err := c.BindJSON(&req)
 	if err != nil {
@@ -170,12 +172,17 @@ func MemberOAuth(c *gin.Context) {
 		var result map[string]interface{}
 		var userData map[string]interface{}
 
+		if platform.LineChannelID == "" || platform.LineChannelSecret == "" {
+			platform.LineChannelID = os.Getenv("LINE_CHANNEL_ID")
+			platform.LineChannelSecret = os.Getenv("LINE_CHANNEL_SECRET")
+		}
+
 		params := url.Values{}
 		params.Add("grant_type", "authorization_code")
 		params.Add("code", req.Token)
 		params.Add("redirect_uri", fmt.Sprintf(os.Getenv("LINE_LOGIN_REDIRECT_URL"), c.Request.Header["Hostname"][0]))
-		params.Add("client_id", os.Getenv("LINE_CHANNEL_ID"))
-		params.Add("client_secret", os.Getenv("LINE_CHANNEL_SECRET"))
+		params.Add("client_id", platform.LineChannelID)
+		params.Add("client_secret", platform.LineChannelSecret)
 		body := strings.NewReader(params.Encode())
 
 		curl, _ := http.NewRequest("POST", "https://api.line.me/oauth2/v2.1/token", body)
@@ -187,7 +194,7 @@ func MemberOAuth(c *gin.Context) {
 
 		params = url.Values{}
 		params.Add("id_token", result["id_token"].(string))
-		params.Add("client_id", os.Getenv("LINE_CHANNEL_ID"))
+		params.Add("client_id", platform.LineChannelID)
 		body = strings.NewReader(params.Encode())
 		curl, _ = http.NewRequest("POST", "https://api.line.me/oauth2/v2.1/verify", body)
 		curl.Header.Set("Content-Type", "application/x-www-form-urlencoded")
