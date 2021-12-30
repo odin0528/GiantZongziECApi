@@ -3,6 +3,7 @@ package frontend
 import (
 	"eCommerce/pkg/e"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 
@@ -18,8 +19,15 @@ func PlatformFetch(c *gin.Context) {
 	logistics := Platform.GetLogistics()
 	payment := Platform.GetPayments()
 	categories := Platform.GetCategory()
+	if Platform.FBAppID == "" {
+		Platform.FBAppID = os.Getenv("FB_APP_ID")
+	}
+	if Platform.LineChannelID == "" {
+		Platform.LineChannelID = os.Getenv("LINE_CHANNEL_ID")
+	}
+
 	g.Response(http.StatusOK, e.Success, map[string]interface{}{
-		"info":       platform,
+		"info":       Platform,
 		"menu":       menu,
 		"promotions": promotions,
 		"payment":    payment,

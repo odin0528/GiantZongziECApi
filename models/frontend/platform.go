@@ -21,10 +21,12 @@ type Platform struct {
 	IconUrl            string `json:"icon_url"`
 	Hostname           string `json:"hostname"`
 	Code               string `json:"code"`
+	FBAppID            string `json:"fb_app_id"`
 	FBPageID           string `json:"fb_page_id"`
 	FBMessengerEnabled bool   `json:"fb_messenger_enabled"`
 	FBPixel            string `json:"fb_pixel"`
 	FBPixelToken       string `json:"-"`
+	LineChannelID      string `json:"line_channel_id"`
 }
 
 func (Platform) TableName() string {

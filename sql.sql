@@ -250,4 +250,8 @@ END;
 
 ALTER TABLE `page_component_data` 
 ADD COLUMN `created_at` int(11) NULL AFTER `end_time`,
-ADD COLUMN `updated_at` int(11) NULL AFTER `created_at`
+ADD COLUMN `updated_at` int(11) NULL AFTER `created_at`;
+
+ALTER TABLE .`platform` 
+ADD COLUMN `fb_app_id` varchar(31) NULL COMMENT 'FB APP ID' AFTER `fb_pixel_token`,
+ADD COLUMN `line_channel_id` varchar(15) NULL COMMENT 'LINE CHANNEL ID' AFTER `fb_messenger_enabled`;
