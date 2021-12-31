@@ -4,6 +4,7 @@ import (
 	"context"
 	"eCommerce/internal/auth"
 	"eCommerce/internal/line"
+	"eCommerce/internal/money"
 	models "eCommerce/models/frontend"
 	"eCommerce/pkg/e"
 	"encoding/base64"
@@ -123,7 +124,7 @@ func OrderCreate(c *gin.Context) {
 
 	for pi, product := range order.Products {
 		for si, style := range product.Styles {
-			itemName = append(itemName, fmt.Sprintf("%s %s", product.Title, style.StyleTitle))
+			itemName = append(itemName, money.FilterGoodsName(fmt.Sprintf("%s %s", product.Title, style.StyleTitle)))
 			order.Products[pi].Styles[si].Title = product.Title
 			orderProduct := models.OrderProducts{
 				OrderID:         order.ID,
