@@ -70,13 +70,20 @@ func ProductModify(c *gin.Context) {
 		sort := 1
 		firstPhoto := ""
 		for _, photo := range req.Photos {
-			//有找到base64的編碼關鍵字
-			if strings.Index(photo.Img, ",") > 0 {
-				filename := fmt.Sprintf("/upload/%08d/products/%08d/%d", platformID.(int), req.ID, time.Now().UnixNano())
+			if photo.Img == "" {
+				continue
+			} else {
+				filename := ""
+				if strings.Index(photo.Img, ",") > 0 {
+					filename = fmt.Sprintf("/upload/%08d/products/%08d/%d", platformID.(int), req.ID, time.Now().UnixNano())
+					filename = uploader.Thumbnail(filename, photo.Img, 1440)
+				} else {
+					filename = photo.Img
+				}
 				productPhotos := models.ProductPhotos{
 					ProductID:  req.ID,
 					PlatformID: platformID.(int),
-					Img:        uploader.Thumbnail(filename, photo.Img, 1440),
+					Img:        filename,
 					Sort:       sort,
 				}
 				productPhotos.Create()
@@ -88,6 +95,7 @@ func ProductModify(c *gin.Context) {
 		}
 
 		for index, style := range req.Style {
+			style.ID = 0
 			style.ProductID = req.ID
 			style.PlatformID = platformID.(int)
 			style.Sort = index
@@ -100,6 +108,7 @@ func ProductModify(c *gin.Context) {
 		}
 
 		for index, style := range req.SubStyle {
+			style.ID = 0
 			style.ProductID = req.ID
 			style.PlatformID = platformID.(int)
 			style.Sort = index
@@ -111,6 +120,7 @@ func ProductModify(c *gin.Context) {
 
 		for index, list := range req.StyleTable {
 			for _, item := range list {
+				item.ID = 0
 				item.ProductID = req.ID
 				item.PlatformID = platformID.(int)
 				item.Title = req.Title

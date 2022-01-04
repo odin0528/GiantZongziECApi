@@ -255,3 +255,39 @@ ADD COLUMN `updated_at` int(11) NULL AFTER `created_at`;
 ALTER TABLE .`platform` 
 ADD COLUMN `fb_app_id` varchar(31) NULL COMMENT 'FB APP ID' AFTER `fb_pixel_token`,
 ADD COLUMN `line_channel_id` varchar(15) NULL COMMENT 'LINE CHANNEL ID' AFTER `fb_messenger_enabled`;
+
+CREATE OR REPLACE ALGORITHM = UNDEFINED DEFINER = `root`@`%` SQL SECURITY DEFINER VIEW `report_wait_delivery_style_table` AS SELECT
+	`pst`.`id` AS `id`,
+	`pst`.`platform_id` AS `platform_id`,
+	`pst`.`product_id` AS `product_id`,
+	`pst`.`group_no` AS `group_no`,
+	`pst`.`sort` AS `sort`,
+	`pst`.`title` AS `title`,
+	`pst`.`style_title` AS `style_title`,
+	`pst`.`sub_style_title` AS `sub_style_title`,
+	`pst`.`photo` AS `photo`,
+	`pst`.`sku` AS `sku`,
+	`pst`.`price` AS `price`,
+	`pst`.`qty` AS `qty`,
+	`pst`.`low_stock` AS `low_stock`,
+	`pst`.`cost` AS `cost`,
+	`pst`.`suggest_price` AS `suggest_price`,
+	`pst`.`no_store_delivery` AS `no_store_delivery`,
+	`pst`.`no_over_sale` AS `no_over_sale`,
+	`pst`.`sold` AS `sold`,
+	`pst`.`created_at` AS `created_at`,
+	`pst`.`updated_at` AS `updated_at`,
+	sum( `pst`.`ordered_qty` ) AS `ordered_qty` 
+FROM
+	((
+			`product_style_table` `pst`
+			JOIN `order_products` `op` ON ((
+					`op`.`style_id` = `pst`.`id` 
+				)))
+		JOIN `orders` ON ((
+				`orders`.`id` = `op`.`order_id` 
+			))) 
+WHERE
+	( `orders`.`status` = 21 ) 
+GROUP BY
+	`pst`.`id`;
