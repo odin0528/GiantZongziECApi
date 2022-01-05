@@ -117,6 +117,7 @@ func main() {
 			authRequired.GET("/orders/untreated", backend.OrderUntreated)
 			authRequired.POST("/orders", backend.OrderList)
 			authRequired.POST("/order/pickup", backend.OrderStartPickup)
+			authRequired.POST("/order/cancel", backend.OrderCancel)
 
 			authRequired.POST("/shipment", backend.ShipmentList)
 			authRequired.POST("/shipment/make", backend.ShipmentMakeNo)

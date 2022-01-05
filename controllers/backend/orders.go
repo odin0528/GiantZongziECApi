@@ -72,6 +72,31 @@ func OrderStartPickup(c *gin.Context) {
 	g.Response(http.StatusOK, e.Success, nil)
 }
 
+func OrderCancel(c *gin.Context) {
+	g := Gin{c}
+	var query models.OrderQuery
+	err := c.BindJSON(&query)
+	if err != nil {
+		g.Response(http.StatusBadRequest, e.InvalidParams, err)
+		return
+	}
+
+	PlatformID, _ := c.Get("platform_id")
+
+	affected := DB.Model(models.Orders{}).Where(`
+		id = ? AND 
+		(status = 21 AND payment = 2 OR status = 11 ) AND 
+		platform_id = ?
+	`, query.ID, PlatformID.(int)).Update("status", 99).RowsAffected
+
+	if affected == 0 {
+		g.Response(http.StatusOK, e.StatusNotFound, err)
+		return
+	}
+
+	g.Response(http.StatusOK, e.Success, nil)
+}
+
 func OrderUntreated(c *gin.Context) {
 	g := Gin{c}
 	var query models.OrderQuery
