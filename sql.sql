@@ -344,4 +344,22 @@ CREATE DEFINER = `root`@`%` TRIGGER `pickup_product` AFTER UPDATE ON `orders` FO
 			END IF;
 		UNTIL done END REPEAT;
 	END IF;
-END
+END;
+
+CREATE TABLE `brand`  (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `platform_id` int UNSIGNED NULL,
+  `supplier_id` int NULL DEFAULT 0,
+  `title` varchar(255) NULL,
+  `logo` varchar(255) NULL,
+  `updated_at` int NULL,
+  `created_at` int NULL,
+  `deleted_at` int NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+);
+
+ALTER TABLE `products` 
+ADD COLUMN `brand_id` int(11) NULL DEFAULT 0 AFTER `platform_id`;
+
+INSERT INTO `ec`.`brand`(`platform_id`, `title`) VALUES (3, '法米納');
+INSERT INTO `ec`.`brand`(`platform_id`, `title`) VALUES (3, '希爾斯');

@@ -18,6 +18,7 @@ type ProductQuery struct {
 type Products struct {
 	ID              int                   `json:"id"`
 	PlatformID      int                   `json:"-" gorm:"<-:create"`
+	BrandID         int                   `json:"brand_id"`
 	Title           string                `json:"title"`
 	StyleTitle      string                `json:"style_title"`
 	SubStyleTitle   string                `json:"sub_style_title"`

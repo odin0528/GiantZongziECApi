@@ -136,6 +136,8 @@ func main() {
 			authRequired.POST("/platform/payment", backend.PlatformPaymentUpdate)
 			authRequired.POST("/platform/logistics", backend.PlatformLogisticsUpdate)
 
+			authRequired.GET("/brand", backend.BrandList)
+
 			authRequired.GET("/menus", backend.MenuList)
 			authRequired.POST("/menus", backend.MenuModify)
 			authRequired.POST("/menus/move", backend.MenuMove)
