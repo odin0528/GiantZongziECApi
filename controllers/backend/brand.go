@@ -9,17 +9,28 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func BrandList(c *gin.Context) {
+func BrandFetchAll(c *gin.Context) {
 	g := Gin{c}
 	var query models.BrandQuery
 	PlatformID, _ := c.Get("platform_id")
 	query.PlatformID = PlatformID.(int)
-	menus, err := query.FetchAll()
+	brands, err := query.FetchAll()
 
 	if err != nil {
 		g.Response(http.StatusBadRequest, e.InvalidParams, err)
 		return
 	}
 
-	g.Response(http.StatusOK, e.Success, menus)
+	g.Response(http.StatusOK, e.Success, brands)
+}
+
+func BrandFetchByPage(c *gin.Context) {
+	g := Gin{c}
+	var query models.BrandQuery
+	g.C.BindJSON(&query)
+	PlatformID, _ := c.Get("platform_id")
+	query.PlatformID = PlatformID.(int)
+	brands, pagination := query.Fetch()
+
+	g.PaginationResponse(http.StatusOK, e.Success, brands, pagination)
 }

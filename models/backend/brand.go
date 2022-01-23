@@ -25,6 +25,8 @@ type Brand struct {
 type BrandQuery struct {
 	ID         int
 	PlatformID int
+	SupplierID int `json:"supplier_id"`
+	Pagination
 }
 
 func (Brand) TableName() string {
@@ -36,11 +38,24 @@ func (query *BrandQuery) GetCondition() *gorm.DB {
 
 	if query.ID != 0 {
 		sql.Where("id = ?", query.ID)
+
+	}
+	if query.SupplierID != -1 {
+		sql.Where("supplier_id = ?", query.SupplierID)
 	}
 
 	sql.Where("platform_id = ?", query.PlatformID)
 
 	return sql
+}
+
+func (query *BrandQuery) Fetch() (brands []Brand, pagination Pagination) {
+	var count int64
+	sql := query.GetCondition()
+	sql.Count(&count)
+	sql.Offset((query.Page - 1) * query.Items).Limit(query.Items).Scan(&brands)
+	pagination = CreatePagination(query.Page, query.Items, count)
+	return
 }
 
 func (query *BrandQuery) FetchAll() (brands []Brand, err error) {

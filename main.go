@@ -136,7 +136,12 @@ func main() {
 			authRequired.POST("/platform/payment", backend.PlatformPaymentUpdate)
 			authRequired.POST("/platform/logistics", backend.PlatformLogisticsUpdate)
 
-			authRequired.GET("/brand", backend.BrandList)
+			authRequired.GET("/brand", backend.BrandFetchAll)
+			authRequired.POST("/brand", backend.BrandFetchByPage)
+
+			authRequired.GET("/supplier", backend.SupplierList)
+			authRequired.POST("/supplier/modify", backend.SupplierModify)
+			authRequired.POST("/supplier/delete", backend.SupplierDelete)
 
 			authRequired.GET("/menus", backend.MenuList)
 			authRequired.POST("/menus", backend.MenuModify)

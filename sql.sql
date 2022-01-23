@@ -352,6 +352,7 @@ CREATE TABLE `brand`  (
   `supplier_id` int NULL DEFAULT 0,
   `title` varchar(255) NULL,
   `logo` varchar(255) NULL,
+  `is_brand` tinyint(4) NULL DEFAULT 1,
   `updated_at` int NULL,
   `created_at` int NULL,
   `deleted_at` int NULL DEFAULT 0,
@@ -363,3 +364,23 @@ ADD COLUMN `brand_id` int(11) NULL DEFAULT 0 AFTER `platform_id`;
 
 INSERT INTO `ec`.`brand`(`platform_id`, `title`) VALUES (3, '法米納');
 INSERT INTO `ec`.`brand`(`platform_id`, `title`) VALUES (3, '希爾斯');
+
+CREATE TABLE `supplier`  (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `platform_id` int UNSIGNED NOT NULL,
+  `title` varchar(255) NULL,
+  `url` varchar(255) NULL,
+  `contact_name` varchar(255) NULL,
+  `contact_phone` varchar(255) NULL,
+  `memo` text NULL,
+  `created_at` int NULL,
+  `updated_at` int NULL,
+  `deleted_at` int NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TRIGGER `clean_brand_supplier_id` AFTER UPDATE ON `supplier` FOR EACH ROW BEGIN
+	IF NEW.deleted_at > 0 THEN
+		UPDATE brand SET supplier_id = 0 WHERE supplier_id = OLD.id AND platform_id = OLD.platform_id;
+	END IF;
+END;
