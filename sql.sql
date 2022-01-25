@@ -384,3 +384,13 @@ CREATE TRIGGER `clean_brand_supplier_id` AFTER UPDATE ON `supplier` FOR EACH ROW
 		UPDATE brand SET supplier_id = 0 WHERE supplier_id = OLD.id AND platform_id = OLD.platform_id;
 	END IF;
 END;
+
+ALTER TABLE `product_style_table` 
+MODIFY COLUMN `qty` int(11) NULL DEFAULT 0 COMMENT '庫存數' AFTER `price`,
+MODIFY COLUMN `ordered_qty` int(11) NULL DEFAULT 0 COMMENT '已訂購數' AFTER `qty`,
+MODIFY COLUMN `low_stock` int(11) NULL DEFAULT 0 COMMENT '低庫存數量，庫存低於此數字時發通知' AFTER `ordered_qty`,
+MODIFY COLUMN `cost` double(10, 2) NULL DEFAULT 0 COMMENT '單件產品成本' AFTER `low_stock`,
+MODIFY COLUMN `suggest_price` double(10, 2) NULL DEFAULT 0 COMMENT '建議售價' AFTER `cost`,
+MODIFY COLUMN `no_store_delivery` tinyint(4) NULL DEFAULT 0 COMMENT '超過此數量後不可超取，若為0則皆可超取' AFTER `suggest_price`,
+MODIFY COLUMN `no_over_sale` tinyint(4) NULL DEFAULT 0 COMMENT '不可超賣' AFTER `no_store_delivery`,
+MODIFY COLUMN `sold` int(11) UNSIGNED NULL DEFAULT 0 COMMENT '賣出數量' AFTER `no_over_sale`;
